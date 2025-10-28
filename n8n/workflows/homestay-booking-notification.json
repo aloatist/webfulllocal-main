@@ -1,0 +1,152 @@
+{
+  "name": "Homestay Booking Notification",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "homestay-booking",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-homestay-booking",
+      "name": "Webhook - Homestay Booking",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "webhookId": "homestay-booking"
+    },
+    {
+      "parameters": {
+        "fromEmail": "booking@conphungtourist.com",
+        "toEmail": "={{ $json.customer.email }}",
+        "subject": "Xác nhận đặt phòng Homestay #{{ $json.reference }}",
+        "emailType": "html",
+        "message": "<!DOCTYPE html>\n<html>\n<head>\n  <style>\n    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }\n    .container { max-width: 600px; margin: 0 auto; padding: 20px; }\n    .header { background: #8b5cf6; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }\n    .content { padding: 20px; background: #f9fafb; }\n    .booking-details { background: white; padding: 20px; margin: 15px 0; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }\n    .detail-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb; }\n    .detail-label { font-weight: 600; color: #6b7280; }\n    .detail-value { color: #111827; }\n    .footer { text-align: center; padding: 20px; color: #6b7280; font-size: 14px; }\n    .button { display: inline-block; padding: 12px 32px; background: #8b5cf6; color: white; text-decoration: none; border-radius: 6px; margin: 15px 0; font-weight: 600; }\n    .highlight { background: #fef3c7; padding: 15px; border-left: 4px solid #f59e0b; margin: 15px 0; border-radius: 4px; }\n  </style>\n</head>\n<body>\n  <div class=\"container\">\n    <div class=\"header\">\n      <h1>🏡 Đặt Phòng Homestay Thành Công!</h1>\n    </div>\n    <div class=\"content\">\n      <p>Xin chào <strong>{{ $json.customer.fullName }}</strong>,</p>\n      <p>Cảm ơn bạn đã chọn Homestay tại Khu Du Lịch Cồn Phụng. Chúng tôi rất vui được đón tiếp bạn!</p>\n      \n      <div class=\"booking-details\">\n        <h3 style=\"margin-top: 0; color: #8b5cf6;\">📋 Thông Tin Đặt Phòng</h3>\n        <div class=\"detail-row\">\n          <span class=\"detail-label\">Mã đặt phòng:</span>\n          <span class=\"detail-value\">{{ $json.reference }}</span>\n        </div>\n        <div class=\"detail-row\">\n          <span class=\"detail-label\">Homestay:</span>\n          <span class=\"detail-value\">{{ $json.homestay.title }}</span>\n        </div>\n        <div class=\"detail-row\">\n          <span class=\"detail-label\">Ngày nhận phòng:</span>\n          <span class=\"detail-value\">{{ $json.checkInDate }}</span>\n        </div>\n        <div class=\"detail-row\">\n          <span class=\"detail-label\">Ngày trả phòng:</span>\n          <span class=\"detail-value\">{{ $json.checkOutDate }}</span>\n        </div>\n        <div class=\"detail-row\">\n          <span class=\"detail-label\">Số đêm:</span>\n          <span class=\"detail-value\">{{ $json.nights }} đêm</span>\n        </div>\n        <div class=\"detail-row\">\n          <span class=\"detail-label\">Số khách:</span>\n          <span class=\"detail-value\">{{ $json.guests }} người</span>\n        </div>\n        <div class=\"detail-row\" style=\"border-bottom: none; font-size: 18px; margin-top: 10px;\">\n          <span class=\"detail-label\">Tổng tiền:</span>\n          <span class=\"detail-value\" style=\"color: #8b5cf6; font-weight: 700;\">{{ $json.totalAmount }} VND</span>\n        </div>\n      </div>\n      \n      <div class=\"highlight\">\n        <strong>⏰ Thời gian nhận/trả phòng:</strong><br>\n        • Check-in: 14:00<br>\n        • Check-out: 12:00\n      </div>\n      \n      <p><strong>Bước tiếp theo:</strong></p>\n      <ol style=\"padding-left: 20px;\">\n        <li>Đội ngũ của chúng tôi sẽ liên hệ xác nhận trong vòng 24h</li>\n        <li>Vui lòng chuẩn bị thanh toán theo hướng dẫn</li>\n        <li>Mang theo CMND/CCCD khi check-in</li>\n      </ol>\n      \n      <div style=\"text-align: center;\">\n        <a href=\"{{ $json.bookingUrl }}\" class=\"button\">Xem Chi Tiết Đặt Phòng</a>\n      </div>\n      \n      <p style=\"margin-top: 20px;\">Nếu có bất kỳ thắc mắc nào, vui lòng liên hệ:</p>\n      <p style=\"margin: 5px 0;\">📞 Hotline: 0123 456 789</p>\n      <p style=\"margin: 5px 0;\">📧 Email: booking@conphungtourist.com</p>\n    </div>\n    <div class=\"footer\">\n      <p>Khu Du Lịch Cồn Phụng</p>\n      <p>Cảm ơn bạn đã tin tưởng và lựa chọn chúng tôi! 🌴</p>\n    </div>\n  </div>\n</body>\n</html>"
+      },
+      "id": "email-customer",
+      "name": "Email - Customer Confirmation",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [450, 200],
+      "credentials": {
+        "smtp": {
+          "id": "1",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "system@conphungtourist.com",
+        "toEmail": "admin@conphungtourist.com",
+        "subject": "🏡 Đặt phòng Homestay mới #{{ $json.reference }}",
+        "emailType": "html",
+        "message": "<!DOCTYPE html>\n<html>\n<head>\n  <style>\n    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }\n    .container { max-width: 600px; margin: 0 auto; padding: 20px; }\n    .header { background: #0ea5e9; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }\n    .content { padding: 20px; background: #f9fafb; }\n    .booking-details { background: white; padding: 20px; margin: 15px 0; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }\n    .urgent { background: #fef3c7; padding: 15px; border-left: 4px solid #f59e0b; margin: 15px 0; border-radius: 4px; }\n    .button { display: inline-block; padding: 12px 32px; background: #0ea5e9; color: white; text-decoration: none; border-radius: 6px; margin: 15px 0; font-weight: 600; }\n    .detail-row { padding: 8px 0; border-bottom: 1px solid #e5e7eb; }\n    .detail-label { font-weight: 600; color: #6b7280; display: inline-block; width: 150px; }\n  </style>\n</head>\n<body>\n  <div class=\"container\">\n    <div class=\"header\">\n      <h1>🏡 Đặt Phòng Homestay Mới!</h1>\n    </div>\n    <div class=\"content\">\n      <div class=\"urgent\">\n        <strong>⚠️ Cần xử lý:</strong> Vui lòng liên hệ khách hàng trong vòng 24h để xác nhận đặt phòng\n      </div>\n      \n      <div class=\"booking-details\">\n        <h3 style=\"margin-top: 0; color: #0ea5e9;\">📋 Chi Tiết Đặt Phòng</h3>\n        <div class=\"detail-row\">\n          <span class=\"detail-label\">Mã booking:</span>\n          <span>{{ $json.reference }}</span>\n        </div>\n        <div class=\"detail-row\">\n          <span class=\"detail-label\">Homestay:</span>\n          <span>{{ $json.homestay.title }}</span>\n        </div>\n        <div class=\"detail-row\">\n          <span class=\"detail-label\">Check-in:</span>\n          <span>{{ $json.checkInDate }}</span>\n        </div>\n        <div class=\"detail-row\">\n          <span class=\"detail-label\">Check-out:</span>\n          <span>{{ $json.checkOutDate }}</span>\n        </div>\n        <div class=\"detail-row\">\n          <span class=\"detail-label\">Số đêm:</span>\n          <span>{{ $json.nights }} đêm</span>\n        </div>\n        <div class=\"detail-row\">\n          <span class=\"detail-label\">Số khách:</span>\n          <span>{{ $json.guests }} người</span>\n        </div>\n        <div class=\"detail-row\" style=\"border-bottom: none; font-size: 18px; margin-top: 10px;\">\n          <span class=\"detail-label\">Tổng tiền:</span>\n          <span style=\"color: #0ea5e9; font-weight: 700;\">{{ $json.totalAmount }} VND</span>\n        </div>\n      </div>\n      \n      <div class=\"booking-details\">\n        <h3 style=\"margin-top: 0; color: #0ea5e9;\">👤 Thông Tin Khách Hàng</h3>\n        <div class=\"detail-row\">\n          <span class=\"detail-label\">Tên:</span>\n          <span>{{ $json.customer.fullName }}</span>\n        </div>\n        <div class=\"detail-row\">\n          <span class=\"detail-label\">Email:</span>\n          <span>{{ $json.customer.email }}</span>\n        </div>\n        <div class=\"detail-row\">\n          <span class=\"detail-label\">Điện thoại:</span>\n          <span>{{ $json.customer.phone }}</span>\n        </div>\n        <div class=\"detail-row\" style=\"border-bottom: none;\">\n          <span class=\"detail-label\">Ghi chú:</span>\n          <span>{{ $json.specialRequests || 'Không có' }}</span>\n        </div>\n      </div>\n      \n      <div style=\"text-align: center;\">\n        <a href=\"{{ $json.bookingUrl }}\" class=\"button\">Xem & Xử Lý Booking</a>\n      </div>\n    </div>\n  </div>\n</body>\n</html>"
+      },
+      "id": "email-admin",
+      "name": "Email - Admin Notification",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [450, 400],
+      "credentials": {
+        "smtp": {
+          "id": "1",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "text": "🏡 *Đặt Phòng Homestay Mới!*\n\n📋 Mã: `{{ $json.reference }}`\n🏠 Homestay: {{ $json.homestay.title }}\n👤 Khách: {{ $json.customer.fullName }}\n📞 SĐT: {{ $json.customer.phone }}\n📧 Email: {{ $json.customer.email }}\n\n📅 Check-in: {{ $json.checkInDate }}\n📅 Check-out: {{ $json.checkOutDate }}\n🌙 Số đêm: {{ $json.nights }}\n👥 Số khách: {{ $json.guests }}\n💰 Tổng: {{ $json.totalAmount }} VND\n\n📝 Ghi chú: {{ $json.specialRequests || 'Không có' }}\n\n⚠️ *Cần liên hệ khách trong 24h!*\n\n🔗 [Xem chi tiết]({{ $json.bookingUrl }})",
+        "additionalFields": {
+          "parseMode": "Markdown"
+        }
+      },
+      "id": "telegram-notification",
+      "name": "Telegram - Admin Alert",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [450, 600],
+      "credentials": {
+        "telegramApi": {
+          "id": "2",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"success\": true, \"message\": \"Homestay booking notification sent\", \"reference\": $json.reference } }}"
+      },
+      "id": "respond-webhook",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [650, 300]
+    }
+  ],
+  "connections": {
+    "Webhook - Homestay Booking": {
+      "main": [
+        [
+          {
+            "node": "Email - Customer Confirmation",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Email - Admin Notification",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Telegram - Admin Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email - Customer Confirmation": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email - Admin Notification": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram - Admin Alert": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {},
+  "staticData": null,
+  "tags": ["booking", "homestay", "notification"],
+  "triggerCount": 1,
+  "updatedAt": "2025-01-22T00:00:00.000Z",
+  "versionId": "1"
+}

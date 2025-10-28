@@ -1,0 +1,16 @@
+import { IsOptional, IsString } from 'class-validator';
+import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
+
+export class CustomerQueryDto extends PaginationQueryDto {
+  @IsOptional()
+  @IsString()
+  search?: string;
+
+  @IsOptional()
+  @IsString()
+  source?: string;
+
+  @IsOptional()
+  @IsString()
+  tag?: string;
+}

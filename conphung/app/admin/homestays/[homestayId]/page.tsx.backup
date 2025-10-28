@@ -1,0 +1,168 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
+import Link from 'next/link';
+import Loader from '@/components/Loader';
+
+export default function EditHomestayPage() {
+  const params = useParams<{ homestayId: string }>();
+  const homestayId = params?.homestayId;
+  
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [data, setData] = useState<any | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    
+    async function loadHomestay() {
+      if (!homestayId) return;
+      
+      setLoading(true);
+      setError(null);
+      
+      try {
+        const res = await fetch(`/api/homestays/${homestayId}`);
+        
+        if (!res.ok) {
+          const payload = await res.json().catch(() => ({}));
+          throw new Error(payload.error || 'Không tìm thấy homestay');
+        }
+        
+        const homestay = await res.json();
+        
+        if (!cancelled) {
+          setData(homestay);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : 'Không thể tải dữ liệu');
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    }
+    
+    void loadHomestay();
+    
+    return () => {
+      cancelled = true;
+    };
+  }, [homestayId]);
+
+  if (!homestayId) {
+    return (
+      <div className="p-6">
+        <p className="text-sm text-red-600">Thiếu mã homestay hợp lệ.</p>
+        <Link href="/admin/homestays" className="mt-2 inline-flex text-sm underline">
+          Quay lại danh sách
+        </Link>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center">
+        <Loader />
+      </div>
+    );
+  }
+
+  if (error || !data) {
+    return (
+      <div className="flex min-h-[50vh] flex-col items-center justify-center gap-3 p-6">
+        <p className="text-sm text-red-600">{error ?? 'Không tìm thấy homestay.'}</p>
+        <Link 
+          href="/admin/homestays" 
+          className="inline-flex text-sm underline hover:no-underline"
+        >
+          Quay lại danh sách
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <div className="container mx-auto max-w-5xl p-6">
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Chỉnh sửa Homestay</h1>
+          <p className="text-sm text-muted-foreground">
+            {data.title}
+          </p>
+        </div>
+        <Link 
+          href="/admin/homestays" 
+          className="text-sm underline hover:no-underline"
+        >
+          Quay lại danh sách
+        </Link>
+      </div>
+      
+      <div className="rounded-lg border bg-card p-6">
+        <div className="space-y-4">
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">ID</p>
+              <p className="text-sm">{data.id}</p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Slug</p>
+              <p className="text-sm">{data.slug}</p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Trạng thái</p>
+              <p className="text-sm">{data.status}</p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Loại</p>
+              <p className="text-sm">{data.type}</p>
+            </div>
+          </div>
+          
+          <div className="pt-4 border-t">
+            <p className="text-sm text-muted-foreground mb-4">
+              ⚠️ <strong>Tính năng chỉnh sửa đầy đủ đang được phát triển.</strong>
+            </p>
+            <p className="text-sm text-muted-foreground mb-4">
+              Hiện tại bạn có thể xem thông tin homestay. Để chỉnh sửa, vui lòng:
+            </p>
+            <ol className="list-decimal list-inside space-y-2 text-sm text-muted-foreground">
+              <li>Sử dụng Prisma Studio để chỉnh sửa trực tiếp</li>
+              <li>Hoặc xóa và tạo lại homestay mới</li>
+              <li>Hoặc đợi tính năng edit hoàn chỉnh (Phase 3.2)</li>
+            </ol>
+            
+            <div className="mt-6 flex gap-3">
+              <button
+                onClick={() => window.open('http://localhost:5555', '_blank')}
+                className="rounded-md border px-4 py-2 text-sm hover:bg-muted"
+              >
+                Mở Prisma Studio
+              </button>
+              <Link
+                href={`/homestays/${data.slug}`}
+                target="_blank"
+                className="rounded-md border px-4 py-2 text-sm hover:bg-muted"
+              >
+                Xem trang công khai
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div className="mt-6 rounded-lg border bg-muted/50 p-4">
+        <h3 className="text-sm font-semibold mb-2">📊 Thông tin chi tiết</h3>
+        <pre className="text-xs overflow-auto max-h-96 bg-background p-4 rounded">
+          {JSON.stringify(data, null, 2)}
+        </pre>
+      </div>
+    </div>
+  );
+}
+

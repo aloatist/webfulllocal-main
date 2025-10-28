@@ -1,0 +1,44 @@
+# Node dependencies
+node_modules
+backend/node_modules
+conphung/node_modules
+CONPHUNG/node_modules
+
+# Build artifacts
+backend/dist/
+conphung/.next/
+CONPHUNG/.next/
+n8n/.n8n_storage/
+docker-data/
+data/
+backend/data/
+
+# Environment files
+.env
+.env.*
+*.env.local
+
+# Local development clutter
+.cache/
+.codex/
+.config/
+.cursor/
+.cursor-server/
+.n8n/
+.dotnet/
+.npm/
+.pm2/
+.ssh/
+.vscode-server/
+.bash_history
+.bashrc
+.gitconfig
+.lesshs*
+.profile
+.wget-hsts
+venv/
+.gemini/
+dev.log
+dev-frontend.log
+.backend.pid
+.frontend.pid

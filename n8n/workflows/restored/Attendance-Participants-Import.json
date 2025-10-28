@@ -1,0 +1,214 @@
+{
+  "createdAt": "2025-10-02T16:42:38.588Z",
+  "updatedAt": "2025-10-02T16:59:18.995Z",
+  "id": "7rwaesHr2B5cydCo",
+  "name": "Attendance Participants Import",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "b294124f-cbbb-4a36-bcc9-d2d1377cb4c4",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const records = items\n  .map((item) => item.json)\n  .filter((row, index) => {\n    const code = row['Code'];\n    const fullName = row['H\u1ed9 T\u00ean'];\n    // B\u1ecf d\u00f2ng ti\u00eau \u0111\u1ec1 n\u1ebfu row_number = 1 v\u00e0 Code = 'Code'\n    if (index === 0 && typeof code === 'string' && code.toLowerCase() === 'code') {\n      return false;\n    }\n    return Boolean(code || fullName);\n  })\n  .map((row) => ({\n    code: row['Code'] ? String(row['Code']).trim() : undefined,\n    fullName: row['H\u1ed9 T\u00ean'] ? String(row['H\u1ed9 T\u00ean']).trim() : '',\n    metadata: row['Ch\u1ee9c V\u1ee5'] ? { position: String(row['Ch\u1ee9c V\u1ee5']).trim() } : undefined,\n    phoneNumber: row['\u0110i\u1ec7n Tho\u1ea1i'] ? String(row['\u0110i\u1ec7n Tho\u1ea1i']).trim() : undefined,\n    email: row['Email'] ? String(row['Email']).trim() : undefined,\n  }))\n  .filter((record) => record.code);\n\nreturn [{ json: { records } }];\n"
+      },
+      "id": "663689f8-5e82-4fe7-bcf4-cac6c8cb3d5d",
+      "name": "Normalize Data",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        608,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "basicAuth",
+        "url": "={{$env.BACKEND_API_BASE_URL || 'http://localhost:4000/api'}}/participants/import",
+        "jsonParameters": true,
+        "options": {},
+        "headerParametersJson": "="
+      },
+      "id": "76ac2898-fed5-4aaa-b094-fa5513e93db6",
+      "name": "Import to Backend",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "return [{ json: {\n  imported: items[0].json?.data?.length ?? 0,\n  timestamp: new Date().toISOString(),\n} }]\n"
+      },
+      "id": "e6e79c7c-88b6-4471-8488-e95fba8be5c7",
+      "name": "Summarise Import",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        1424,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1bON0RaeOYDUaKns6ZnXdbJGw5kVNrpF5HqUn5FK9cR8",
+          "mode": "list",
+          "cachedResultName": "diem danh",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1bON0RaeOYDUaKns6ZnXdbJGw5kVNrpF5HqUn5FK9cR8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Trang t\u00ednh1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1bON0RaeOYDUaKns6ZnXdbJGw5kVNrpF5HqUn5FK9cR8/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        208,
+        0
+      ],
+      "id": "b10e6b29-ceec-4745-b16d-f8ed63ad97cc",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "lbgwne66qBmePJgG",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:4000/api/auth/login",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "email",
+              "value": "aloatist@gmail.com"
+            },
+            {
+              "name": "password",
+              "value": "ChangeMe123!"
+            },
+            {
+              "name": "userAgent",
+              "value": "n8n-import"
+            },
+            {
+              "name": "ip",
+              "value": "127.0.0.1"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        944,
+        32
+      ],
+      "id": "db470d4d-f294-4c39-85a6-627995e2fb04",
+      "name": "HTTP Request"
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Data": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Import to Backend": {
+      "main": [
+        [
+          {
+            "node": "Summarise Import",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Normalize Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Import to Backend",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "834afc32-1a43-49e2-a171-ee06369e0ca5",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-10-02T16:42:38.588Z",
+      "updatedAt": "2025-10-02T16:42:38.588Z",
+      "role": "workflow:owner",
+      "workflowId": "7rwaesHr2B5cydCo",
+      "projectId": "ICp1M8C0gzC6bJJb"
+    }
+  ],
+  "tags": [],
+  "repo_owner": "aloatist",
+  "repo_name": "n8nvps",
+  "repo_path": "aloatist/n8nvps",
+  "drive_folder": "1xA6c0JY5ZpCuLzILbuv4tiP_pMCPWRCH"
+}

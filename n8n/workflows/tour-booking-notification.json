@@ -1,0 +1,152 @@
+{
+  "name": "Tour Booking Notification",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "tour-booking",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-tour-booking",
+      "name": "Webhook - Tour Booking",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "webhookId": "tour-booking"
+    },
+    {
+      "parameters": {
+        "fromEmail": "booking@conphungtourist.com",
+        "toEmail": "={{ $json.customerEmail }}",
+        "subject": "Xác nhận đặt tour #{{ $json.reference }}",
+        "emailType": "html",
+        "message": "<!DOCTYPE html>\n<html>\n<head>\n  <style>\n    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }\n    .container { max-width: 600px; margin: 0 auto; padding: 20px; }\n    .header { background: #22c55e; color: white; padding: 20px; text-align: center; }\n    .content { padding: 20px; background: #f9f9f9; }\n    .booking-details { background: white; padding: 15px; margin: 15px 0; border-radius: 8px; }\n    .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }\n    .button { display: inline-block; padding: 12px 24px; background: #22c55e; color: white; text-decoration: none; border-radius: 6px; margin: 10px 0; }\n  </style>\n</head>\n<body>\n  <div class=\"container\">\n    <div class=\"header\">\n      <h1>🎉 Đặt Tour Thành Công!</h1>\n    </div>\n    <div class=\"content\">\n      <p>Xin chào <strong>{{ $json.customerName }}</strong>,</p>\n      <p>Cảm ơn bạn đã đặt tour tại Khu Du Lịch Cồn Phụng. Chúng tôi đã nhận được yêu cầu đặt tour của bạn.</p>\n      \n      <div class=\"booking-details\">\n        <h3>📋 Thông Tin Đặt Tour</h3>\n        <p><strong>Mã đặt tour:</strong> {{ $json.reference }}</p>\n        <p><strong>Tour:</strong> {{ $json.tourTitle }}</p>\n        <p><strong>Ngày khởi hành:</strong> {{ $json.departureDate }}</p>\n        <p><strong>Số người lớn:</strong> {{ $json.adults }}</p>\n        <p><strong>Số trẻ em:</strong> {{ $json.children }}</p>\n        <p><strong>Tổng tiền:</strong> {{ $json.totalAmount }} VND</p>\n      </div>\n      \n      <p><strong>Bước tiếp theo:</strong></p>\n      <ol>\n        <li>Đội ngũ của chúng tôi sẽ liên hệ với bạn trong vòng 24h để xác nhận</li>\n        <li>Vui lòng chuẩn bị thanh toán theo hướng dẫn</li>\n        <li>Chúng tôi sẽ gửi thông tin chi tiết về tour trước ngày khởi hành</li>\n      </ol>\n      \n      <p>Nếu có bất kỳ thắc mắc nào, vui lòng liên hệ:</p>\n      <p>📞 Hotline: 0xxx-xxx-xxx<br>\n      📧 Email: booking@conphungtourist.com</p>\n    </div>\n    <div class=\"footer\">\n      <p>© 2024 Khu Du Lịch Cồn Phụng. All rights reserved.</p>\n      <p>Bến Tre, Việt Nam</p>\n    </div>\n  </div>\n</body>\n</html>"
+      },
+      "id": "email-customer",
+      "name": "Email - Customer Confirmation",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [450, 200],
+      "credentials": {
+        "smtp": {
+          "id": "1",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "system@conphungtourist.com",
+        "toEmail": "admin@conphungtourist.com",
+        "subject": "🎉 Booking mới #{{ $json.reference }}",
+        "emailType": "html",
+        "message": "<!DOCTYPE html>\n<html>\n<head>\n  <style>\n    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }\n    .container { max-width: 600px; margin: 0 auto; padding: 20px; }\n    .header { background: #0ea5e9; color: white; padding: 20px; text-align: center; }\n    .content { padding: 20px; background: #f9f9f9; }\n    .booking-details { background: white; padding: 15px; margin: 15px 0; border-radius: 8px; }\n    .urgent { background: #fef3c7; padding: 10px; border-left: 4px solid #f59e0b; margin: 10px 0; }\n    .button { display: inline-block; padding: 12px 24px; background: #0ea5e9; color: white; text-decoration: none; border-radius: 6px; margin: 10px 0; }\n  </style>\n</head>\n<body>\n  <div class=\"container\">\n    <div class=\"header\">\n      <h1>🎉 Booking Mới!</h1>\n    </div>\n    <div class=\"content\">\n      <div class=\"urgent\">\n        <strong>⚠️ Cần xử lý:</strong> Vui lòng liên hệ khách hàng trong vòng 24h\n      </div>\n      \n      <div class=\"booking-details\">\n        <h3>📋 Chi Tiết Booking</h3>\n        <p><strong>Mã booking:</strong> {{ $json.reference }}</p>\n        <p><strong>Tour:</strong> {{ $json.tourTitle }}</p>\n        <p><strong>Ngày khởi hành:</strong> {{ $json.departureDate }}</p>\n        <p><strong>Tổng tiền:</strong> {{ $json.totalAmount }} VND</p>\n      </div>\n      \n      <div class=\"booking-details\">\n        <h3>👤 Thông Tin Khách Hàng</h3>\n        <p><strong>Tên:</strong> {{ $json.customerName }}</p>\n        <p><strong>Email:</strong> {{ $json.customerEmail }}</p>\n        <p><strong>Điện thoại:</strong> {{ $json.customerPhone }}</p>\n        <p><strong>Số người lớn:</strong> {{ $json.adults }}</p>\n        <p><strong>Số trẻ em:</strong> {{ $json.children }}</p>\n      </div>\n      \n      <a href=\"{{ $json.bookingUrl }}\" class=\"button\">Xem Chi Tiết Booking</a>\n    </div>\n  </div>\n</body>\n</html>"
+      },
+      "id": "email-admin",
+      "name": "Email - Admin Notification",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [450, 400],
+      "credentials": {
+        "smtp": {
+          "id": "1",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "text": "🎉 *Booking Mới!*\n\n📋 Mã: `{{ $json.reference }}`\n🎯 Tour: {{ $json.tourTitle }}\n👤 Khách: {{ $json.customerName }}\n📞 SĐT: {{ $json.customerPhone }}\n💰 Tổng: {{ $json.totalAmount }} VND\n👥 Người lớn: {{ $json.adults }} | Trẻ em: {{ $json.children }}\n📅 Khởi hành: {{ $json.departureDate }}\n\n🔗 [Xem chi tiết]({{ $json.bookingUrl }})",
+        "additionalFields": {
+          "parseMode": "Markdown"
+        }
+      },
+      "id": "telegram-notification",
+      "name": "Telegram - Admin Alert",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [450, 600],
+      "credentials": {
+        "telegramApi": {
+          "id": "2",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"success\": true, \"message\": \"Notification sent\" } }}"
+      },
+      "id": "respond-webhook",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [650, 300]
+    }
+  ],
+  "connections": {
+    "Webhook - Tour Booking": {
+      "main": [
+        [
+          {
+            "node": "Email - Customer Confirmation",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Email - Admin Notification",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Telegram - Admin Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email - Customer Confirmation": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email - Admin Notification": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram - Admin Alert": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {},
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2024-01-01T00:00:00.000Z",
+  "versionId": "1"
+}

@@ -1,0 +1,242 @@
+/* Mobile-Specific Utilities */
+
+/* Touch-friendly minimum sizes */
+.touch-target {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* Prevent zoom on input focus (iOS) */
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="number"],
+input[type="password"],
+input[type="search"],
+input[type="url"],
+textarea,
+select {
+  font-size: 16px !important;
+}
+
+/* Smooth scrolling for mobile */
+@media (max-width: 768px) {
+  html {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Hide scrollbar on mobile */
+  ::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+  }
+}
+
+/* Safe area insets for notched devices */
+@supports (padding: max(0px)) {
+  .safe-top {
+    padding-top: max(env(safe-area-inset-top), 1rem);
+  }
+
+  .safe-bottom {
+    padding-bottom: max(env(safe-area-inset-bottom), 1rem);
+  }
+
+  .safe-left {
+    padding-left: max(env(safe-area-inset-left), 1rem);
+  }
+
+  .safe-right {
+    padding-right: max(env(safe-area-inset-right), 1rem);
+  }
+}
+
+/* Prevent text selection on touch */
+.no-select {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Touch feedback */
+.touch-feedback {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+  transition: transform 0.1s ease;
+}
+
+.touch-feedback:active {
+  transform: scale(0.98);
+}
+
+/* Mobile-optimized spacing */
+@media (max-width: 768px) {
+  .mobile-px {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .mobile-py {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+
+  .mobile-gap {
+    gap: 1rem;
+  }
+}
+
+/* Sticky header with safe area */
+.sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: var(--background);
+  border-bottom: 1px solid var(--border);
+}
+
+@supports (padding: max(0px)) {
+  .sticky-header {
+    padding-top: env(safe-area-inset-top);
+  }
+}
+
+/* Bottom sheet animation */
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.bottom-sheet {
+  animation: slide-up 0.3s ease-out;
+}
+
+/* Pull to refresh indicator */
+.pull-to-refresh {
+  position: absolute;
+  top: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: top 0.3s ease;
+}
+
+.pull-to-refresh.active {
+  top: 10px;
+}
+
+/* Mobile-friendly table */
+@media (max-width: 768px) {
+  .mobile-table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .mobile-table table {
+    min-width: 100%;
+  }
+}
+
+/* Horizontal scroll container */
+.horizontal-scroll {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.horizontal-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.horizontal-scroll > * {
+  scroll-snap-align: start;
+  flex-shrink: 0;
+}
+
+/* Mobile card grid */
+@media (max-width: 768px) {
+  .mobile-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+}
+
+/* Floating action button */
+.fab {
+  position: fixed;
+  bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
+  right: 1rem;
+  z-index: 60;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+@media (min-width: 768px) {
+  .fab {
+    bottom: 1rem;
+    z-index: 40;
+  }
+}
+
+/* Mobile modal */
+.mobile-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: var(--background);
+}
+
+@media (min-width: 768px) {
+  .mobile-modal {
+    position: relative;
+    inset: auto;
+    max-width: 600px;
+    margin: 0 auto;
+    border-radius: 0.5rem;
+  }
+}
+
+/* Touch-friendly checkbox/radio */
+input[type="checkbox"],
+input[type="radio"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+/* Mobile-optimized images */
+@media (max-width: 768px) {
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* Prevent double-tap zoom */
+button,
+a,
+input,
+select,
+textarea {
+  touch-action: manipulation;
+}
+
+/* Mobile-friendly focus styles */
+@media (max-width: 768px) {
+  *:focus {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+
+  *:focus:not(:focus-visible) {
+    outline: none;
+  }
+}

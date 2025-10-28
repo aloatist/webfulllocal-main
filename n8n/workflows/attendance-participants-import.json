@@ -1,0 +1,131 @@
+{
+  "name": "Attendance Participants Import",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "Manual_Trigger",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "resource": "values",
+        "sheetId": "={{$env.GSHEET_ID}}",
+        "range": "Participants!A:E",
+        "returnAll": true,
+        "options": {
+          "valueRenderMode": "UNFORMATTED_VALUE"
+        }
+      },
+      "id": "Read_Sheet",
+      "name": "Read Participants Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 2,
+      "position": [260, 0],
+      "credentials": {
+        "googleApi": {
+          "id": "=Google Sheets"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "const records = items\n  .map((item) => item.json)\n  .filter((row, index) => {\n    const code = row.A ?? row[0];\n    const fullName = row.B ?? row[1];\n    // Bỏ header nếu có chữ 'Code' hoặc không có mã\n    if (index === 0 && typeof code === 'string' && code.toLowerCase() === 'code') {\n      return false;\n    }\n    return Boolean(code || fullName);\n  })\n  .map((row) => {\n    const code = row.A ?? row[0];\n    const fullName = row.B ?? row[1];\n    const position = row.C ?? row[2];\n    const phone = row.D ?? row[3];\n    const email = row.E ?? row[4];\n    return {\n      code: code ? String(code).trim() : undefined,\n      fullName: fullName ? String(fullName).trim() : '',\n      metadata: position ? { position: String(position).trim() } : undefined,\n      phoneNumber: phone ? String(phone).trim() : undefined,\n      email: email ? String(email).trim() : undefined,\n    };\n  })\n  .filter((record) => record.code);\n\nreturn [{ json: { records } }];\n"
+      },
+      "id": "Normalize_Data",
+      "name": "Normalize Data",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [520, 0]
+    },
+    {
+      "parameters": {
+        "authentication": "genericCredentialType",
+        "url": "={{$env.BACKEND_API_BASE_URL || 'http://backend:4000/api'}}/participants/import",
+        "method": "POST",
+        "responseFormat": "json",
+        "jsonParameters": true,
+        "options": {
+          "redirect": {
+            "followRedirects": true
+          },
+          "bodyContentType": "json"
+        },
+        "bodyParametersJson": "={{$json}}"
+      },
+      "id": "HTTP_Import",
+      "name": "Import to Backend",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [780, 0],
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "=Backend API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "return [{ json: {\n  imported: items[0].json?.data?.length ?? 0,\n  timestamp: new Date().toISOString(),\n} }]\n"
+      },
+      "id": "Summarise",
+      "name": "Summarise Import",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [1000, 0]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Read Participants Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Participants Sheet": {
+      "main": [
+        [
+          {
+            "node": "Normalize Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Data": {
+      "main": [
+        [
+          {
+            "node": "Import to Backend",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Import to Backend": {
+      "main": [
+        [
+          {
+            "node": "Summarise Import",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "timezone": "Asia/Ho_Chi_Minh"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "createdAt": "2025-09-30T09:29:30.053Z",
+  "updatedAt": "2025-09-30T09:29:30.053Z",
+  "id": "cFtHM3uf6rH7Psmz",
+  "name": "dang bai",
+  "active": false,
+  "isArchived": false,
+  "nodes": [],
+  "connections": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "b5d2596d-b2f8-4b67-9011-4d851ed22df0",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-09-30T09:29:30.053Z",
+      "updatedAt": "2025-09-30T09:29:30.053Z",
+      "role": "workflow:owner",
+      "workflowId": "cFtHM3uf6rH7Psmz",
+      "projectId": "ICp1M8C0gzC6bJJb"
+    }
+  ],
+  "tags": [],
+  "repo_owner": "aloatist",
+  "repo_name": "n8nvps",
+  "repo_path": "aloatist/n8nvps",
+  "drive_folder": "1xA6c0JY5ZpCuLzILbuv4tiP_pMCPWRCH"
+}

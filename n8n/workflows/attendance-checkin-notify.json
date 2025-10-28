@@ -1,0 +1,224 @@
+{
+  "name": "Attendance Check-in Notifications",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "attendance/checkin",
+        "httpMethod": "POST",
+        "responseMode": "onReceived",
+        "options": {
+          "responseCode": 200,
+          "responseData": "raw",
+          "responseDataCustom": "{\n  \"status\": \"received\"\n}"
+        }
+      },
+      "id": "Webhook_1",
+      "name": "Check-in Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [0, 0],
+      "webhookId": "attendance-checkin-webhook"
+    },
+    {
+      "parameters": {
+        "functionCode": "const payload = items[0].json;\nreturn items.map(item => ({\n  json: {\n    scannedAt: payload.scannedAt ?? new Date().toISOString(),\n    status: payload.status ?? 'unknown',\n    participant: payload.participant ?? null,\n    scannerId: payload.scannerId ?? null,\n    deviceInfo: payload.deviceInfo ?? null,\n    message: payload.message ?? null,\n    scanCode: payload.code ?? payload.scanCode ?? null\n  }\n}));"
+      },
+      "id": "Function_1",
+      "name": "Normalize Payload",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [240, 0]
+    },
+    {
+      "parameters": {
+        "property": "status",
+        "dataType": "string",
+        "rules": [
+          {
+            "operation": "equal",
+            "value": "success"
+          },
+          {
+            "operation": "equal",
+            "value": "duplicate"
+          }
+        ]
+      },
+      "id": "Switch_1",
+      "name": "Route Status",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 1,
+      "position": [500, 0]
+    },
+    {
+      "parameters": {
+        "options": {
+          "customProperties": {
+            "notification": "Success"
+          }
+        },
+        "value": {
+          "json": {
+            "channel": "success",
+            "text": "✅ ${$json.participant?.fullName || 'Khách'} đã điểm danh lúc ${$json.scannedAt}."
+          }
+        }
+      },
+      "id": "Set_1",
+      "name": "Success Notification",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [760, 120]
+    },
+    {
+      "parameters": {
+        "options": {
+          "customProperties": {
+            "notification": "Duplicate"
+          }
+        },
+        "value": {
+          "json": {
+            "channel": "duplicate",
+            "text": "⚠️ ${$json.participant?.fullName || 'Khách'} quét lại lúc ${$json.scannedAt}."
+          }
+        }
+      },
+      "id": "Set_2",
+      "name": "Duplicate Alert",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [760, 0]
+    },
+    {
+      "parameters": {
+        "options": {
+          "customProperties": {
+            "notification": "Invalid"
+          }
+        },
+        "value": {
+          "json": {
+            "channel": "invalid",
+            "text": "⛔ Mã ${$json.scanCode || 'không xác định'} không tồn tại lúc ${$json.scannedAt}."
+          }
+        }
+      },
+      "id": "Set_3",
+      "name": "Invalid Alert",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [760, -120]
+    },
+    {
+      "parameters": {
+        "responseBody": "={{$json}}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "Respond_1",
+      "name": "Respond to Backend",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1020, 0]
+    }
+  ],
+  "connections": {
+    "Check-in Webhook": {
+      "main": [
+        [
+          {
+            "node": "Normalize Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Payload": {
+      "main": [
+        [
+          {
+            "node": "Route Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route Status": {
+      "main": [
+        [
+          {
+            "node": "Success Notification",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Duplicate Alert",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Invalid Alert",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Invalid Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Success Notification": {
+      "main": [
+        [
+          {
+            "node": "Respond to Backend",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Duplicate Alert": {
+      "main": [
+        [
+          {
+            "node": "Respond to Backend",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Invalid Alert": {
+      "main": [
+        [
+          {
+            "node": "Respond to Backend",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "a3da638c-0b05-4d8e-aa61-7f34651cbe67",
+  "meta": {
+    "template": true
+  }
+}

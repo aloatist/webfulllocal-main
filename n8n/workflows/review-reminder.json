@@ -1,0 +1,144 @@
+{
+  "name": "Review Reminder - Post Trip",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 9 * * *"
+            }
+          ]
+        }
+      },
+      "id": "cron-daily",
+      "name": "Daily at 9 AM",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n  b.id,\n  b.reference,\n  b.\"checkOutDate\",\n  b.\"totalAmount\",\n  c.email as \"customerEmail\",\n  c.\"fullName\" as \"customerName\",\n  h.title as \"homestayTitle\",\n  h.slug as \"homestaySlug\"\nFROM \"Booking\" b\nINNER JOIN \"Customer\" c ON b.\"customerId\" = c.id\nLEFT JOIN \"Homestay\" h ON b.\"homestayId\" = h.id\nWHERE b.status = 'COMPLETED'\n  AND b.\"checkOutDate\" >= CURRENT_DATE - INTERVAL '7 days'\n  AND b.\"checkOutDate\" < CURRENT_DATE\n  AND NOT EXISTS (\n    SELECT 1 FROM \"HomestayReview\" hr \n    WHERE hr.\"bookingId\" = b.id\n  )\nLIMIT 50",
+        "additionalFields": {}
+      },
+      "id": "postgres-query",
+      "name": "Find Completed Bookings Without Reviews",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [450, 300],
+      "credentials": {
+        "postgres": {
+          "id": "3",
+          "name": "PostgreSQL account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{ $json.length }}",
+              "operation": "larger",
+              "value2": 0
+            }
+          ]
+        }
+      },
+      "id": "if-has-bookings",
+      "name": "Has Bookings?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "fromEmail": "noreply@conphungtourist.com",
+        "toEmail": "={{ $json.customerEmail }}",
+        "subject": "Chia sẻ trải nghiệm của bạn tại {{ $json.homestayTitle }}",
+        "emailType": "html",
+        "message": "<!DOCTYPE html>\n<html>\n<head>\n  <style>\n    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }\n    .container { max-width: 600px; margin: 0 auto; padding: 20px; }\n    .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px 20px; text-align: center; border-radius: 8px 8px 0 0; }\n    .content { padding: 30px 20px; background: #f9fafb; }\n    .highlight { background: white; padding: 20px; margin: 20px 0; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }\n    .button { display: inline-block; padding: 14px 36px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 6px; margin: 20px 0; font-weight: 600; font-size: 16px; }\n    .stars { font-size: 24px; color: #fbbf24; }\n    .footer { text-align: center; padding: 20px; color: #6b7280; font-size: 14px; }\n  </style>\n</head>\n<body>\n  <div class=\"container\">\n    <div class=\"header\">\n      <h1>⭐ Chia sẻ trải nghiệm của bạn</h1>\n    </div>\n    <div class=\"content\">\n      <p>Xin chào <strong>{{ $json.customerName }}</strong>,</p>\n      \n      <p>Cảm ơn bạn đã lựa chọn <strong>{{ $json.homestayTitle }}</strong> cho chuyến đi của mình!</p>\n      \n      <p>Chúng tôi hy vọng bạn đã có những trải nghiệm tuyệt vời. Đánh giá của bạn sẽ giúp chúng tôi cải thiện dịch vụ và giúp những du khách khác có thêm thông tin khi lựa chọn.</p>\n      \n      <div class=\"highlight\">\n        <p style=\"text-align: center; margin: 0;\"><strong>Mã đặt phòng:</strong> {{ $json.reference }}</p>\n        <p style=\"text-align: center; margin: 10px 0 0 0;\"><strong>Ngày trả phòng:</strong> {{ $json.checkOutDate }}</p>\n      </div>\n      \n      <p><strong>Chỉ mất 2 phút để:</strong></p>\n      <ul style=\"padding-left: 20px;\">\n        <li>Đánh giá chất lượng dịch vụ</li>\n        <li>Chia sẻ trải nghiệm của bạn</li>\n        <li>Giúp cải thiện dịch vụ</li>\n        <li>Hỗ trợ du khách khác</li>\n      </ul>\n      \n      <div style=\"text-align: center;\">\n        <div class=\"stars\">⭐⭐⭐⭐⭐</div>\n        <a href=\"https://conphungtourist.com//homestays/{{ $json.homestaySlug }}?review=true&booking={{ $json.reference }}\" class=\"button\">Viết Đánh Giá Ngay</a>\n      </div>\n      \n      <p style=\"margin-top: 30px; font-size: 14px; color: #6b7280;\">Nếu bạn đã viết đánh giá, xin vui lòng bỏ qua email này. Cảm ơn bạn rất nhiều!</p>\n    </div>\n    <div class=\"footer\">\n      <p>Khu Du Lịch Cồn Phụng</p>\n      <p>Cảm ơn bạn đã tin tưởng chúng tôi! 🌴</p>\n    </div>\n  </div>\n</body>\n</html>"
+      },
+      "id": "email-review-request",
+      "name": "Send Review Request Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [850, 200],
+      "credentials": {
+        "smtp": {
+          "id": "1",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "text": "📊 *Review Reminder Report*\n\n✅ Sent {{ $json.length }} review reminder emails\n\n📅 Date: {{ $now.toFormat('yyyy-MM-dd') }}\n⏰ Time: {{ $now.toFormat('HH:mm') }}",
+        "additionalFields": {
+          "parseMode": "Markdown"
+        }
+      },
+      "id": "telegram-report",
+      "name": "Send Summary to Admin",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [850, 400],
+      "credentials": {
+        "telegramApi": {
+          "id": "2",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Daily at 9 AM": {
+      "main": [
+        [
+          {
+            "node": "Find Completed Bookings Without Reviews",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find Completed Bookings Without Reviews": {
+      "main": [
+        [
+          {
+            "node": "Has Bookings?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Bookings?": {
+      "main": [
+        [
+          {
+            "node": "Send Review Request Email",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Summary to Admin",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {},
+  "staticData": null,
+  "tags": ["review", "reminder", "automation"],
+  "triggerCount": 1,
+  "updatedAt": "2025-01-22T00:00:00.000Z",
+  "versionId": "1"
+}

@@ -1,0 +1,1153 @@
+{
+  "createdAt": "2025-09-26T09:05:36.618Z",
+  "updatedAt": "2025-09-28T14:41:54.465Z",
+  "id": "HVPhHv2krk9nStIe",
+  "name": "Backup WF n8n to github",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "7d528a84-a023-4f64-a048-9d8d7a91f307",
+      "name": "On clicking 'execute'",
+      "type": "n8n-nodes-base.manualTrigger",
+      "position": [
+        256,
+        112
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## workflow ph\u1ee5",
+        "height": 872,
+        "width": 2211,
+        "color": 6
+      },
+      "id": "7ddf6ffe-3ae4-4805-8835-5e137b476384",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        96,
+        496
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {},
+      "id": "e0e66f79-34fb-4f8b-bbe1-e8e70a0348df",
+      "name": "Execute Workflow Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        256,
+        880
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "filters": {},
+        "requestOptions": {}
+      },
+      "id": "9bf0877e-59fe-4625-a793-24fb6e291cfd",
+      "name": "n8n",
+      "type": "n8n-nodes-base.n8n",
+      "position": [
+        880,
+        224
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "n8nApi": {
+          "id": "YijXTSoGvBxJfU0h",
+          "name": "n8n account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.download_url }}",
+        "options": {}
+      },
+      "id": "ddef3f82-f9ac-41ab-875e-853485326bb7",
+      "name": "Get File",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        1040,
+        560
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "4eaeb330-b81a-4f80-b5e7-791355b6647d",
+      "name": "Loop Over Items",
+      "type": "n8n-nodes-base.splitInBatches",
+      "position": [
+        1072,
+        224
+      ],
+      "typeVersion": 3
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 1,
+              "triggerAtMinute": 33
+            }
+          ]
+        }
+      },
+      "id": "2a265c38-78db-4af4-a029-f4c8dd3b4e76",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        256,
+        320
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "get",
+        "owner": {
+          "__rl": true,
+          "value": "={{ $json.repo_owner }}",
+          "mode": ""
+        },
+        "repository": {
+          "__rl": true,
+          "value": "={{ $json.repo_name }}",
+          "mode": ""
+        },
+        "filePath": "={{ $json.repo_path }}{{ $('Execute Workflow Trigger').first().json.createdAt.split('-')[0] }}/{{ $('Execute Workflow Trigger').first().json.createdAt.split('-')[1] }}/{{$json.id}}.json",
+        "asBinaryProperty": false,
+        "additionalParameters": {}
+      },
+      "id": "3443708e-39f1-4271-b748-ea26401914da",
+      "name": "Get file data",
+      "type": "n8n-nodes-base.github",
+      "position": [
+        576,
+        576
+      ],
+      "typeVersion": 1,
+      "alwaysOutputData": true,
+      "webhookId": "b690932e-961b-4abc-ad4c-14b89cb54d48",
+      "credentials": {
+        "githubApi": {
+          "id": "QN9qFwM2P1ufalnY",
+          "name": "GitHub account"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8f6d1741-772f-462a-811f-4c334185e4f0",
+              "name": "repo_owner",
+              "type": "string",
+              "value": "=aloatist"
+            },
+            {
+              "id": "8cac215c-4fd7-422f-9fd2-6b2d1e5e0383",
+              "name": "repo_name",
+              "type": "string",
+              "value": "=n8nvps"
+            },
+            {
+              "id": "eee305e9-4164-462a-86bd-80f0d58a31ae",
+              "name": "repo_path",
+              "type": "string",
+              "value": "=aloatist/n8nvps"
+            },
+            {
+              "id": "1c5c8b49-ec51-4ada-a99a-1b47f81a907a",
+              "name": "drive_folder",
+              "value": "1xA6c0JY5ZpCuLzILbuv4tiP_pMCPWRCH",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "0101be55-f935-4ad1-a08f-7c25b47e24ea",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        416,
+        880
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "45ce825e-9fa6-430c-8931-9aaf22c42585",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              },
+              "leftValue": "={{ $json.content }}",
+              "rightValue": ""
+            },
+            {
+              "id": "9619a55f-7fb1-4f24-b1a7-7aeb82365806",
+              "operator": {
+                "type": "string",
+                "operation": "notExists",
+                "singleValue": true
+              },
+              "leftValue": "={{ $json.error }}",
+              "rightValue": ""
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "d35f89fe-6825-47e5-b248-c0d454e44707",
+      "name": "N\u1ebfu file l\u1edbn qu\u00e1",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        816,
+        576
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "jsCode": "const f1 = $input.first().json.repo_owner.toString().trim() !== '';\nconst f2 = $input.first().json.repo_name.toString().trim() !== '';\nconst f3 = $input.first().json.repo_path.toString().trim() !== '';\nconst f4 = $input.first().json.drive_folder.toString().trim() !== '';\n\nconst output = [];\n\nif (f1 && f2 && f3 && !f4) {\n  output.push({ json: { route: 0 } });\n}\n\nif ((!f1 || !f2 || !f3) && f4) {\n  output.push({ json: { route: 1 } });\n}\n\nif (f1 && f2 && f3 && f4) {\n  output.push({ json: { route: 2 } });\n}\nif (!f1 && !f2 && !f3 && !f4) {\n output.push({ json: { route: 3 } });\n}\n\nreturn { ...$input, output};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        576,
+        880
+      ],
+      "id": "aebcc794-50af-4944-9e12-6685029e738f",
+      "name": "\u0110i\u1ec1u h\u01b0\u1edbng d\u1ef1a tr\u00ean file config"
+    },
+    {
+      "parameters": {
+        "mode": "expression",
+        "output": "={{ $json.output[0].json.route }}"
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        736,
+        880
+      ],
+      "id": "34d28873-ca99-4520-bdb3-c377232bd836",
+      "name": "route"
+    },
+    {
+      "parameters": {},
+      "id": "46d19e57-d272-42e6-97d8-47160b15eb89",
+      "name": "G\u1ed9p data",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        960,
+        880
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "jsCode": "const orderJsonKeys = (jsonObj) => {\n  const ordered = {};\n  Object.keys(jsonObj).sort().forEach(key => {\n    ordered[key] = jsonObj[key];\n  });\n  return ordered;\n}\n\n// Check if file returned with content\nif (Object.keys($input.all()[0].json).includes(\"content\")) {\n  // Decode base64 content and parse JSON\n  const origWorkflow = JSON.parse(Buffer.from($input.all()[0].json.content, 'base64').toString());\n  const n8nWorkflow = $input.all()[1].json;\n  \n  // Order JSON objects\n  const orderedOriginal = orderJsonKeys(origWorkflow);\n  const orderedActual = orderJsonKeys(n8nWorkflow);\n\n  // Determine difference\n  if (JSON.stringify(orderedOriginal) === JSON.stringify(orderedActual)) {\n    $input.all()[0].json.github_status = \"same\";\n  } else {\n    $input.all()[0].json.github_status = \"different\";\n    $input.all()[0].json.n8n_data_stringy = JSON.stringify(orderedActual, null, 2);\n  }\n  $input.all()[0].json.content_decoded = orderedOriginal;\n// No file returned / new workflow\n} else if (Object.keys($input.all()[0].json).includes(\"data\")) {\n  const origWorkflow = JSON.parse($input.all()[0].json.data);\n  const n8nWorkflow = $input.all()[1].json;\n  \n  // Order JSON objects\n  const orderedOriginal = orderJsonKeys(origWorkflow);\n  const orderedActual = orderJsonKeys(n8nWorkflow);\n\n  // Determine difference\n  if (JSON.stringify(orderedOriginal) === JSON.stringify(orderedActual)) {\n    $input.all()[0].json.github_status = \"same\";\n  } else {\n    $input.all()[0].json.github_status = \"different\";\n    $input.all()[0].json.n8n_data_stringy = JSON.stringify(orderedActual, null, 2);\n  }\n  $input.all()[0].json.content_decoded = orderedOriginal;\n\n} else {\n  // Order JSON object\n  const n8nWorkflow = $input.all()[1].json;\n  const orderedActual = orderJsonKeys(n8nWorkflow);\n  \n  // Proper formatting\n  $input.all()[0].json.github_status = \"new\";\n  $input.all()[0].json.n8n_data_stringy = JSON.stringify(orderedActual, null, 2);\n}\n\n// Return items\nreturn $input.all();\n"
+      },
+      "id": "97f77a38-369e-49fc-8ec1-192dbc8da937",
+      "name": "Ki\u1ec3m tra file m\u1edbi hay c\u00f3 thay \u0111\u1ed5i",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        1120,
+        880
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "dae43d3b-56e5-4098-b602-862ebf5cd073",
+              "name": "subPath",
+              "type": "string",
+              "value": "={{ $('Execute Workflow Trigger').first().json.createdAt.split('-')[0] }}/{{ $('Execute Workflow Trigger').first().json.createdAt.split('-')[1] }}/"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "29bc84f8-419f-42e9-82a6-6c97def52b98",
+      "name": "T\u1ea1o path theo th\u00e1ng n\u0103m",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        1328,
+        880
+      ],
+      "typeVersion": 3.3
+    },
+    {
+      "parameters": {
+        "dataType": "string",
+        "value1": "={{$json.github_status}}",
+        "rules": {
+          "rules": [
+            {
+              "value2": "same"
+            },
+            {
+              "value2": "different",
+              "output": 1
+            },
+            {
+              "value2": "new",
+              "output": 2
+            }
+          ]
+        }
+      },
+      "id": "631b2029-8daf-459a-b29a-b7f332e1ec01",
+      "name": "Ki\u1ec3m tra tr\u1ea1ng th\u00e1i",
+      "type": "n8n-nodes-base.switch",
+      "position": [
+        1488,
+        736
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {},
+      "id": "8d4d995e-cbf4-4468-8d7d-b5674d267f11",
+      "name": "File ko \u0111\u1ed5i - do nothing",
+      "type": "n8n-nodes-base.noOp",
+      "position": [
+        1664,
+        560
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8d513345-6484-431f-afb7-7cf045c90f4f",
+              "name": "Done",
+              "type": "boolean",
+              "value": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "606727a5-d723-41c8-93c7-9f3acf803e36",
+      "name": "Tr\u1ea3 v\u1ec1",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        2000,
+        560
+      ],
+      "typeVersion": 3.3
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "edit",
+        "owner": {
+          "__rl": true,
+          "value": "={{ $('Config').item.json.repo_owner }}",
+          "mode": ""
+        },
+        "repository": {
+          "__rl": true,
+          "value": "={{ $('Config').item.json.repo_name }}",
+          "mode": ""
+        },
+        "filePath": "={{ $('Config').item.json.repo_path }}{{ $json.subPath }}{{$('Execute Workflow Trigger').first().json.id}}.json",
+        "fileContent": "={{$('Ki\u1ec3m tra file m\u1edbi hay c\u00f3 thay \u0111\u1ed5i').item.json[\"n8n_data_stringy\"]}}",
+        "commitMessage": "={{$('Execute Workflow Trigger').first().json.name}} ({{$json.github_status}})"
+      },
+      "id": "7a993921-9d4d-4dcd-98fc-70edf4f7dc54",
+      "name": "S\u1eeda file \u0111\u00e3 c\u00f3",
+      "type": "n8n-nodes-base.github",
+      "position": [
+        1840,
+        720
+      ],
+      "typeVersion": 1,
+      "webhookId": "63742355-a7d7-44b8-b1c6-92a8560d2bf7",
+      "credentials": {
+        "githubApi": {
+          "id": "QN9qFwM2P1ufalnY",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "5244ff4b-debc-4ef7-8ead-3e5d925f2eab",
+      "name": "File kh\u00e1c",
+      "type": "n8n-nodes-base.noOp",
+      "position": [
+        1664,
+        720
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {},
+      "id": "5da3dbd0-9287-46e5-854c-d38ad913ca10",
+      "name": "File m\u1edbi",
+      "type": "n8n-nodes-base.noOp",
+      "position": [
+        1664,
+        880
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "owner": {
+          "__rl": true,
+          "value": "={{ $('Config').item.json.repo_owner }}",
+          "mode": ""
+        },
+        "repository": {
+          "__rl": true,
+          "value": "={{ $('Config').item.json.repo_name }}",
+          "mode": ""
+        },
+        "filePath": "={{ $('Config').item.json.repo_path }}{{ $json.subPath }}{{ $('Execute Workflow Trigger').item.json.id }}.json",
+        "fileContent": "={{$('Ki\u1ec3m tra file m\u1edbi hay c\u00f3 thay \u0111\u1ed5i').item.json[\"n8n_data_stringy\"]}}",
+        "commitMessage": "={{$('Execute Workflow Trigger').first().json.name}} ({{$json.github_status}})"
+      },
+      "id": "4186c7d8-e3bc-47a4-a544-9be525c64f87",
+      "name": "T\u1ea1o file",
+      "type": "n8n-nodes-base.github",
+      "position": [
+        1840,
+        880
+      ],
+      "typeVersion": 1,
+      "webhookId": "938e0ba3-fbd3-43a6-9912-4749aa51fb56",
+      "credentials": {
+        "githubApi": {
+          "id": "QN9qFwM2P1ufalnY",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "searchMethod": "query",
+        "queryString": "=name = '{{ $('Execute Workflow Trigger').item.json.name }}({{ $('Execute Workflow Trigger').item.json.id }}).json' and '{{ $('Config').first().json.drive_folder }}' in parents",
+        "filter": {},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        960,
+        1072
+      ],
+      "id": "12da0250-a010-42c1-b8ff-fcf7009de1ad",
+      "name": "T\u00ecm file trong folder gg drive",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "vAw59Z3uhzSck1w4",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={{ JSON.stringify($('Execute Workflow Trigger').item.json, null, 2) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1136,
+        1072
+      ],
+      "id": "98ca678c-79bb-490a-9930-2fc4be56baa5",
+      "name": "G\u00e1n d\u1eef li\u1ec7u json nh\u1eadn \u0111\u01b0\u1ee3c"
+    },
+    {
+      "parameters": {
+        "operation": "toJson",
+        "mode": "each",
+        "binaryPropertyName": "=data",
+        "options": {
+          "fileName": "={{ $json.name }}({{ $json.id }}).json"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        1328,
+        1072
+      ],
+      "id": "8d6bfdea-71d0-4fe7-b822-2b9236bf9e19",
+      "name": "Chuy\u1ec3n th\u00e0nh file binary"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "5406098e-5c6b-4f9e-bb80-6bf5e676892f",
+              "leftValue": "={{ $('T\u00ecm file trong folder gg drive').item.json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1520,
+        1072
+      ],
+      "id": "7b2e06ee-161d-49ca-b9b3-ec3ea8a0fe50",
+      "name": "Ki\u1ec3m tra file c\u00f3 ch\u01b0a"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('T\u00ecm file trong folder gg drive').item.json.id }}",
+          "mode": "id"
+        },
+        "changeFileContent": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1776,
+        1056
+      ],
+      "id": "07f04e9e-5af8-4572-8080-0b5b3a020117",
+      "name": "\u0110\u00e3 t\u1ed3n t\u1ea1i => update",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "vAw59Z3uhzSck1w4",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1jFT4-UWAA9SMObtC2o2Z05nfAjZHCqV1",
+          "mode": "list",
+          "cachedResultName": "HH test",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1jFT4-UWAA9SMObtC2o2Z05nfAjZHCqV1"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1776,
+        1216
+      ],
+      "id": "7473eccb-3ebe-4cec-b7d1-7a4d30fd0ece",
+      "name": "Ch\u01b0a t\u1ed3n t\u1ea1i =>upload",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "vAw59Z3uhzSck1w4",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "-4805482716",
+        "text": "=Ch\u01b0a c\u00e0i \u0111\u1eb7t c\u1ea5u h\u00ecnh trong node Config",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        720,
+        1184
+      ],
+      "id": "ea8a44f1-52d3-48a3-acc6-a297daeecfef",
+      "name": "B\u00e1o thi\u1ebfu c\u1ea5u h\u00ecnh",
+      "webhookId": "11e165ea-e229-4115-b3cc-0d16971b53e4",
+      "credentials": {
+        "telegramApi": {
+          "id": "OzdXTeBgH59oBExJ",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "-4805482716",
+        "text": "=:x: Failed to backup {{ $('Loop Over Items').item.json.id }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1488,
+        240
+      ],
+      "id": "74af80ec-fa37-4115-907f-0308c0db52da",
+      "name": "B\u00e1o th\u1ea5t b\u1ea1i",
+      "webhookId": "11e165ea-e229-4115-b3cc-0d16971b53e4",
+      "credentials": {
+        "telegramApi": {
+          "id": "OzdXTeBgH59oBExJ",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "=-4805482716",
+        "text": "=\u2705 Backup has completed - {{ $('n8n').all().length }} workflows have been processed.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1296,
+        80
+      ],
+      "id": "b7574727-013d-48f6-a3e7-a2e06e4d3052",
+      "name": "B\u00e1o ho\u00e0n th\u00e0nh",
+      "webhookId": "11e165ea-e229-4115-b3cc-0d16971b53e4",
+      "executeOnce": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "OzdXTeBgH59oBExJ",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": "={{ $workflow.id }}",
+        "mode": "each",
+        "options": {}
+      },
+      "id": "1c1a97ff-4c41-4285-a60a-07af858518bc",
+      "name": "Th\u1ef1c thi Workflow ph\u1ee5",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "position": [
+        1296,
+        240
+      ],
+      "typeVersion": 1,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "content": "## C\u1ea5u h\u00ecnh node Config\n**repo_owner:** T\u00ean t\u00e0i kho\u1ea3n github.\n**repo_name:** T\u00ean repository Github. \n**repo_path:** \u0111\u01b0\u1eddng d\u1eabn repository (v\u00ed d\u1ee5: nhh0718/n8n_backup).\n**drive_folder:** ID c\u1ee7a folder Google drive. (C\u00f3 th\u1ec3 v\u00e0o folder tr\u00ean gg drive, copy \u0111o\u1ea1n cu\u1ed1i \u1edf link. (v\u00ed d\u1ee5: https://drive.google.com/drive/folders/abc => ID l\u00e0 abc). \n1. N\u1ebfu c\u00f3 c\u1ea3 3 tr\u01b0\u1eddng c\u1ee7a Github m\u00e0 kh\u00f4ng c\u00f3 drive_folder => ch\u1ec9 backup Github.\n2. N\u1ebfu kh\u00f4ng c\u00f3 1 trong 3 tr\u01b0\u1eddng c\u1ee7a Github m\u00e0 c\u00f3 drive_folder => Ch\u1ec9 backup l\u00ean gg drive.\n3. N\u1ebfu c\u00f3 c\u1ea3 4 tr\u01b0\u1eddng => ch\u1ea1y c\u1ea3 2 backup.",
+        "height": 320,
+        "width": 360
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        128,
+        544
+      ],
+      "typeVersion": 1,
+      "id": "45d70a4d-1bb4-4b4c-b5be-43e67797da33",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## workflow ch\u00ednh",
+        "height": 416.1856906618075,
+        "width": 1272.6408145680155,
+        "color": 7
+      },
+      "id": "dd089174-c75e-481a-adcc-6d10e5638214",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        176,
+        32
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.telegram.org/bot8323314294:AAGkiCTtTDuKXmKPUuPY5VVf3vg8P72FeD4/getUpdates",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        640,
+        160
+      ],
+      "id": "516886c4-55fb-4a32-958a-3dc27783725d",
+      "name": "HTTP Request"
+    }
+  ],
+  "connections": {
+    "On clicking 'execute'": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Workflow Trigger": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get File": {
+      "main": [
+        [
+          {
+            "node": "G\u1ed9p data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "B\u00e1o ho\u00e0n th\u00e0nh",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Th\u1ef1c thi Workflow ph\u1ee5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get file data": {
+      "main": [
+        [
+          {
+            "node": "N\u1ebfu file l\u1edbn qu\u00e1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "\u0110i\u1ec1u h\u01b0\u1edbng d\u1ef1a tr\u00ean file config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "N\u1ebfu file l\u1edbn qu\u00e1": {
+      "main": [
+        [
+          {
+            "node": "Get File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "G\u1ed9p data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "\u0110i\u1ec1u h\u01b0\u1edbng d\u1ef1a tr\u00ean file config": {
+      "main": [
+        [
+          {
+            "node": "route",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "route": {
+      "main": [
+        [
+          {
+            "node": "Get file data",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "G\u1ed9p data",
+            "type": "main",
+            "index": 1
+          }
+        ],
+        [
+          {
+            "node": "T\u00ecm file trong folder gg drive",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "T\u00ecm file trong folder gg drive",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get file data",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "G\u1ed9p data",
+            "type": "main",
+            "index": 1
+          }
+        ],
+        [
+          {
+            "node": "B\u00e1o thi\u1ebfu c\u1ea5u h\u00ecnh",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "G\u1ed9p data": {
+      "main": [
+        [
+          {
+            "node": "Ki\u1ec3m tra file m\u1edbi hay c\u00f3 thay \u0111\u1ed5i",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ki\u1ec3m tra file m\u1edbi hay c\u00f3 thay \u0111\u1ed5i": {
+      "main": [
+        [
+          {
+            "node": "T\u1ea1o path theo th\u00e1ng n\u0103m",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T\u1ea1o path theo th\u00e1ng n\u0103m": {
+      "main": [
+        [
+          {
+            "node": "Ki\u1ec3m tra tr\u1ea1ng th\u00e1i",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ki\u1ec3m tra tr\u1ea1ng th\u00e1i": {
+      "main": [
+        [
+          {
+            "node": "File ko \u0111\u1ed5i - do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "File kh\u00e1c",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "File m\u1edbi",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "File ko \u0111\u1ed5i - do nothing": {
+      "main": [
+        [
+          {
+            "node": "Tr\u1ea3 v\u1ec1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "S\u1eeda file \u0111\u00e3 c\u00f3": {
+      "main": [
+        [
+          {
+            "node": "Tr\u1ea3 v\u1ec1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "File kh\u00e1c": {
+      "main": [
+        [
+          {
+            "node": "S\u1eeda file \u0111\u00e3 c\u00f3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "File m\u1edbi": {
+      "main": [
+        [
+          {
+            "node": "T\u1ea1o file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T\u1ea1o file": {
+      "main": [
+        [
+          {
+            "node": "Tr\u1ea3 v\u1ec1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T\u00ecm file trong folder gg drive": {
+      "main": [
+        [
+          {
+            "node": "G\u00e1n d\u1eef li\u1ec7u json nh\u1eadn \u0111\u01b0\u1ee3c",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "G\u00e1n d\u1eef li\u1ec7u json nh\u1eadn \u0111\u01b0\u1ee3c": {
+      "main": [
+        [
+          {
+            "node": "Chuy\u1ec3n th\u00e0nh file binary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chuy\u1ec3n th\u00e0nh file binary": {
+      "main": [
+        [
+          {
+            "node": "Ki\u1ec3m tra file c\u00f3 ch\u01b0a",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ki\u1ec3m tra file c\u00f3 ch\u01b0a": {
+      "main": [
+        [
+          {
+            "node": "\u0110\u00e3 t\u1ed3n t\u1ea1i => update",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Ch\u01b0a t\u1ed3n t\u1ea1i =>upload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "B\u00e1o th\u1ea5t b\u1ea1i": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Th\u1ef1c thi Workflow ph\u1ee5": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "B\u00e1o th\u1ea5t b\u1ea1i",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "n8n",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "2bf9c32c-f613-4b17-b22d-9973f7a93871",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "createdAt": "2025-09-26T09:05:36.618Z",
+      "updatedAt": "2025-09-26T09:05:36.618Z",
+      "role": "workflow:owner",
+      "workflowId": "HVPhHv2krk9nStIe",
+      "projectId": "ICp1M8C0gzC6bJJb"
+    }
+  ],
+  "tags": [],
+  "repo_owner": "aloatist",
+  "repo_name": "n8nvps",
+  "repo_path": "aloatist/n8nvps",
+  "drive_folder": "1xA6c0JY5ZpCuLzILbuv4tiP_pMCPWRCH"
+}

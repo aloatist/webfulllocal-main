@@ -1,0 +1,307 @@
+{
+  "name": "Attendance Check-in Sheets Sync",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "path": "attendance/checkin",
+        "httpMethod": "POST",
+        "responseMode": "onReceived",
+        "options": {
+          "responseData": "noData"
+        }
+      },
+      "id": "Webhook_Trigger",
+      "name": "Check-in Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [0, 0],
+      "webhookId": "attendance-checkin-sheets"
+    },
+    {
+      "parameters": {
+        "functionCode": "const payload = items[0].json;\nconst participant = payload.participant ?? {};\nreturn items.map(() => ({\n  json: {\n    status: payload.status ?? 'unknown',\n    message: payload.message ?? null,\n    scanCode: payload.code ?? payload.scanCode ?? participant.code ?? null,\n    scannedAt: payload.scannedAt ?? new Date().toISOString(),\n    scannerId: payload.scannerId ?? null,\n    deviceInfo: payload.deviceInfo ?? null,\n    participantId: participant.id ?? null,\n    fullName: participant.fullName ?? null,\n    checkedInAt: participant.checkedInAt ?? payload.scannedAt ?? null\n  }\n}));"
+      },
+      "id": "Function_Normalize",
+      "name": "Normalize Payload",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [260, 0]
+    },
+    {
+      "parameters": {
+        "authentication": "genericCredentialType",
+        "url": "={{$env.BACKEND_API_BASE_URL || 'http://backend:4000/api'}}/participants/{{$json.participantId}}",
+        "options": {
+          "redirect": {
+            "followRedirects": true
+          }
+        }
+      },
+      "id": "HTTPRequest_FetchParticipant",
+      "name": "Fetch Participant Details",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [540, 0],
+      "continueOnFail": true,
+      "notes": "Fetches full participant record to enrich optional fields (email/phone/title)."
+    },
+    {
+      "parameters": {
+        "mode": "mergeByIndex",
+        "propertyName": "data"
+      },
+      "id": "Merge_Payload",
+      "name": "Merge Data",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 1,
+      "position": [780, 0]
+    },
+    {
+      "parameters": {
+        "operation": "lookup",
+        "mode": "lookup",
+        "sheetId": "={{$env.GSHEET_ID}}",
+        "range": "Participants!A:G",
+        "lookupColumn": "A",
+        "lookupValue": "={{$json.scanCode}}"
+      },
+      "id": "GoogleSheets_Lookup",
+      "name": "Find Existing Row",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        0
+      ],
+      "credentials": {
+        "googleApi": {
+          "id": "=Google Sheets"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [],
+          "number": [],
+          "string": [
+            {
+              "value1": "={{$json.row}}",
+              "operation": "isNotEmpty"
+            }
+          ]
+        }
+      },
+      "id": "IF_RowFound",
+      "name": "Row Found?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [1200, 0]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "sheetId": "={{$env.GSHEET_ID}}",
+        "range": "Participants!A:G",
+        "key": "={{$json.row}}",
+        "options": {
+          "valueInputMode": "RAW"
+        },
+        "data": {
+          "fields": [
+            {
+              "column": "A",
+              "value": "={{$json.scanCode}}"
+            },
+            {
+              "column": "B",
+              "value": "={{$json.fullName || $json.data?.fullName || 'Chưa có tên'}}"
+            },
+            {
+              "column": "C",
+              "value": "={{$json.data?.metadata?.title || $json.data?.metadata?.position || ''}}"
+            },
+            {
+              "column": "D",
+              "value": "={{$json.data?.phoneNumber || $json.data?.phone || ''}}"
+            },
+            {
+              "column": "E",
+              "value": "={{$json.data?.email || ''}}"
+            },
+            {
+              "column": "F",
+              "value": "={{$json.status}}"
+            },
+            {
+              "column": "G",
+              "value": "={{$json.checkedInAt || $json.scannedAt}}"
+            }
+          ]
+        }
+      },
+      "id": "GoogleSheets_Update",
+      "name": "Update Existing",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 2,
+      "position": [1400, -120],
+      "credentials": {
+        "googleApi": {
+          "id": "=Google Sheets"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "sheetId": "={{$env.GSHEET_ID}}",
+        "range": "Participants!A:G",
+        "options": {
+          "valueInputMode": "RAW"
+        },
+        "data": {
+          "values": [
+            {
+              "values": [
+                "={{$json.scanCode}}",
+                "={{$json.fullName || $json.data?.fullName || 'Chưa có tên'}}",
+                "={{$json.data?.metadata?.title || $json.data?.metadata?.position || ''}}",
+                "={{$json.data?.phoneNumber || $json.data?.phone || ''}}",
+                "={{$json.data?.email || ''}}",
+                "={{$json.status}}",
+                "={{$json.checkedInAt || $json.scannedAt}}"
+              ]
+            }
+          ]
+        }
+      },
+      "id": "GoogleSheets_Append",
+      "name": "Append New",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 2,
+      "position": [1400, 140],
+      "credentials": {
+        "googleApi": {
+          "id": "=Google Sheets"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "responseBody": "={\n  \"status\": $json.status,\n  \"scanCode\": $json.scanCode,\n  \"updated\": $json.row ? true : false\n}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "Webhook_Respond",
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1620, 0]
+    }
+  ],
+  "connections": {
+    "Check-in Webhook": {
+      "main": [
+        [
+          {
+            "node": "Normalize Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Payload": {
+      "main": [
+        [
+          {
+            "node": "Fetch Participant Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Participant Details": {
+      "main": [
+        [
+          {
+            "node": "Merge Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Data": {
+      "main": [
+        [
+          {
+            "node": "Find Existing Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find Existing Row": {
+      "main": [
+        [
+          {
+            "node": "Row Found?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Row Found?": {
+      "main": [
+        [
+          {
+            "node": "Update Existing",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Append New",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Existing": {
+      "main": [
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append New": {
+      "main": [
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "timezone": "Asia/Ho_Chi_Minh"
+  },
+  "staticData": null,
+  "id": "attendance-checkin-google-sheets"
+}

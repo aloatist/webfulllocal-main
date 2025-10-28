@@ -1,0 +1,1130 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Booking {
+  id              String         @id
+  reference       String         @unique
+  tourId          String
+  departureId     String
+  customerId      String
+  promotionId     String?
+  adults          Int            @default(1)
+  children        Int            @default(0)
+  infants         Int            @default(0)
+  totalAmount     Decimal        @db.Decimal(12, 2)
+  currency        String         @default("VND")
+  status          BookingStatus  @default(PENDING)
+  specialRequests String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime
+  adminNotes      String?
+  Customer        Customer       @relation(fields: [customerId], references: [id])
+  TourDeparture   TourDeparture  @relation(fields: [departureId], references: [id])
+  Promotion       Promotion?     @relation(fields: [promotionId], references: [id])
+  Tour            Tour           @relation(fields: [tourId], references: [id])
+  BookingAddon    BookingAddon[]
+  Payment         Payment[]
+
+  @@index([customerId, status])
+  @@index([tourId, status])
+}
+
+model BookingAddon {
+  id        String    @id
+  bookingId String
+  addonId   String
+  quantity  Int       @default(1)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime
+  TourAddon TourAddon @relation(fields: [addonId], references: [id])
+  Booking   Booking   @relation(fields: [bookingId], references: [id])
+
+  @@unique([bookingId, addonId])
+}
+
+model Category {
+  id             String     @id
+  name           String     @unique
+  slug           String     @unique
+  description    String?
+  parentId       String?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime
+  Category       Category?  @relation("CategoryToCategory", fields: [parentId], references: [id])
+  other_Category Category[] @relation("CategoryToCategory")
+  SEO            SEO?
+  Post           Post[]
+  Tour           Tour[]
+}
+
+model ChannelSyncLog {
+  id                 String             @id
+  channelId          String
+  direction          SyncDirection      @default(OUTBOUND)
+  operation          String
+  status             SyncStatus         @default(SUCCESS)
+  message            String?
+  payload            Json?
+  createdAt          DateTime           @default(now())
+  IntegrationChannel IntegrationChannel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  @@index([channelId, createdAt])
+  @@index([status])
+}
+
+model CocoIslandSection {
+  id          String   @id
+  key         String   @unique
+  data        Json
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+  updatedById String?
+  User        User?    @relation(fields: [updatedById], references: [id])
+}
+
+model Customer {
+  id              String            @id
+  userId          String?           @unique
+  fullName        String
+  email           String            @unique
+  phone           String?
+  country         String?
+  city            String?
+  address         String?
+  notes           String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime
+  Booking         Booking[]
+  User            User?             @relation(fields: [userId], references: [id])
+  HomestayBooking HomestayBooking[]
+  TourReview      TourReview[]
+}
+
+model HomepageCompanyInfo {
+  id               String   @id
+  title            String
+  description      String?
+  businessLicense  String?
+  travelLicense    String?
+  foodSafetyCert   String?
+  verificationText String?
+  isActive         Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime
+}
+
+model HomepageContent {
+  id          String   @id
+  section     String   @unique
+  title       String?
+  subtitle    String?
+  description String?
+  imageUrl    String?
+  videoUrl    String?
+  ctaText     String?
+  ctaLink     String?
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+}
+
+model HomepageGallery {
+  id          String   @id
+  title       String
+  description String?
+  images      Json
+  features    Json?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+}
+
+model HomepageHero {
+  id              String   @id
+  mainTitle       String
+  subtitle        String
+  description     String
+  backgroundImage String
+  ctaText         String   @default("Đặt Tour Ngay")
+  ctaLink         String   @default("tel:+84918267715")
+  hotline         String   @default("0918 267 715")
+  location        String   @default("Tờ bản đồ số 3, thửa đất số 32, Ấp Tân Vinh, Xã Phú Túc, tỉnh Vĩnh Long")
+  openingHours    String   @default("7:00 - 18:00")
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime
+}
+
+model HomepagePromotion {
+  id          String    @id
+  title       String
+  subtitle    String?
+  description String?
+  image       String
+  discount    String?
+  validUntil  DateTime?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime
+}
+
+model HomepageRestaurant {
+  id          String   @id
+  title       String
+  description String
+  capacity    String?
+  specialties Json
+  image       String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+}
+
+model HomepageSection {
+  id          String   @id
+  sectionKey  String   @unique
+  title       String?
+  subtitle    String?
+  description String?
+  content     Json?
+  images      Json?
+  isActive    Boolean  @default(true)
+  order       Int      @default(0)
+  metadata    Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+
+  @@index([isActive])
+  @@index([order])
+  @@index([sectionKey])
+}
+
+model HomepageTicket {
+  id          String   @id
+  title       String
+  description String?
+  adultPrice  Int
+  childPrice  Int
+  includes    Json
+  pickupInfo  String?
+  warningNote String?
+  image       String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+}
+
+model HomepageTour {
+  id            String   @id
+  title         String
+  description   String?
+  originalPrice Int
+  salePrice     Int
+  discount      String?
+  duration      String   @default("Trong ngày")
+  includes      Json
+  image         String?
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime
+}
+
+model Homestay {
+  id                    String                 @id
+  title                 String
+  slug                  String                 @unique
+  summary               String?
+  description           String?
+  status                HomestayStatus         @default(DRAFT)
+  addressLine1          String?
+  addressLine2          String?
+  city                  String?
+  state                 String?
+  country               String?
+  postalCode            String?
+  latitude              Decimal?               @db.Decimal(10, 7)
+  longitude             Decimal?               @db.Decimal(10, 7)
+  basePrice             Decimal?               @db.Decimal(12, 2)
+  currency              String                 @default("VND")
+  maxGuests             Int?
+  minNights             Int?
+  maxNights             Int?
+  checkInTime           String?
+  checkOutTime          String?
+  heroImageUrl          String?
+  amenities             String[]               @default([])
+  houseRules            String[]               @default([])
+  seoTitle              String?
+  seoDescription        String?
+  seoKeywords           String[]               @default([])
+  structuredData        Json?
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime
+  accessibilityFeatures Json?
+  bathrooms             Int?
+  bedrooms              Int?
+  beds                  Int                    @default(1)
+  bookingCount          Int                    @default(0)
+  cancellationPolicy    CancellationPolicy     @default(MODERATE)
+  category              PropertyCategory       @default(OTHER)
+  checkInTimeEnd        String                 @default("22:00")
+  checkInTimeStart      String                 @default("15:00")
+  checkInType           CheckInType            @default(HOST_GREETS_YOU)
+  cleaningFee           Decimal?               @default(0) @db.Decimal(12, 2)
+  contactEmail          String?
+  contactPhone          String?
+  extraGuestFee         Decimal?               @default(0) @db.Decimal(12, 2)
+  floor                 Int?
+  galleryImageUrls      Json?
+  hasAirConditioning    Boolean                @default(false)
+  hasBalcony            Boolean                @default(false)
+  hasElevator           Boolean                @default(false)
+  hasEventsAllowed      Boolean                @default(false)
+  hasGarden             Boolean                @default(false)
+  hasGym                Boolean                @default(false)
+  hasKitchen            Boolean                @default(false)
+  hasParking            Boolean                @default(false)
+  hasPetFriendly        Boolean                @default(false)
+  hasPool               Boolean                @default(false)
+  hasSmokingAllowed     Boolean                @default(false)
+  hasWifi               Boolean                @default(true)
+  isFeatured            Boolean                @default(false)
+  isInstantBook         Boolean                @default(false)
+  isSuperhost           Boolean                @default(false)
+  isVerified            Boolean                @default(false)
+  monthlyPrice          Decimal?               @db.Decimal(12, 2)
+  ratingAverage         Decimal?               @db.Decimal(3, 2)
+  reviewCount           Int                    @default(0)
+  safetyFeatures        Json?
+  securityDeposit       Decimal?               @default(0) @db.Decimal(12, 2)
+  sizeSquareMeters      Decimal?               @db.Decimal(8, 2)
+  specialAmenities      Json?
+  subtitle              String?
+  type                  HomestayType           @default(ENTIRE_PLACE)
+  viewCount             Int                    @default(0)
+  weekendPrice          Decimal?               @db.Decimal(12, 2)
+  HomestayAvailability  HomestayAvailability[]
+  HomestayBooking       HomestayBooking[]
+  HomestayMedia         HomestayMedia[]
+  HomestayPricingRule   HomestayPricingRule[]
+  HomestayReview        HomestayReview[]
+  HomestayRoom          HomestayRoom[]
+
+  @@index([basePrice])
+  @@index([bathrooms])
+  @@index([bedrooms])
+  @@index([category])
+  @@index([createdAt])
+  @@index([isFeatured])
+  @@index([isInstantBook])
+  @@index([isSuperhost])
+  @@index([isVerified])
+  @@index([maxGuests])
+  @@index([ratingAverage])
+  @@index([status, city])
+  @@index([status, country])
+  @@index([type])
+}
+
+model HomestayAvailability {
+  id            String             @id
+  roomId        String
+  homestayId    String
+  date          DateTime
+  totalUnits    Int                @default(1)
+  reservedUnits Int                @default(0)
+  status        AvailabilityStatus @default(OPEN)
+  source        String?
+  metadata      Json?
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime
+  Homestay      Homestay           @relation(fields: [homestayId], references: [id], onDelete: Cascade)
+  HomestayRoom  HomestayRoom       @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  @@unique([roomId, date])
+  @@index([homestayId, date])
+  @@index([status])
+}
+
+model HomestayBooking {
+  id               String           @id
+  reference        String           @unique
+  homestayId       String
+  roomId           String?
+  customerId       String?
+  channel          String?
+  channelReference String?
+  checkIn          DateTime
+  checkOut         DateTime
+  adults           Int              @default(1)
+  children         Int              @default(0)
+  infants          Int              @default(0)
+  status           BookingStatus    @default(PENDING)
+  totalAmount      Decimal          @db.Decimal(12, 2)
+  currency         String           @default("VND")
+  specialRequests  String?
+  adminNotes       String?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime
+  Customer         Customer?        @relation(fields: [customerId], references: [id])
+  Homestay         Homestay         @relation(fields: [homestayId], references: [id])
+  HomestayRoom     HomestayRoom?    @relation(fields: [roomId], references: [id])
+  HomestayReview   HomestayReview[]
+
+  @@index([homestayId, status])
+  @@index([roomId, checkIn, checkOut])
+}
+
+model HomestayMedia {
+  id         String   @id
+  homestayId String
+  mediaId    String
+  type       String   @default("IMAGE")
+  position   Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime
+  Homestay   Homestay @relation(fields: [homestayId], references: [id])
+  Media      Media    @relation(fields: [mediaId], references: [id])
+
+  @@index([homestayId, position])
+}
+
+model HomestayPricingRule {
+  id                        String            @id
+  homestayId                String
+  name                      String
+  type                      PricingRuleType   @default(SEASONAL)
+  status                    PricingRuleStatus @default(ACTIVE)
+  description               String?
+  startDate                 DateTime
+  endDate                   DateTime
+  startTime                 String?
+  endTime                   String?
+  daysOfWeek                Int[]
+  minimumNights             Int?
+  maximumNights             Int?
+  minimumGuests             Int?
+  maximumGuests             Int?
+  priceAdjustmentType       String            @default("percentage")
+  priceAdjustmentValue      Decimal           @db.Decimal(10, 2)
+  newBasePrice              Decimal?          @db.Decimal(12, 2)
+  cleaningFeeAdjustment     Decimal?          @db.Decimal(12, 2)
+  securityDepositAdjustment Decimal?          @db.Decimal(12, 2)
+  priority                  Int               @default(0)
+  isRecursive               Boolean           @default(false)
+  recursionPattern          String?
+  conditions                Json?
+  metadata                  Json?
+  createdAt                 DateTime          @default(now())
+  updatedAt                 DateTime
+  Homestay                  Homestay          @relation(fields: [homestayId], references: [id], onDelete: Cascade)
+
+  @@index([endDate])
+  @@index([homestayId])
+  @@index([priority])
+  @@index([startDate])
+  @@index([status])
+  @@index([type])
+}
+
+model HomestayReview {
+  id                  String           @id
+  homestayId          String
+  reviewerId          String
+  bookingId           String?
+  status              ReviewStatus     @default(PENDING)
+  overallRating       Decimal          @db.Decimal(3, 2)
+  cleanlinessRating   Decimal?         @db.Decimal(3, 2)
+  communicationRating Decimal?         @db.Decimal(3, 2)
+  checkinRating       Decimal?         @db.Decimal(3, 2)
+  accuracyRating      Decimal?         @db.Decimal(3, 2)
+  locationRating      Decimal?         @db.Decimal(3, 2)
+  valueRating         Decimal?         @db.Decimal(3, 2)
+  title               String?
+  content             String?
+  hostResponse        String?
+  hostResponseAt      DateTime?
+  isAnonymous         Boolean          @default(false)
+  isVerified          Boolean          @default(false)
+  helpfulCount        Int              @default(0)
+  reportCount         Int              @default(0)
+  metadata            Json?
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime
+  HomestayBooking     HomestayBooking? @relation(fields: [bookingId], references: [id])
+  Homestay            Homestay         @relation(fields: [homestayId], references: [id], onDelete: Cascade)
+  User                User             @relation(fields: [reviewerId], references: [id], onDelete: Cascade)
+
+  @@index([bookingId])
+  @@index([createdAt])
+  @@index([homestayId])
+  @@index([overallRating])
+  @@index([reviewerId])
+  @@index([status])
+}
+
+model HomestayRoom {
+  id                   String                 @id
+  homestayId           String
+  name                 String
+  slug                 String
+  description          String?
+  sizeSqm              Decimal?               @db.Decimal(8, 2)
+  basePrice            Decimal?               @db.Decimal(12, 2)
+  currency             String?
+  maxGuests            Int?
+  bedTypes             String[]               @default([])
+  amenities            String[]               @default([])
+  status               HomestayRoomStatus     @default(ACTIVE)
+  heroImageUrl         String?
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime
+  HomestayAvailability HomestayAvailability[]
+  HomestayBooking      HomestayBooking[]
+  Homestay             Homestay               @relation(fields: [homestayId], references: [id])
+
+  @@unique([homestayId, slug])
+  @@index([status])
+}
+
+model IntegrationChannel {
+  id             String            @id
+  name           String
+  provider       String
+  status         IntegrationStatus @default(ACTIVE)
+  endpoint       String?
+  config         Json?
+  lastSyncedAt   DateTime?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime
+  ChannelSyncLog ChannelSyncLog[]
+
+  @@unique([provider, name])
+}
+
+model ItineraryDay {
+  id          String   @id
+  tourId      String
+  dayNumber   Int
+  title       String?
+  description String?
+  meals       String[] @default([])
+  activities  String[] @default([])
+  stayInfo    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+  Tour        Tour     @relation(fields: [tourId], references: [id])
+
+  @@unique([tourId, dayNumber])
+}
+
+model Media {
+  id            String          @id
+  filename      String
+  url           String
+  publicId      String          @unique
+  mimeType      String
+  size          Int
+  alt           String?
+  caption       String?
+  width         Int?
+  height        Int?
+  userId        String
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime
+  HomestayMedia HomestayMedia[]
+  User          User            @relation(fields: [userId], references: [id])
+  Post          Post[]
+  TourMedia     TourMedia[]
+}
+
+model Menu {
+  id          String     @id
+  name        String
+  description String?
+  isDefault   Boolean    @default(false)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime
+  MenuItem    MenuItem[]
+}
+
+model MenuItem {
+  id             String     @id
+  menuId         String
+  parentId       String?
+  label          String
+  href           String
+  icon           String?
+  target         String?
+  order          Int        @default(0)
+  isActive       Boolean    @default(true)
+  roles          String[]   @default([])
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime
+  Menu           Menu       @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  MenuItem       MenuItem?  @relation("MenuItemToMenuItem", fields: [parentId], references: [id], onDelete: Cascade)
+  other_MenuItem MenuItem[] @relation("MenuItemToMenuItem")
+}
+
+model Payment {
+  id            String          @id
+  bookingId     String
+  provider      PaymentProvider @default(NONE)
+  externalId    String?
+  status        PaymentStatus   @default(PENDING)
+  amount        Decimal         @db.Decimal(12, 2)
+  currency      String          @default("VND")
+  paidAt        DateTime?
+  failureReason String?
+  metadata      Json?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime
+  Booking       Booking         @relation(fields: [bookingId], references: [id])
+
+  @@index([provider, status])
+}
+
+model Post {
+  id              String            @id
+  title           String
+  slug            String            @unique
+  content         String
+  excerpt         String?
+  featured        Boolean           @default(false)
+  status          PostStatus        @default(DRAFT)
+  authorId        String
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime
+  featuredImageId String?
+  User            User              @relation(fields: [authorId], references: [id])
+  Media           Media?            @relation(fields: [featuredImageId], references: [id])
+  SEO             SEO?
+  Category        Category[]
+  Tag             Tag[]
+  SocialMediaPost SocialMediaPost[]
+}
+
+model Promotion {
+  id            String       @id
+  code          String       @unique
+  name          String
+  description   String?
+  discountType  DiscountType @default(PERCENTAGE)
+  discountValue Decimal      @db.Decimal(10, 2)
+  maxDiscount   Decimal?     @db.Decimal(10, 2)
+  startDate     DateTime?
+  endDate       DateTime?
+  usageLimit    Int?
+  usageCount    Int          @default(0)
+  isActive      Boolean      @default(true)
+  minimumOrder  Decimal?     @db.Decimal(10, 2)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime
+  Booking       Booking[]
+  Tour          Tour[]       @relation("TourPromotions")
+}
+
+model SEO {
+  id                 String    @id
+  title              String?
+  description        String?
+  keywords           String?
+  ogTitle            String?
+  ogDescription      String?
+  ogImage            String?
+  twitterCard        String?
+  twitterTitle       String?
+  twitterDescription String?
+  twitterImage       String?
+  postId             String?   @unique
+  categoryId         String?   @unique
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime
+  Category           Category? @relation(fields: [categoryId], references: [id])
+  Post               Post?     @relation(fields: [postId], references: [id])
+}
+
+model Setting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  type      String
+  group     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Tag {
+  id          String   @id
+  name        String   @unique
+  slug        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+  Post        Post[]
+}
+
+model Tour {
+  id             String          @id
+  title          String
+  slug           String          @unique
+  summary        String?
+  heroImageUrl   String?
+  durationDays   Int
+  durationNights Int?
+  difficulty     TourDifficulty  @default(EASY)
+  basePrice      Decimal?        @db.Decimal(10, 2)
+  currency       String          @default("VND")
+  maxGuests      Int?
+  meetingPoint   String?
+  departureCity  String?
+  arrivalCity    String?
+  status         TourStatus      @default(DRAFT)
+  isFeatured     Boolean         @default(false)
+  highlights     String[]        @default([])
+  inclusions     String[]        @default([])
+  exclusions     String[]        @default([])
+  seoTitle       String?
+  seoDescription String?
+  seoKeywords    String[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime
+  Booking        Booking[]
+  ItineraryDay   ItineraryDay[]
+  TourAddon      TourAddon[]
+  TourDeparture  TourDeparture[]
+  TourMedia      TourMedia[]
+  TourReview     TourReview[]
+  Category       Category[]
+  Promotion      Promotion[]     @relation("TourPromotions")
+
+  @@index([status, isFeatured])
+  @@index([title])
+}
+
+model TourAddon {
+  id           String         @id
+  tourId       String
+  name         String
+  description  String?
+  price        Decimal        @db.Decimal(10, 2)
+  perPerson    Boolean        @default(true)
+  isActive     Boolean        @default(true)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime
+  BookingAddon BookingAddon[]
+  Tour         Tour           @relation(fields: [tourId], references: [id])
+
+  @@index([tourId])
+}
+
+model TourDeparture {
+  id             String          @id
+  tourId         String
+  startDate      DateTime
+  endDate        DateTime?
+  seatsTotal     Int
+  seatsAvailable Int
+  priceAdult     Decimal?        @db.Decimal(10, 2)
+  priceChild     Decimal?        @db.Decimal(10, 2)
+  priceInfant    Decimal?        @db.Decimal(10, 2)
+  status         DepartureStatus @default(SCHEDULED)
+  notes          String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime
+  Booking        Booking[]
+  Tour           Tour            @relation(fields: [tourId], references: [id])
+
+  @@index([startDate])
+  @@index([status])
+}
+
+model TourMedia {
+  id        String   @id
+  tourId    String
+  mediaId   String
+  type      String   @default("IMAGE")
+  position  Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  Media     Media    @relation(fields: [mediaId], references: [id])
+  Tour      Tour     @relation(fields: [tourId], references: [id])
+
+  @@unique([tourId, position])
+}
+
+model TourReview {
+  id          String    @id
+  tourId      String
+  customerId  String?
+  fullName    String
+  rating      Int
+  title       String?
+  content     String?
+  isPublished Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime
+  Customer    Customer? @relation(fields: [customerId], references: [id])
+  Tour        Tour      @relation(fields: [tourId], references: [id])
+
+  @@index([tourId, isPublished])
+}
+
+model User {
+  id                String              @id
+  name              String?
+  email             String              @unique
+  password          String
+  image             String?
+  role              Role                @default(USER)
+  permissions       String[]            // Custom permissions for this user
+  isActive          Boolean             @default(true)
+  lastLoginAt       DateTime?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime
+  CocoIslandSection CocoIslandSection[]
+  Customer          Customer?
+  HomestayReview    HomestayReview[]
+  Media             Media[]
+  Post              Post[]
+  TeamMember        TeamMember[]
+  SocialMediaPost   SocialMediaPost[]
+}
+
+enum AvailabilityStatus {
+  OPEN
+  CLOSED
+  BLOCKED
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+enum CancellationPolicy {
+  FLEXIBLE
+  MODERATE
+  STRICT
+  SUPER_STRICT
+  LONG_TERM
+}
+
+enum CheckInType {
+  SELF_CHECKIN
+  HOST_GREETS_YOU
+  BUILDING_STAFF
+}
+
+enum DepartureStatus {
+  SCHEDULED
+  LOW_AVAILABILITY
+  SOLD_OUT
+  CANCELLED
+  COMPLETED
+}
+
+enum DiscountType {
+  PERCENTAGE
+  AMOUNT
+}
+
+enum HomestayRoomStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum HomestayStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum HomestayType {
+  PRIVATE_ROOM
+  ENTIRE_PLACE
+  SHARED_ROOM
+}
+
+enum IntegrationStatus {
+  ACTIVE
+  INACTIVE
+  ERROR
+}
+
+enum PaymentProvider {
+  NONE
+  STRIPE
+  MOMO
+  ZALOPAY
+  PAYPAL
+  CASH
+  BANK_TRANSFER
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+  REFUNDED
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum PricingRuleStatus {
+  ACTIVE
+  INACTIVE
+  EXPIRED
+}
+
+enum PricingRuleType {
+  SEASONAL
+  WEEKEND
+  HOLIDAY
+  LONG_STAY
+  LAST_MINUTE
+  EARLY_BIRD
+  GROUP_DISCOUNT
+  LENGTH_OF_STAY
+  DYNAMIC
+}
+
+enum PropertyCategory {
+  APARTMENT
+  HOUSE
+  VILLA
+  CONDO
+  TOWNHOUSE
+  STUDIO
+  LOFT
+  BUNGALOW
+  CABIN
+  TREEHOUSE
+  BOAT
+  CAMPER
+  TENT
+  OTHER
+}
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  HIDDEN
+}
+
+enum Role {
+  USER
+  EDITOR
+  MARKETING
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum SyncDirection {
+  INBOUND
+  OUTBOUND
+}
+
+enum SyncStatus {
+  SUCCESS
+  FAILED
+  RETRYING
+}
+
+enum TourDifficulty {
+  EASY
+  MODERATE
+  CHALLENGING
+  EXTREME
+}
+
+enum TourStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+// ============================================
+// USER MANAGEMENT & PERMISSIONS SYSTEM
+// ============================================
+
+// Team/Organization for multi-tenancy
+model Team {
+  id          String       @id
+  name        String
+  slug        String       @unique
+  description String?
+  isActive    Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime
+  members     TeamMember[]
+}
+
+// Team membership with roles
+model TeamMember {
+  id          String   @id
+  userId      String
+  teamId      String
+  role        String   // team_owner, team_admin, team_member
+  permissions String[] // Team-specific permissions
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+  
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  team        Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, teamId])
+  @@index([userId])
+  @@index([teamId])
+}
+
+// Permission definitions
+model Permission {
+  id          String   @id
+  code        String   @unique // e.g., 'post.create', 'media.upload'
+  name        String
+  description String?
+  category    String   // post, media, user, social_media, analytics
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+  
+  @@index([category])
+}
+
+// Role definitions with default permissions
+model RoleDefinition {
+  id          String   @id
+  code        String   @unique // admin, editor, marketing
+  name        String
+  permissions String[] // Array of permission codes
+  description String?
+  isSystem    Boolean  @default(false) // System roles can't be deleted
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+}
+
+// ============================================
+// SOCIAL MEDIA AUTOMATION SYSTEM
+// ============================================
+
+// Social media platform accounts
+model SocialMediaAccount {
+  id           String            @id
+  platform     String            // facebook, instagram, youtube, twitter, linkedin, tiktok
+  accountName  String
+  accountId    String            // Platform-specific account ID
+  accessToken  String?           // Encrypted access token
+  refreshToken String?           // Encrypted refresh token
+  expiresAt    DateTime?
+  isActive     Boolean           @default(true)
+  settings     Json?             // Platform-specific settings
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime
+  
+  posts        SocialMediaPost[]
+  
+  @@unique([platform, accountId])
+  @@index([platform])
+  @@index([isActive])
+}
+
+// Posts to social media platforms
+model SocialMediaPost {
+  id              String   @id
+  postId          String              // Reference to Post.id
+  userId          String?             // User who triggered the post
+  accountId       String              // Social media account
+  platform        String              // facebook, instagram, youtube, etc
+  status          SocialMediaStatus   // pending, processing, published, failed, scheduled
+  scheduledAt     DateTime?
+  publishedAt     DateTime?
+  platformPostId  String?             // ID on the platform (for edit/delete)
+  platformUrl     String?             // Link to the post on platform
+  content         Json                // Customized content for platform
+  media           Json?               // URLs of media files
+  error           String?
+  errorDetails    Json?
+  retryCount      Int                 @default(0)
+  maxRetries      Int                 @default(3)
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime
+  
+  account         SocialMediaAccount  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  Post            Post                @relation(fields: [postId], references: [id], onDelete: Cascade)
+  User            User?               @relation(fields: [userId], references: [id], onDelete: SetNull)
+  
+  @@index([postId])
+  @@index([accountId])
+  @@index([status])
+  @@index([scheduledAt])
+  @@index([platform])
+}
+
+// Content templates for each platform
+model SocialMediaTemplate {
+  id          String   @id
+  platform    String   // facebook, instagram, youtube, etc
+  name        String
+  content     String   // Template with placeholders: {{title}}, {{excerpt}}, {{url}}
+  isDefault   Boolean  @default(false)
+  settings    Json?    // Platform-specific settings (hashtags, mentions, etc)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+  
+  @@index([platform])
+  @@index([isDefault])
+}
+
+// Sync history/logs
+model SocialMediaSync {
+  id          String   @id
+  operation   String   // post_created, post_published, post_deleted, retry
+  platform    String?
+  status      String   // success, failed, pending
+  payload     Json
+  response    Json?
+  error       String?
+  createdAt   DateTime @default(now())
+  
+  @@index([operation])
+  @@index([status])
+  @@index([createdAt])
+}
+
+// ============================================
+// ENUMS FOR SOCIAL MEDIA
+// ============================================
+
+enum SocialMediaStatus {
+  PENDING
+  SCHEDULED
+  PROCESSING
+  PUBLISHED
+  FAILED
+  CANCELLED
+}
+
+enum SocialMediaPlatform {
+  FACEBOOK
+  INSTAGRAM
+  YOUTUBE
+  TWITTER
+  LINKEDIN
+  TIKTOK
+  PINTEREST
+  ZALO
+}

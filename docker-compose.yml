@@ -1,0 +1,112 @@
+version: '3.9'
+services:
+  postgres:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: attendance
+      POSTGRES_PASSWORD: attendance
+      POSTGRES_DB: attendance
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - attendance-net
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U attendance']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - '5432:5432'
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --save 60 1 --loglevel warning
+    volumes:
+      - redis_data:/data
+    networks:
+      - attendance-net
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      API_PREFIX: api
+      FRONTEND_URL: http://localhost:3000
+      TYPEORM_SYNC: 'true'
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: attendance
+      DB_PASSWORD: attendance
+      DB_NAME: attendance
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      N8N_DASHBOARD_URL: http://n8n:5678
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - '4000:4000'
+    networks:
+      - attendance-net
+    volumes:
+      - backend_data:/app/data
+
+  frontend:
+    build:
+      context: ./conphung
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_API_BASE_URL: http://backend:4000/api
+      NEXT_PUBLIC_API_WITH_CREDENTIALS: 'false'
+    depends_on:
+      backend:
+        condition: service_started
+    ports:
+      - '3000:3000'
+    networks:
+      - attendance-net
+
+  n8n:
+    image: n8nio/n8n:latest
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      DB_TYPE: postgresdb
+      DB_POSTGRESDB_HOST: postgres
+      DB_POSTGRESDB_PORT: 5432
+      DB_POSTGRESDB_DATABASE: attendance
+      DB_POSTGRESDB_USER: attendance
+      DB_POSTGRESDB_PASSWORD: attendance
+      EXECUTIONS_PROCESS: main
+      GENERIC_TIMEZONE: Asia/Ho_Chi_Minh
+      N8N_PORT: 5678
+      N8N_PROTOCOL: http
+      N8N_HOST: localhost
+      WEBHOOK_URL: http://localhost:5678/
+    ports:
+      - '5678:5678'
+    networks:
+      - attendance-net
+    volumes:
+      - n8n_data:/home/node/.n8n
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  redis_data:
+  backend_data:
+  n8n_data:
+
+networks:
+  attendance-net:
+    driver: bridge

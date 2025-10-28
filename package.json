@@ -1,0 +1,19 @@
+{
+  "name": "fullconphung",
+  "version": "1.0.0",
+  "description": "Full Stack Attendance System",
+  "scripts": {
+    "dev": "./dev-start.sh",
+    "stop": "./dev-stop.sh",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "docker:rebuild": "docker-compose up -d --build",
+    "backend:dev": "cd backend && npm run start:dev",
+    "frontend:dev": "cd conphung && npm run dev",
+    "logs": "tail -f dev.log dev-frontend.log"
+  },
+  "dependencies": {
+    "swiper": "^12.0.2"
+  }
+}

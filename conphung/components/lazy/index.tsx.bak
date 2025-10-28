@@ -1,0 +1,99 @@
+'use client'
+
+import dynamic from 'next/dynamic'
+import { ComponentType, Suspense } from 'react'
+import { Loader2 } from 'lucide-react'
+
+/**
+ * Loading fallback component
+ */
+export function LoadingFallback({ message = 'Đang tải...' }: { message?: string }) {
+  return (
+    <div className="flex items-center justify-center p-8">
+      <div className="text-center">
+        <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
+        <p className="mt-2 text-sm text-muted-foreground">{message}</p>
+      </div>
+    </div>
+  )
+}
+
+/**
+ * Lazy load component with loading fallback
+ */
+export function lazyLoad<T extends ComponentType<any>>(
+  importFunc: () => Promise<{ default: T }>,
+  fallback?: React.ReactNode
+) {
+  const LazyComponent = dynamic(importFunc, {
+    loading: () => (fallback as React.ReactElement) || <LoadingFallback />,
+    ssr: false,
+  })
+  
+  return LazyComponent
+}
+
+/**
+ * Lazy load with SSR support
+ */
+export function lazyLoadSSR<T extends ComponentType<any>>(
+  importFunc: () => Promise<{ default: T }>,
+  fallback?: React.ReactNode
+) {
+  const LazyComponent = dynamic(importFunc, {
+    loading: () => fallback || <LoadingFallback />,
+    ssr: true,
+  })
+  
+  return LazyComponent
+}
+
+// Pre-configured lazy loaded components for common use cases
+
+/**
+ * Lazy load gallery/image viewer (heavy component)
+ */
+export const LazyGallery = lazyLoad(
+  () => import('@/components/homestays/HomestayGallery'),
+  <LoadingFallback message="Đang tải thư viện ảnh..." />
+)
+
+/**
+ * Lazy load booking form (complex form with validation)
+ */
+export const LazyBookingForm = lazyLoad(
+  () => import('@/components/homestays/BookingForm'),
+  <LoadingFallback message="Đang tải form đặt phòng..." />
+)
+
+/**
+ * Lazy load map component (requires external library)
+ */
+export const LazyMap = lazyLoad(
+  () => import('@/components/ui/map'),
+  <LoadingFallback message="Đang tải bản đồ..." />
+)
+
+/**
+ * Lazy load reviews section
+ */
+export const LazyReviews = lazyLoad(
+  () => import('@/components/reviews/ReviewsSection'),
+  <LoadingFallback message="Đang tải đánh giá..." />
+)
+
+/**
+ * Lazy load chart components (for admin dashboard)
+ */
+export const LazyChart = lazyLoad(
+  () => import('@/components/admin/charts'),
+  <LoadingFallback message="Đang tải biểu đồ..." />
+)
+
+/**
+ * Lazy load rich text editor (heavy component)
+ */
+export const LazyEditor = lazyLoad(
+  () => import('@/components/admin/editor'),
+  <LoadingFallback message="Đang tải trình soạn thảo..." />
+)

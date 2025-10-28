@@ -1,0 +1,102 @@
+'use client'
+
+import { Star } from 'lucide-react'
+import { cn } from '@/lib/utils'
+
+interface RatingStarsProps {
+  rating: number
+  maxRating?: number
+  size?: 'sm' | 'md' | 'lg'
+  interactive?: boolean
+  onRatingChange?: (rating: number) => void
+  className?: string
+}
+
+export function RatingStars({
+  rating,
+  maxRating = 5,
+  size = 'md',
+  interactive = false,
+  onRatingChange,
+  className,
+}: RatingStarsProps) {
+  const sizeClasses = {
+    sm: 'w-4 h-4',
+    md: 'w-5 h-5',
+    lg: 'w-6 h-6',
+  }
+
+  const handleClick = (value: number) => {
+    if (interactive && onRatingChange) {
+      onRatingChange(value)
+    }
+  }
+
+  return (
+    <div className={cn('flex items-center gap-1', className)}>
+      {Array.from({ length: maxRating }).map((_, index) => {
+        const starValue = index + 1
+        const isFilled = starValue <= rating
+        const isHalf = starValue - 0.5 === rating
+
+        return (
+          <button
+            key={index}
+            type="button"
+            onClick={() => handleClick(starValue)}
+            disabled={!interactive}
+            className={cn(
+              'relative',
+              interactive && 'cursor-pointer hover:scale-110 transition-transform',
+              !interactive && 'cursor-default'
+            )}
+          >
+            <Star
+              className={cn(
+                sizeClasses[size],
+                isFilled
+                  ? 'fill-yellow-400 text-yellow-400'
+                  : 'fill-gray-200 text-gray-200 dark:fill-gray-700 dark:text-gray-700'
+              )}
+            />
+            {isHalf && (
+              <div className="absolute inset-0 overflow-hidden" style={{ width: '50%' }}>
+                <Star className={cn(sizeClasses[size], 'fill-yellow-400 text-yellow-400')} />
+              </div>
+            )}
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
+interface RatingDisplayProps {
+  rating: number
+  totalReviews?: number
+  size?: 'sm' | 'md' | 'lg'
+  showNumber?: boolean
+  className?: string
+}
+
+export function RatingDisplay({
+  rating,
+  totalReviews,
+  size = 'md',
+  showNumber = true,
+  className,
+}: RatingDisplayProps) {
+  return (
+    <div className={cn('flex items-center gap-2', className)}>
+      <RatingStars rating={rating} size={size} />
+      {showNumber && (
+        <div className="flex items-center gap-1 text-sm">
+          <span className="font-semibold">{rating.toFixed(1)}</span>
+          {totalReviews !== undefined && (
+            <span className="text-gray-500">({totalReviews})</span>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}

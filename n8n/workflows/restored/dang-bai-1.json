@@ -1,0 +1,113 @@
+{
+  "createdAt": "2025-09-30T09:29:30.045Z",
+  "updatedAt": "2025-09-30T15:20:43.543Z",
+  "id": "yWjHQuLmwdoGHt5Z",
+  "name": "dang bai",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -288,
+        -80
+      ],
+      "id": "ff951bc4-cdd7-4985-b4fe-fb06092e10ce",
+      "name": "When clicking \u2018Execute workflow\u2019"
+    },
+    {
+      "parameters": {
+        "url": "http://127.0.0.1:1337/api/posts",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer 39feb67704906c5bfd7084c9653708aaf9a64938b9188a4ddfac4c1e27b9c4cbbdeb3aa3aca4801caa1bb03ccc134a0b5a26b875c4a8f3829f04849745d63f86a39c143bece0df57e2bc321df31010ec6b6cb9fab2cbc35c040d33170dee4fb08ef0b4d963dad39e3834afd5010869961ed305d9f5788095d366d2ee0da8f54b"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -80,
+        -80
+      ],
+      "id": "58799d24-311c-493f-a06a-74a624aa7487",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "authentication": "token",
+        "contentType": "post",
+        "entryId": "post"
+      },
+      "type": "n8n-nodes-base.strapi",
+      "typeVersion": 1,
+      "position": [
+        128,
+        -64
+      ],
+      "id": "89c2cce2-19f7-4d38-be33-a5f87ad4683b",
+      "name": "Get an entry",
+      "credentials": {
+        "strapiTokenApi": {
+          "id": "p79BA6DJCH5YZLOr",
+          "name": "Strapi account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When clicking \u2018Execute workflow\u2019": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Get an entry",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "34ae9d8c-5861-4e76-8da9-c0acc6495026",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-09-30T09:29:30.045Z",
+      "updatedAt": "2025-09-30T09:29:30.045Z",
+      "role": "workflow:owner",
+      "workflowId": "yWjHQuLmwdoGHt5Z",
+      "projectId": "ICp1M8C0gzC6bJJb"
+    }
+  ],
+  "tags": [],
+  "repo_owner": "aloatist",
+  "repo_name": "n8nvps",
+  "repo_path": "aloatist/n8nvps",
+  "drive_folder": "1xA6c0JY5ZpCuLzILbuv4tiP_pMCPWRCH"
+}

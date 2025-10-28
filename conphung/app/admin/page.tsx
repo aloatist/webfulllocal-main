@@ -1,0 +1,280 @@
+'use client';
+
+import { useCallback, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import {
+  Loader2,
+  LogOut,
+  DollarSign,
+  Calendar,
+  Users,
+  Star,
+  TrendingUp,
+  Home,
+  MapPin,
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useSession, signOut } from 'next-auth/react';
+import { StatCard } from '@/components/admin/analytics/stat-card';
+import { RevenueChart } from '@/components/admin/analytics/revenue-chart';
+import { BookingStats } from '@/components/admin/analytics/booking-stats';
+
+export default function AdminDashboardPage() {
+  const { data: session } = useSession();
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({
+    posts: 0,
+    categories: 0,
+    tags: 0,
+    media: 0,
+    totalRevenue: 0,
+    totalBookings: 0,
+    totalCustomers: 0,
+    avgRating: 0,
+    revenueChange: 0,
+    bookingsChange: 0,
+    customersChange: 0,
+  });
+  const [revenueData, setRevenueData] = useState<any[]>([]);
+  const [bookingData, setBookingData] = useState<any[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<string>('');
+  const router = useRouter();
+
+  const handleLogout = useCallback(async () => {
+    await signOut({ redirect: false });
+    router.push('/login');
+  }, [router]);
+
+  const loadStats = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await fetch('/api/admin/stats');
+      if (!response.ok) {
+        throw new Error('Failed to load dashboard statistics');
+      }
+      const data = await response.json();
+      setStats({
+        posts: data.posts ?? 0,
+        categories: data.categories ?? 0,
+        tags: data.tags ?? 0,
+        media: data.media ?? 0,
+        totalRevenue: data.totalRevenue ?? 0,
+        totalBookings: data.totalBookings ?? 0,
+        totalCustomers: data.totalCustomers ?? 0,
+        avgRating: data.avgRating ?? 0,
+        revenueChange: data.revenueChange ?? 0,
+        bookingsChange: data.bookingsChange ?? 0,
+        customersChange: data.customersChange ?? 0,
+      });
+      
+      // Set chart data
+      if (data.revenueData) {
+        setRevenueData(data.revenueData);
+      }
+      if (data.bookingData) {
+        setBookingData(data.bookingData);
+      }
+      
+      setLastUpdated(new Date().toLocaleString());
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load dashboard data');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadStats();
+  }, [loadStats]);
+
+  return (
+    <div className="mx-auto flex w-full flex-col gap-8 py-6 px-4 lg:px-8">
+      <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">Dashboard</p>
+          <h1 className="text-3xl font-semibold sm:text-4xl">Analytics & Overview</h1>
+          <p className="text-sm text-muted-foreground">
+            Theo dõi hiệu suất kinh doanh và quản lý hệ thống.
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-muted-foreground">
+            {session?.user?.email}
+          </span>
+          <Button variant="outline" onClick={handleLogout}>
+            <LogOut className="mr-2 h-4 w-4" />
+            Sign Out
+          </Button>
+        </div>
+      </header>
+
+      {loading ? (
+        <div className="flex items-center justify-center rounded-xl border border-border/80 bg-background/70 py-16">
+          <div className="flex items-center gap-3 text-muted-foreground">
+            <Loader2 className="h-6 w-6 animate-spin" />
+            <span>Loading dashboard data...</span>
+          </div>
+        </div>
+      ) : (
+        <>
+          {error && (
+            <div className="rounded-lg bg-destructive/10 p-4 text-destructive">
+              {error}
+            </div>
+          )}
+          
+          {/* Key Metrics */}
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <StatCard
+              title="Tổng doanh thu"
+              value={new Intl.NumberFormat('vi-VN', {
+                style: 'currency',
+                currency: 'VND',
+                notation: 'compact',
+              }).format(stats.totalRevenue)}
+              change={stats.revenueChange}
+              icon={DollarSign}
+              iconColor="text-green-600"
+              iconBgColor="bg-green-100"
+            />
+            <StatCard
+              title="Đặt phòng"
+              value={stats.totalBookings}
+              change={stats.bookingsChange}
+              icon={Calendar}
+              iconColor="text-blue-600"
+              iconBgColor="bg-blue-100"
+            />
+            <StatCard
+              title="Khách hàng"
+              value={stats.totalCustomers}
+              change={stats.customersChange}
+              icon={Users}
+              iconColor="text-purple-600"
+              iconBgColor="bg-purple-100"
+            />
+            <StatCard
+              title="Đánh giá TB"
+              value={`${stats.avgRating.toFixed(1)} ⭐`}
+              icon={Star}
+              iconColor="text-yellow-600"
+              iconBgColor="bg-yellow-100"
+            />
+          </div>
+
+          {/* Charts */}
+          <div className="grid gap-6 lg:grid-cols-2">
+            <RevenueChart data={revenueData} period="daily" />
+            <BookingStats data={bookingData} />
+          </div>
+
+          {/* Content Stats */}
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div className="rounded-xl border border-border/80 bg-background/70 p-6 shadow-sm">
+              <h3 className="font-semibold">Posts</h3>
+              <p className="mt-2 text-2xl font-bold">{stats.posts}</p>
+              <div className="mt-4">
+                <a href="/admin/posts" className="text-sm text-primary hover:underline">
+                  Manage Posts →
+                </a>
+              </div>
+            </div>
+            
+            <div className="rounded-xl border border-border/80 bg-background/70 p-6 shadow-sm">
+              <h3 className="font-semibold">Categories</h3>
+              <p className="mt-2 text-2xl font-bold">{stats.categories}</p>
+              <div className="mt-4">
+                <a href="/admin/categories" className="text-sm text-primary hover:underline">
+                  Manage Categories →
+                </a>
+              </div>
+            </div>
+            
+            <div className="rounded-xl border border-border/80 bg-background/70 p-6 shadow-sm">
+              <h3 className="font-semibold">Tags</h3>
+              <p className="mt-2 text-2xl font-bold">{stats.tags}</p>
+              <div className="mt-4">
+                <a href="/admin/tags" className="text-sm text-primary hover:underline">
+                  Manage Tags →
+                </a>
+              </div>
+            </div>
+            
+            <div className="rounded-xl border border-border/80 bg-background/70 p-6 shadow-sm">
+              <h3 className="font-semibold">Media</h3>
+              <p className="mt-2 text-2xl font-bold">{stats.media}</p>
+              <div className="mt-4">
+                <a href="/admin/media" className="text-sm text-primary hover:underline">
+                  Manage Media →
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid gap-6 lg:grid-cols-2">
+            <div className="rounded-xl border border-border/80 bg-background/70 p-6 shadow-sm">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-lg font-semibold">Quick Actions</h2>
+                  <p className="text-sm text-muted-foreground">Common tasks and content management.</p>
+                </div>
+              </div>
+              <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                <Button variant="outline" onClick={() => router.push('/admin/posts/new')}>
+                  Create New Post
+                </Button>
+                <Button variant="outline" onClick={() => router.push('/admin/media/upload')}>
+                  Upload Media
+                </Button>
+                <Button variant="outline" onClick={() => router.push('/admin/categories')}>
+                  Manage Categories
+                </Button>
+                <Button variant="outline" onClick={() => router.push('/admin/settings')}>
+                  Site Settings
+                </Button>
+              </div>
+            </div>
+
+            <div className="rounded-xl border border-border/80 bg-background/70 p-6 shadow-sm">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-lg font-semibold">System Status</h2>
+                  <p className="text-sm text-muted-foreground">Current system information and stats.</p>
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => void loadStats()}
+                  disabled={loading}
+                >
+                  Refresh
+                </Button>
+              </div>
+              <div className="mt-6">
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-sm font-medium">Environment</p>
+                    <p className="text-sm text-muted-foreground">Production</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium">Database Status</p>
+                    <p className="text-sm text-green-600">Connected</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium">Last Updated</p>
+                    <p className="text-sm text-muted-foreground">
+                      {lastUpdated || '—'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
