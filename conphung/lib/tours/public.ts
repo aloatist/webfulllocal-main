@@ -19,7 +19,7 @@ const publicTourInclude = {
   },
   Category: true,
   TourReview: {
-    where: { isPublished: true },
+    where: { status: 'APPROVED' },
     orderBy: { createdAt: 'desc' as const },
     take: 10,
   },

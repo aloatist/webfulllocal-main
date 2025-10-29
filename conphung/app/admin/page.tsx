@@ -52,7 +52,7 @@ export default function AdminDashboardPage() {
       setError(null);
       const response = await fetch('/api/admin/stats');
       if (!response.ok) {
-        throw new Error('Failed to load dashboard statistics');
+        throw new Error('Không thể tải thống kê bảng điều khiển');
       }
       const data = await response.json();
       setStats({
@@ -79,7 +79,7 @@ export default function AdminDashboardPage() {
       
       setLastUpdated(new Date().toLocaleString());
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load dashboard data');
+      setError(err instanceof Error ? err.message : 'Không thể tải dữ liệu bảng điều khiển');
     } finally {
       setLoading(false);
     }
@@ -93,8 +93,8 @@ export default function AdminDashboardPage() {
     <div className="mx-auto flex w-full flex-col gap-8 py-6 px-4 lg:px-8">
       <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">Dashboard</p>
-          <h1 className="text-3xl font-semibold sm:text-4xl">Analytics & Overview</h1>
+          <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">Bảng điều khiển</p>
+          <h1 className="text-3xl font-semibold sm:text-4xl">Phân tích & Tổng quan</h1>
           <p className="text-sm text-muted-foreground">
             Theo dõi hiệu suất kinh doanh và quản lý hệ thống.
           </p>
@@ -105,7 +105,7 @@ export default function AdminDashboardPage() {
           </span>
           <Button variant="outline" onClick={handleLogout}>
             <LogOut className="mr-2 h-4 w-4" />
-            Sign Out
+            Đăng xuất
           </Button>
         </div>
       </header>
@@ -114,7 +114,7 @@ export default function AdminDashboardPage() {
         <div className="flex items-center justify-center rounded-xl border border-border/80 bg-background/70 py-16">
           <div className="flex items-center gap-3 text-muted-foreground">
             <Loader2 className="h-6 w-6 animate-spin" />
-            <span>Loading dashboard data...</span>
+            <span>Đang tải dữ liệu bảng điều khiển...</span>
           </div>
         </div>
       ) : (
@@ -173,41 +173,41 @@ export default function AdminDashboardPage() {
           {/* Content Stats */}
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <div className="rounded-xl border border-border/80 bg-background/70 p-6 shadow-sm">
-              <h3 className="font-semibold">Posts</h3>
+              <h3 className="font-semibold">Bài viết</h3>
               <p className="mt-2 text-2xl font-bold">{stats.posts}</p>
               <div className="mt-4">
                 <a href="/admin/posts" className="text-sm text-primary hover:underline">
-                  Manage Posts →
+                  Quản lý bài viết →
                 </a>
               </div>
             </div>
             
             <div className="rounded-xl border border-border/80 bg-background/70 p-6 shadow-sm">
-              <h3 className="font-semibold">Categories</h3>
+              <h3 className="font-semibold">Danh mục</h3>
               <p className="mt-2 text-2xl font-bold">{stats.categories}</p>
               <div className="mt-4">
                 <a href="/admin/categories" className="text-sm text-primary hover:underline">
-                  Manage Categories →
+                  Quản lý danh mục →
                 </a>
               </div>
             </div>
             
             <div className="rounded-xl border border-border/80 bg-background/70 p-6 shadow-sm">
-              <h3 className="font-semibold">Tags</h3>
+              <h3 className="font-semibold">Thẻ</h3>
               <p className="mt-2 text-2xl font-bold">{stats.tags}</p>
               <div className="mt-4">
                 <a href="/admin/tags" className="text-sm text-primary hover:underline">
-                  Manage Tags →
+                  Quản lý thẻ →
                 </a>
               </div>
             </div>
             
             <div className="rounded-xl border border-border/80 bg-background/70 p-6 shadow-sm">
-              <h3 className="font-semibold">Media</h3>
+              <h3 className="font-semibold">Thư viện</h3>
               <p className="mt-2 text-2xl font-bold">{stats.media}</p>
               <div className="mt-4">
                 <a href="/admin/media" className="text-sm text-primary hover:underline">
-                  Manage Media →
+                  Quản lý thư viện →
                 </a>
               </div>
             </div>
@@ -217,22 +217,22 @@ export default function AdminDashboardPage() {
             <div className="rounded-xl border border-border/80 bg-background/70 p-6 shadow-sm">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-lg font-semibold">Quick Actions</h2>
-                  <p className="text-sm text-muted-foreground">Common tasks and content management.</p>
+                  <h2 className="text-lg font-semibold">Tác vụ nhanh</h2>
+                  <p className="text-sm text-muted-foreground">Các hành động phổ biến và quản lý nội dung.</p>
                 </div>
               </div>
               <div className="mt-6 grid gap-4 sm:grid-cols-2">
                 <Button variant="outline" onClick={() => router.push('/admin/posts/new')}>
-                  Create New Post
+                  Tạo bài viết mới
                 </Button>
                 <Button variant="outline" onClick={() => router.push('/admin/media/upload')}>
-                  Upload Media
+                  Tải lên thư viện
                 </Button>
                 <Button variant="outline" onClick={() => router.push('/admin/categories')}>
-                  Manage Categories
+                  Quản lý danh mục
                 </Button>
                 <Button variant="outline" onClick={() => router.push('/admin/settings')}>
-                  Site Settings
+                  Cài đặt website
                 </Button>
               </div>
             </div>
@@ -240,8 +240,8 @@ export default function AdminDashboardPage() {
             <div className="rounded-xl border border-border/80 bg-background/70 p-6 shadow-sm">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-lg font-semibold">System Status</h2>
-                  <p className="text-sm text-muted-foreground">Current system information and stats.</p>
+                  <h2 className="text-lg font-semibold">Trạng thái hệ thống</h2>
+                  <p className="text-sm text-muted-foreground">Thông tin và thống kê hệ thống hiện tại.</p>
                 </div>
                 <Button
                   type="button"
@@ -250,21 +250,21 @@ export default function AdminDashboardPage() {
                   onClick={() => void loadStats()}
                   disabled={loading}
                 >
-                  Refresh
+                  Làm mới
                 </Button>
               </div>
               <div className="mt-6">
                 <div className="space-y-4">
                   <div>
-                    <p className="text-sm font-medium">Environment</p>
+                    <p className="text-sm font-medium">Môi trường</p>
                     <p className="text-sm text-muted-foreground">Production</p>
                   </div>
                   <div>
-                    <p className="text-sm font-medium">Database Status</p>
-                    <p className="text-sm text-green-600">Connected</p>
+                    <p className="text-sm font-medium">Trạng thái cơ sở dữ liệu</p>
+                    <p className="text-sm text-green-600">Đã kết nối</p>
                   </div>
                   <div>
-                    <p className="text-sm font-medium">Last Updated</p>
+                    <p className="text-sm font-medium">Cập nhật lần cuối</p>
                     <p className="text-sm text-muted-foreground">
                       {lastUpdated || '—'}
                     </p>

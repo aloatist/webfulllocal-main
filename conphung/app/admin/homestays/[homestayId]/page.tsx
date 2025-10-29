@@ -62,6 +62,7 @@ type AvailabilityBlock = {
 type HomestayFormState = {
   title: string;
   slug: string;
+  subtitle?: string;
   summary: string;
   description: string;
   status: 'DRAFT' | 'PUBLISHED';
@@ -82,17 +83,30 @@ type HomestayFormState = {
     | 'TENT'
     | 'OTHER';
   addressLine1: string;
+  addressLine2?: string;
   city: string;
+  state?: string;
   country: string;
+  postalCode?: string;
+  latitude?: number;
+  longitude?: number;
   maxGuests: number;
   bedrooms: number;
   bathrooms: number;
   basePrice: number;
   weekendPrice: string;
   currency: string;
+  minNights?: number;
+  maxNights?: number;
+  checkInTime?: string;
+  checkOutTime?: string;
+  cleaningFee?: number;
+  securityDeposit?: number;
+  cancellationPolicy?: string;
   isInstantBook: boolean;
   isFeatured: boolean;
   isVerified: boolean;
+  isSuperhost?: boolean;
   heroImageUrl: string;
   galleryImageUrls: string[];
   amenities: string[];
@@ -106,22 +120,36 @@ type HomestayEditorData = {
   id: string;
   title: string;
   slug: string;
+  subtitle?: string | null;
   summary?: string | null;
   description?: string | null;
   status?: 'DRAFT' | 'PUBLISHED';
   type?: 'ENTIRE_PLACE' | 'PRIVATE_ROOM' | 'SHARED_ROOM';
   category?: HomestayFormState['category'];
   addressLine1?: string | null;
+  addressLine2?: string | null;
   city?: string | null;
+  state?: string | null;
   country?: string | null;
+  postalCode?: string | null;
+  latitude?: string | null;
+  longitude?: string | null;
   maxGuests?: number | null;
   bedrooms?: number | null;
   bathrooms?: number | null;
   basePrice?: string | null;
   currency?: string | null;
+  minNights?: number | null;
+  maxNights?: number | null;
+  checkInTime?: string | null;
+  checkOutTime?: string | null;
+  cleaningFee?: string | null;
+  securityDeposit?: string | null;
+  cancellationPolicy?: string | null;
   isInstantBook?: boolean | null;
   isFeatured?: boolean | null;
   isVerified?: boolean | null;
+  isSuperhost?: boolean | null;
   heroImageUrl?: string | null;
   galleryImageUrls?: string[] | any;
   amenities?: string[];
@@ -260,23 +288,37 @@ const buildInitialFormState = (initial?: HomestayEditorData | null): HomestayFor
   return {
     title: initial?.title ?? '',
     slug: initial?.slug ?? '',
+    subtitle: initial?.subtitle ?? undefined,
     summary: initial?.summary ?? '',
     description: initial?.description ?? '',
     status: initial?.status ?? 'DRAFT',
     type: initial?.type ?? 'ENTIRE_PLACE',
     category: initial?.category ?? 'OTHER',
     addressLine1: initial?.addressLine1 ?? '',
+    addressLine2: initial?.addressLine2 ?? undefined,
     city: initial?.city ?? '',
+    state: initial?.state ?? undefined,
     country: initial?.country ?? '',
+    postalCode: initial?.postalCode ?? undefined,
+    latitude: initial?.latitude ? Number(initial.latitude) : undefined,
+    longitude: initial?.longitude ? Number(initial.longitude) : undefined,
     maxGuests: initial?.maxGuests ?? 2,
     bedrooms: initial?.bedrooms ?? 1,
     bathrooms: initial?.bathrooms ?? 1,
     basePrice: initial?.basePrice ? Number(initial.basePrice) : 1200000,
     weekendPrice: '',
+    minNights: initial?.minNights ?? undefined,
+    maxNights: initial?.maxNights ?? undefined,
+    checkInTime: initial?.checkInTime ?? undefined,
+    checkOutTime: initial?.checkOutTime ?? undefined,
+    cleaningFee: initial?.cleaningFee ? Number(initial.cleaningFee) : undefined,
+    securityDeposit: initial?.securityDeposit ? Number(initial.securityDeposit) : undefined,
+    cancellationPolicy: initial?.cancellationPolicy ?? undefined,
     currency: initial?.currency ?? 'VND',
     isInstantBook: initial?.isInstantBook ?? false,
     isFeatured: initial?.isFeatured ?? false,
     isVerified: initial?.isVerified ?? false,
+    isSuperhost: initial?.isSuperhost ?? false,
     heroImageUrl: initial?.heroImageUrl ?? '',
     galleryImageUrls: galleryUrls,
     amenities: Array.isArray(initial?.amenities) ? initial.amenities : [],
@@ -866,23 +908,37 @@ function HomestayEditor({
     const payload = {
       title: form.title.trim(),
       slug: slugValue,
+      subtitle: form.subtitle?.trim() || undefined,
       summary: form.summary.trim() || undefined,
       description: form.description.trim() || undefined,
       status: targetStatus,
       type: form.type,
       category: form.category,
       addressLine1: form.addressLine1.trim() || undefined,
+      addressLine2: form.addressLine2?.trim() || undefined,
       city: form.city.trim() || undefined,
+      state: form.state?.trim() || undefined,
       country: form.country.trim() || undefined,
+      postalCode: form.postalCode?.trim() || undefined,
+      latitude: form.latitude || undefined,
+      longitude: form.longitude || undefined,
       maxGuests: Number.isFinite(form.maxGuests) ? form.maxGuests : undefined,
       bedrooms: Number.isFinite(form.bedrooms) ? form.bedrooms : undefined,
       bathrooms: Number.isFinite(form.bathrooms) ? form.bathrooms : undefined,
       basePrice: Number.isFinite(form.basePrice) ? form.basePrice : undefined,
       weekendPrice: Number.isFinite(weekendPriceValue) && weekendPriceValue > 0 ? weekendPriceValue : undefined,
       currency: form.currency.trim() || undefined,
+      minNights: form.minNights || undefined,
+      maxNights: form.maxNights || undefined,
+      checkInTime: form.checkInTime?.trim() || undefined,
+      checkOutTime: form.checkOutTime?.trim() || undefined,
+      cleaningFee: form.cleaningFee || undefined,
+      securityDeposit: form.securityDeposit || undefined,
+      cancellationPolicy: form.cancellationPolicy || undefined,
       isInstantBook: form.isInstantBook,
       isFeatured: form.isFeatured,
       isVerified: form.isVerified,
+      isSuperhost: form.isSuperhost || false,
       heroImageUrl: form.heroImageUrl.trim() || undefined,
       galleryImageUrls: form.galleryImageUrls,
       amenities: form.amenities,
@@ -900,7 +956,23 @@ function HomestayEditor({
               status: room.status,
             }))
           : undefined,
+      availabilityBlocks:
+        availabilityBlocks.length > 0
+          ? availabilityBlocks.map((block) => ({
+              startDate: block.startDate,
+              endDate: block.endDate,
+              notes: block.notes || '',
+            }))
+          : undefined,
     };
+
+    // 🔍 DEBUG: Check payload before sending
+    console.log('🔍 PAYLOAD DEBUG:', {
+      hasAvailabilityBlocks: !!payload.availabilityBlocks,
+      blockCount: payload.availabilityBlocks?.length || 0,
+      blocks: payload.availabilityBlocks,
+      availabilityBlocksState: availabilityBlocks,
+    });
 
     try {
       // Determine API endpoint and method based on mode

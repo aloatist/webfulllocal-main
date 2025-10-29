@@ -50,7 +50,7 @@ export function CategoryForm({
     try {
       await onSubmit(formData);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save category');
+      setError(err instanceof Error ? err.message : 'Không thể lưu danh mục');
     } finally {
       setSaving(false);
     }
@@ -71,7 +71,7 @@ export function CategoryForm({
       )}
 
       <div className="space-y-2">
-        <Label htmlFor="name">Name</Label>
+        <Label htmlFor="name">Tên danh mục</Label>
         <Input
           id="name"
           value={formData.name}
@@ -85,36 +85,36 @@ export function CategoryForm({
                 .replace(/^-|-$/g, ''),
             }))
           }
-          placeholder="Category name"
+          placeholder="Nhập tên danh mục"
         />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="slug">Slug</Label>
+        <Label htmlFor="slug">Đường dẫn (slug)</Label>
         <Input
           id="slug"
           value={formData.slug}
           onChange={(e) =>
             setFormData((prev) => ({ ...prev, slug: e.target.value }))
           }
-          placeholder="category-slug"
+          placeholder="danh-muc"
         />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="description">Description</Label>
+        <Label htmlFor="description">Mô tả</Label>
         <Textarea
           id="description"
           value={formData.description}
           onChange={(e) =>
             setFormData((prev) => ({ ...prev, description: e.target.value }))
           }
-          placeholder="Category description (optional)"
+          placeholder="Mô tả danh mục (không bắt buộc)"
         />
       </div>
 
       <div className="space-y-2">
-        <Label>Parent Category</Label>
+        <Label>Danh mục cha</Label>
         <Select
           value={formData.parentId || ''}
           onValueChange={(value) =>
@@ -125,10 +125,10 @@ export function CategoryForm({
           }
         >
           <SelectTrigger>
-            <SelectValue placeholder="Select a parent category (optional)" />
+            <SelectValue placeholder="Chọn danh mục cha (không bắt buộc)" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">None</SelectItem>
+            <SelectItem value="">Không có</SelectItem>
             {availableParents.map((category) => (
               <SelectItem key={category.id} value={category.id}>
                 {category.name}
@@ -145,10 +145,10 @@ export function CategoryForm({
           onClick={onCancel}
           disabled={saving}
         >
-          Cancel
+          Hủy
         </Button>
         <Button type="submit" disabled={saving}>
-          {saving ? 'Saving...' : initialData ? 'Update' : 'Create'}
+          {saving ? 'Đang lưu...' : initialData ? 'Cập nhật' : 'Tạo mới'}
         </Button>
       </div>
     </form>

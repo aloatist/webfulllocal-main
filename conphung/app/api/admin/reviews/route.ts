@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth/auth-options';
+import { prisma } from '@/lib/prisma';
 
 export async function GET(request: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -13,83 +14,103 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const status = searchParams.get('status');
 
-    // Mock data - replace with actual database queries
-    const mockReviews = [
-      {
-        id: '1',
-        rating: 5,
-        comment: 'Dịch vụ tuyệt vời! Homestay rất đẹp và sạch sẽ.',
-        status: 'PENDING',
-        createdAt: new Date().toISOString(),
-        user: {
-          name: 'Nguyễn Văn A',
-          email: 'nguyenvana@example.com',
-        },
-        booking: {
-          homestay: {
-            title: 'Villa Đà Lạt View Đẹp',
+    // Query both tour and homestay reviews
+    const [tourReviews, homestayReviews] = await Promise.all([
+      // Tour reviews
+      prisma.tourReview.findMany({
+        where: status && status !== 'all' ? {
+          status: status as any,
+        } : undefined,
+        include: {
+          Tour: {
+            select: {
+              id: true,
+              title: true,
+              slug: true,
+            },
           },
         },
-      },
-      {
-        id: '2',
-        rating: 4,
-        comment: 'Tour rất hay, hướng dẫn viên nhiệt tình.',
-        status: 'APPROVED',
-        createdAt: new Date(Date.now() - 86400000).toISOString(),
-        user: {
-          name: 'Trần Thị B',
-          email: 'tranthib@example.com',
+        orderBy: {
+          createdAt: 'desc',
         },
-        booking: {
-          tour: {
-            title: 'Tour Hà Nội - Hạ Long 3N2Đ',
+      }),
+      // Homestay reviews
+      prisma.homestayReview.findMany({
+        where: status && status !== 'all' ? {
+          status: status as any,
+        } : undefined,
+        include: {
+          User: {
+            select: {
+              name: true,
+              email: true,
+            },
+          },
+          Homestay: {
+            select: {
+              id: true,
+              title: true,
+              slug: true,
+            },
           },
         },
-        adminResponse: 'Cảm ơn bạn đã đánh giá! Chúng tôi rất vui khi bạn hài lòng.',
-      },
-      {
-        id: '3',
-        rating: 3,
-        comment: 'Tạm được, nhưng giá hơi cao.',
-        status: 'APPROVED',
-        createdAt: new Date(Date.now() - 172800000).toISOString(),
-        user: {
-          name: 'Lê Văn C',
-          email: 'levanc@example.com',
+        orderBy: {
+          createdAt: 'desc',
         },
-        booking: {
-          homestay: {
-            title: 'Căn hộ Vũng Tàu gần biển',
-          },
-        },
-      },
-      {
-        id: '4',
-        rating: 2,
-        comment: 'Không như mô tả, thất vọng.',
-        status: 'REJECTED',
-        createdAt: new Date(Date.now() - 259200000).toISOString(),
-        user: {
-          name: 'Phạm Thị D',
-          email: 'phamthid@example.com',
-        },
-        booking: {
-          tour: {
-            title: 'Tour Phú Quốc 4N3Đ',
-          },
-        },
-      },
-    ];
+      }),
+    ]);
 
-    let filteredReviews = mockReviews;
-    if (status && status !== 'all') {
-      filteredReviews = mockReviews.filter((r) => r.status === status);
-    }
+    // Format tour reviews
+    const formattedTourReviews = tourReviews.map(review => ({
+      id: review.id,
+      rating: review.rating,
+      comment: review.content || '',
+      status: review.status,
+      createdAt: review.createdAt.toISOString(),
+      user: {
+        name: review.fullName,
+        email: 'N/A',
+      },
+      booking: {
+        tour: {
+          id: review.Tour.id,
+          title: review.Tour.title,
+          slug: review.Tour.slug,
+        },
+      },
+      adminResponse: review.adminResponse,
+      type: 'tour',
+    }));
+
+    // Format homestay reviews
+    const formattedHomestayReviews = homestayReviews.map(review => ({
+      id: review.id,
+      rating: Number(review.overallRating),
+      comment: review.content || '',
+      status: review.status,
+      createdAt: review.createdAt.toISOString(),
+      user: {
+        name: review.User.name || 'N/A',
+        email: review.User.email || 'N/A',
+      },
+      booking: {
+        homestay: {
+          id: review.Homestay.id,
+          title: review.Homestay.title,
+          slug: review.Homestay.slug,
+        },
+      },
+      adminResponse: review.hostResponse,
+      type: 'homestay',
+    }));
+
+    // Combine and sort by date
+    const allReviews = [...formattedTourReviews, ...formattedHomestayReviews]
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
     return NextResponse.json({
-      reviews: filteredReviews,
-      total: filteredReviews.length,
+      reviews: allReviews,
+      total: allReviews.length,
     });
   } catch (error) {
     console.error('Error loading reviews:', error);

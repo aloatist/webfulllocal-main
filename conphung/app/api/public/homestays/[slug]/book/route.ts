@@ -112,7 +112,26 @@ export async function POST(
       }
     }
 
-    // Check availability (simplified - you may want more complex logic)
+    // Check 1: Blocked dates in HomestayAvailability
+    const blockedDates = await prisma.homestayAvailability.count({
+      where: {
+        homestayId: homestay.id,
+        status: 'BLOCKED',
+        date: {
+          gte: checkInDate,
+          lt: checkOutDate, // Check-out date is not included (guest leaves that day)
+        },
+      },
+    });
+
+    if (blockedDates > 0) {
+      return NextResponse.json(
+        { error: 'Một số ngày trong khoảng thời gian này đã bị chặn. Vui lòng chọn ngày khác.' },
+        { status: 400 }
+      );
+    }
+
+    // Check 2: Existing bookings
     const existingBookings = await prisma.homestayBooking.count({
       where: {
         homestayId: homestay.id,

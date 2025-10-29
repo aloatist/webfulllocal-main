@@ -89,7 +89,7 @@ export function RevenueChart({ data, period = 'daily' }: RevenueChartProps) {
             <Area
               type="monotone"
               dataKey="tours"
-              name="Tours"
+              name="Tour du lịch"
               stroke="#3b82f6"
               fillOpacity={1}
               fill="url(#colorTours)"
@@ -97,7 +97,7 @@ export function RevenueChart({ data, period = 'daily' }: RevenueChartProps) {
             <Area
               type="monotone"
               dataKey="homestays"
-              name="Homestays"
+              name="Homestay"
               stroke="#10b981"
               fillOpacity={1}
               fill="url(#colorHomestays)"

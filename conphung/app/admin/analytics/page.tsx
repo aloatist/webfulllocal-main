@@ -48,12 +48,12 @@ export default function AnalyticsPage() {
           total: 125430000,
           change: 12.5,
           chartData: [
-            { month: 'Jan', amount: 8500000 },
-            { month: 'Feb', amount: 9200000 },
-            { month: 'Mar', amount: 10100000 },
-            { month: 'Apr', amount: 11500000 },
-            { month: 'May', amount: 13200000 },
-            { month: 'Jun', amount: 15430000 },
+            { month: 'Th1', amount: 8500000 },
+            { month: 'Th2', amount: 9200000 },
+            { month: 'Th3', amount: 10100000 },
+            { month: 'Th4', amount: 11500000 },
+            { month: 'Th5', amount: 13200000 },
+            { month: 'Th6', amount: 15430000 },
           ],
         },
         bookings: {
@@ -81,7 +81,7 @@ export default function AnalyticsPage() {
       <div className="flex h-96 items-center justify-center">
         <div className="text-center">
           <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-t-2 border-primary"></div>
-          <p className="mt-4 text-sm text-muted-foreground">Loading analytics...</p>
+          <p className="mt-4 text-sm text-muted-foreground">Đang tải dữ liệu phân tích...</p>
         </div>
       </div>
     )
@@ -92,9 +92,9 @@ export default function AnalyticsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Analytics Dashboard</h1>
+        <h1 className="text-3xl font-bold">Bảng điều khiển phân tích</h1>
         <p className="text-muted-foreground">
-          Track your business performance and insights
+          Theo dõi hiệu suất kinh doanh và các chỉ số quan trọng
         </p>
       </div>
 
@@ -102,7 +102,7 @@ export default function AnalyticsPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
+            <CardTitle className="text-sm font-medium">Tổng doanh thu</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -110,46 +110,46 @@ export default function AnalyticsPage() {
               {data.revenue.total.toLocaleString('vi-VN')} ₫
             </div>
             <p className="text-xs text-muted-foreground">
-              <span className="text-green-600">+{data.revenue.change}%</span> from last month
+              <span className="text-green-600">+{data.revenue.change}%</span> so với tháng trước
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Bookings</CardTitle>
+            <CardTitle className="text-sm font-medium">Tổng lượt đặt</CardTitle>
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{data.bookings.total}</div>
             <p className="text-xs text-muted-foreground">
-              <span className="text-green-600">+{data.bookings.change}%</span> from last month
+              <span className="text-green-600">+{data.bookings.change}%</span> so với tháng trước
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Customers</CardTitle>
+            <CardTitle className="text-sm font-medium">Tổng khách hàng</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{data.customers.total}</div>
             <p className="text-xs text-muted-foreground">
-              {data.customers.new} new this month
+              {data.customers.new} khách mới trong tháng
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Average Rating</CardTitle>
+            <CardTitle className="text-sm font-medium">Điểm đánh giá trung bình</CardTitle>
             <Star className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{data.ratings.average}/5.0</div>
             <p className="text-xs text-muted-foreground">
-              From {data.ratings.total} reviews
+              Từ {data.ratings.total} đánh giá
             </p>
           </CardContent>
         </Card>
@@ -159,11 +159,11 @@ export default function AnalyticsPage() {
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <BarChart3 className="h-5 w-5" />
-              Revenue Trend
-            </CardTitle>
-            <CardDescription>Monthly revenue over the last 6 months</CardDescription>
+          <CardTitle className="flex items-center gap-2">
+            <BarChart3 className="h-5 w-5" />
+            Xu hướng doanh thu
+          </CardTitle>
+          <CardDescription>Doanh thu 6 tháng gần nhất</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -191,18 +191,18 @@ export default function AnalyticsPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Booking Distribution</CardTitle>
-            <CardDescription>Tours vs Homestays bookings</CardDescription>
+            <CardTitle>Phân bổ đặt chỗ</CardTitle>
+            <CardDescription>So sánh đặt tour và homestay</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div>
               <div className="mb-2 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <MapPin className="h-4 w-4 text-blue-500" />
-                  <span className="font-medium">Tours</span>
+                  <span className="font-medium">Tour du lịch</span>
                 </div>
                 <span className="text-sm text-muted-foreground">
-                  {data.bookings.tours} bookings
+                  {data.bookings.tours} lượt đặt
                 </span>
               </div>
               <div className="h-3 rounded-full bg-secondary">
@@ -214,7 +214,7 @@ export default function AnalyticsPage() {
                 />
               </div>
               <p className="mt-1 text-xs text-muted-foreground">
-                {((data.bookings.tours / data.bookings.total) * 100).toFixed(1)}% of total
+                {((data.bookings.tours / data.bookings.total) * 100).toFixed(1)}% tổng lượt
               </p>
             </div>
 
@@ -222,10 +222,10 @@ export default function AnalyticsPage() {
               <div className="mb-2 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Home className="h-4 w-4 text-green-500" />
-                  <span className="font-medium">Homestays</span>
+                  <span className="font-medium">Homestay</span>
                 </div>
                 <span className="text-sm text-muted-foreground">
-                  {data.bookings.homestays} bookings
+                  {data.bookings.homestays} lượt đặt
                 </span>
               </div>
               <div className="h-3 rounded-full bg-secondary">
@@ -237,18 +237,17 @@ export default function AnalyticsPage() {
                 />
               </div>
               <p className="mt-1 text-xs text-muted-foreground">
-                {((data.bookings.homestays / data.bookings.total) * 100).toFixed(1)}% of total
+                {((data.bookings.homestays / data.bookings.total) * 100).toFixed(1)}% tổng lượt
               </p>
             </div>
 
             <div className="rounded-lg bg-muted p-4">
               <div className="mb-2 flex items-center gap-2">
                 <TrendingUp className="h-4 w-4 text-primary" />
-                <span className="font-semibold">Insight</span>
+                <span className="font-semibold">Nhận định</span>
               </div>
               <p className="text-sm text-muted-foreground">
-                Tours are performing {((data.bookings.tours / data.bookings.homestays - 1) * 100).toFixed(1)}% 
-                better than homestays this month. Consider running promotions for homestays.
+                Tour đang đạt hiệu quả cao hơn {((data.bookings.tours / data.bookings.homestays - 1) * 100).toFixed(1)}% so với homestay trong tháng này. Hãy cân nhắc chạy khuyến mãi cho homestay.
               </p>
             </div>
           </CardContent>
@@ -258,27 +257,27 @@ export default function AnalyticsPage() {
       {/* Customer Stats */}
       <Card>
         <CardHeader>
-          <CardTitle>Customer Insights</CardTitle>
-          <CardDescription>New vs returning customers</CardDescription>
+          <CardTitle>Thông tin khách hàng</CardTitle>
+          <CardDescription>Khách mới và khách quay lại</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-3">
             <div className="space-y-2">
-              <p className="text-sm font-medium text-muted-foreground">Total Customers</p>
+              <p className="text-sm font-medium text-muted-foreground">Tổng khách hàng</p>
               <p className="text-3xl font-bold">{data.customers.total}</p>
             </div>
             <div className="space-y-2">
-              <p className="text-sm font-medium text-muted-foreground">New Customers</p>
+              <p className="text-sm font-medium text-muted-foreground">Khách mới</p>
               <p className="text-3xl font-bold text-green-600">{data.customers.new}</p>
               <p className="text-xs text-muted-foreground">
-                {((data.customers.new / data.customers.total) * 100).toFixed(1)}% of total
+                {((data.customers.new / data.customers.total) * 100).toFixed(1)}% tổng số
               </p>
             </div>
             <div className="space-y-2">
-              <p className="text-sm font-medium text-muted-foreground">Returning Customers</p>
+              <p className="text-sm font-medium text-muted-foreground">Khách quay lại</p>
               <p className="text-3xl font-bold text-blue-600">{data.customers.returning}</p>
               <p className="text-xs text-muted-foreground">
-                {((data.customers.returning / data.customers.total) * 100).toFixed(1)}% of total
+                {((data.customers.returning / data.customers.total) * 100).toFixed(1)}% tổng số
               </p>
             </div>
           </div>

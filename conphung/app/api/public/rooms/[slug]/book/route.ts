@@ -52,6 +52,28 @@ export async function POST(
       );
     }
 
+    // Check for blocked dates before creating booking
+    if (checkIn && checkOut) {
+      const blockedDates = await prisma.homestayAvailability.count({
+        where: {
+          homestayId: room.homestayId,
+          roomId: room.id,
+          status: 'BLOCKED',
+          date: {
+            gte: checkIn,
+            lt: checkOut,
+          },
+        },
+      });
+
+      if (blockedDates > 0) {
+        return NextResponse.json(
+          { error: 'Một số ngày trong khoảng thời gian này đã bị chặn. Vui lòng chọn ngày khác.' },
+          { status: 400 }
+        );
+      }
+    }
+
     const bookingReference = `HS-${Date.now()}`;
 
     const booking = await prisma.$transaction(async (tx) => {

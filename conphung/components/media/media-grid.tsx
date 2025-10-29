@@ -47,7 +47,7 @@ export function MediaGrid({ items, onSelect, onDelete, onUpdate, selectedIds }: 
   const handleDelete = async (id: string) => {
     if (!onDelete) return;
     
-    if (window.confirm('Are you sure you want to delete this media?')) {
+    if (window.confirm('Bạn có chắc muốn xóa hình ảnh này?')) {
       await onDelete(id);
     }
   };
@@ -82,7 +82,7 @@ export function MediaGrid({ items, onSelect, onDelete, onUpdate, selectedIds }: 
                   size="sm"
                   onClick={() => onSelect(media)}
                 >
-                  Select
+                  Chọn
                 </Button>
               )}
               {onUpdate && (
@@ -119,16 +119,16 @@ export function MediaGrid({ items, onSelect, onDelete, onUpdate, selectedIds }: 
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Edit Media</DialogTitle>
+            <DialogTitle>Chỉnh sửa media</DialogTitle>
             <DialogDescription>
-              Update the alt text and caption for this media.
+              Cập nhật văn bản thay thế và chú thích cho hình ảnh.
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-4">
             <div className="space-y-2">
               <label htmlFor="alt" className="text-sm font-medium">
-                Alt Text
+                Văn bản thay thế
               </label>
               <input
                 id="alt"
@@ -140,7 +140,7 @@ export function MediaGrid({ items, onSelect, onDelete, onUpdate, selectedIds }: 
 
             <div className="space-y-2">
               <label htmlFor="caption" className="text-sm font-medium">
-                Caption
+                Chú thích
               </label>
               <textarea
                 id="caption"
@@ -160,10 +160,10 @@ export function MediaGrid({ items, onSelect, onDelete, onUpdate, selectedIds }: 
                 setSelectedMedia(null);
               }}
             >
-              Cancel
+              Hủy
             </Button>
             <Button onClick={handleUpdate}>
-              Save Changes
+              Lưu thay đổi
             </Button>
           </DialogFooter>
         </DialogContent>

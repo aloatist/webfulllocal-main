@@ -44,7 +44,7 @@ export function AdminHeader() {
     <header className="fixed left-64 right-0 top-0 z-30 h-16 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="flex h-full items-center justify-between px-6">
         <div className="flex items-center gap-4">
-          <h2 className="text-lg font-semibold">Dashboard</h2>
+          <h2 className="text-lg font-semibold">Bảng điều khiển</h2>
         </div>
 
         <div className="flex items-center gap-3">
@@ -73,10 +73,10 @@ export function AdminHeader() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-80">
-              <DropdownMenuLabel>Notifications</DropdownMenuLabel>
+              <DropdownMenuLabel>Thông báo</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <div className="p-4 text-center text-sm text-muted-foreground">
-                No new notifications
+                Chưa có thông báo mới
               </div>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -93,10 +93,10 @@ export function AdminHeader() {
                 </Avatar>
                 <div className="hidden flex-col items-start md:flex">
                   <span className="text-sm font-medium">
-                    {session?.user?.name || 'User'}
+                    {session?.user?.name || 'Người dùng'}
                   </span>
                   <span className="text-xs text-muted-foreground">
-                    {session?.user?.role || 'Member'}
+                    {session?.user?.role || 'Thành viên'}
                   </span>
                 </div>
               </Button>
@@ -104,7 +104,7 @@ export function AdminHeader() {
             <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuLabel>
                 <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium">{session?.user?.name || 'User'}</p>
+                  <p className="text-sm font-medium">{session?.user?.name || 'Người dùng'}</p>
                   <p className="text-xs text-muted-foreground">
                     {session?.user?.email}
                   </p>
@@ -113,16 +113,16 @@ export function AdminHeader() {
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => router.push('/admin/profile')}>
                 <User className="mr-2 h-4 w-4" />
-                <span>Profile</span>
+                <span>Thông tin cá nhân</span>
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => router.push('/admin/settings')}>
                 <Settings className="mr-2 h-4 w-4" />
-                <span>Settings</span>
+                <span>Cài đặt</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogout} className="text-destructive">
                 <LogOut className="mr-2 h-4 w-4" />
-                <span>Log out</span>
+                <span>Đăng xuất</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

@@ -147,6 +147,11 @@ export const createHomestaySchema = z.object({
   isSuperhost: z.boolean().optional(),
   rooms: z.array(homestayRoomSchema).optional(),
   media: z.array(mediaSchema).optional(),
+  availabilityBlocks: z.array(z.object({
+    startDate: z.string(),
+    endDate: z.string(),
+    notes: z.string().optional(),
+  })).optional(),
 })
 
 export const updateHomestaySchema = createHomestaySchema.extend({

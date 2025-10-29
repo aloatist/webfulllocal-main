@@ -42,14 +42,14 @@ export function MediaUpload({ onUpload, maxFiles = 1, acceptedTypes = ['image/*'
       });
 
       if (!response.ok) {
-        throw new Error('Upload failed');
+        throw new Error('Tải lên thất bại');
       }
 
       const media = (await response.json()) as MediaItem;
       onUpload(media);
       setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to upload file');
+      setError(err instanceof Error ? err.message : 'Không thể tải lên tệp');
       if (preview) {
         URL.revokeObjectURL(preview);
       }
@@ -94,13 +94,13 @@ export function MediaUpload({ onUpload, maxFiles = 1, acceptedTypes = ['image/*'
         {uploading ? (
           <div className="flex flex-col items-center space-y-2">
             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-            <p className="text-sm text-muted-foreground">Uploading...</p>
+            <p className="text-sm text-muted-foreground">Đang tải lên...</p>
           </div>
         ) : preview ? (
           <div className="relative mx-auto h-48 w-full max-w-xs">
             <Image
               src={preview}
-              alt="Preview"
+              alt="Xem trước"
               fill
               className="rounded-lg object-cover"
               sizes="(max-width: 640px) 100vw, 320px"
@@ -122,8 +122,8 @@ export function MediaUpload({ onUpload, maxFiles = 1, acceptedTypes = ['image/*'
             <Upload className="h-8 w-8 text-muted-foreground" />
             <p className="text-sm text-muted-foreground">
               {isDragActive
-                ? 'Drop the file here'
-                : 'Drag & drop a file here, or click to select'}
+                ? 'Thả tệp vào đây'
+                : 'Kéo thả tệp vào đây hoặc bấm để chọn'}
             </p>
           </div>
         )}

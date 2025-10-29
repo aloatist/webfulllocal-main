@@ -39,26 +39,26 @@ interface NavItem {
 
 const navigation: NavItem[] = [
   {
-    title: 'Dashboard',
+    title: 'Tổng quan',
     href: '/admin',
     icon: LayoutDashboard,
   },
   {
-    title: 'Content',
+    title: 'Nội dung',
     icon: FileText,
     children: [
       {
-        title: 'Posts',
+        title: 'Bài viết',
         href: '/admin/posts',
         icon: FileText,
       },
       {
-        title: 'Categories',
+        title: 'Danh mục',
         href: '/admin/categories',
         icon: FolderTree,
       },
       {
-        title: 'Tags',
+        title: 'Thẻ tag',
         href: '/admin/tags',
         icon: Tags,
       },
@@ -69,20 +69,16 @@ const navigation: NavItem[] = [
     icon: MapPin,
     children: [
       {
-        title: 'All Tours',
+        title: 'Tất cả Tours',
         href: '/admin/tours',
         icon: MapPin,
       },
       {
-        title: 'Bookings',
+        title: 'Đặt tour',
         href: '/admin/bookings',
         icon: Calendar,
       },
-      {
-        title: 'Reviews',
-        href: '/admin/tours/reviews',
-        icon: Star,
-      },
+      
     ],
   },
   {
@@ -90,30 +86,16 @@ const navigation: NavItem[] = [
     icon: Home,
     children: [
       {
-        title: 'All Homestays',
+        title: 'Tất cả Homestays',
         href: '/admin/homestays',
         icon: Home,
       },
       {
-        title: 'Bookings',
+        title: 'Đặt phòng',
         href: '/admin/homestay-bookings',
         icon: Calendar,
       },
-      {
-        title: 'Reviews',
-        href: '/admin/homestays/reviews',
-        icon: MessageSquare,
-      },
-      {
-        title: 'Availability',
-        href: '/admin/homestays/availability',
-        icon: Calendar,
-      },
-      {
-        title: 'Pricing Rules',
-        href: '/admin/homestays/pricing',
-        icon: CreditCard,
-      },
+    
     ],
   },
   {
@@ -121,12 +103,12 @@ const navigation: NavItem[] = [
     icon: Bed,
     children: [
       {
-        title: 'Content Settings',
+        title: 'Cài đặt nội dung',
         href: '/admin/cocoisland',
         icon: Settings,
       },
       {
-        title: 'Integration',
+        title: 'Tích hợp',
         href: '/admin/integrations/cocoisland',
         icon: Link2,
       },
@@ -136,25 +118,21 @@ const navigation: NavItem[] = [
     title: 'Marketing',
     icon: Megaphone,
     children: [
+      
       {
-        title: 'Promotions',
-        href: '/admin/promotions',
-        icon: Ticket,
-      },
-      {
-        title: 'Reviews',
+        title: 'Đánh giá',
         href: '/admin/reviews',
         icon: Star,
       },
       {
-        title: 'Analytics',
+        title: 'Phân tích',
         href: '/admin/analytics',
         icon: BarChart3,
       },
     ],
   },
   {
-    title: 'Media',
+    title: 'Thư viện',
     href: '/admin/media',
     icon: Image,
   },
@@ -165,28 +143,28 @@ const navigation: NavItem[] = [
   //   icon: Users,
   // },
   {
-    title: 'Integrations',
+    title: 'Tích hợp',
     icon: Link2,
     children: [
       {
-        title: 'Channels',
+        title: 'Kênh bán',
         href: '/admin/integrations/channels',
         icon: Globe,
       },
       {
-        title: 'Settings',
+        title: 'Cài đặt',
         href: '/admin/integrations',
         icon: Settings,
       },
     ],
   },
   {
-    title: 'Navigation',
+    title: 'Điều hướng',
     href: '/admin/navigation',
     icon: Link2,
   },
   {
-    title: 'Settings',
+    title: 'Cài đặt',
     href: '/admin/settings',
     icon: Settings,
   },
@@ -236,8 +214,8 @@ function NavItemComponent({ item, level = 0 }: { item: NavItem; level?: number }
       className={cn(
         'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
         isActive
-          ? 'bg-primary text-primary-foreground'
-          : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground',
+          ? 'bg-primary/10 text-primary font-semibold border-l-2 border-primary'
+          : 'text-foreground hover:bg-accent hover:text-accent-foreground',
         level > 0 && 'pl-6'
       )}
     >
@@ -260,7 +238,7 @@ export function AdminSidebar() {
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
             <LayoutDashboard className="h-5 w-5" />
           </div>
-          <span className="font-semibold">Admin Panel</span>
+          <span className="font-semibold">Quản trị</span>
         </Link>
       </div>
       <nav className="space-y-1 overflow-y-auto p-4" style={{ height: 'calc(100vh - 4rem)' }}>

@@ -7,6 +7,7 @@ import { getTourBySlug } from '@/lib/tours/public';
 import type { PublicTourDetail } from '@/lib/tours/public';
 import { TourBookingForm } from '@/components/tours/tour-booking-form';
 import { SchemaTour } from '@/components/schema/SchemaTour';
+import { ReviewForm, ReviewList } from '@/components/reviews';
 
 type TourDetail = NonNullable<PublicTourDetail>;
 
@@ -435,7 +436,7 @@ export default async function TourDetailPage({ params }: TourDetailPageProps) {
             <h3 className="text-lg font-semibold">Đánh giá gần đây</h3>
             {tour.TourReview && tour.TourReview.length > 0 ? (
               <div className="mt-4 space-y-4 text-sm leading-relaxed text-muted-foreground">
-                {tour.TourReview.map((review) => (
+                {tour.TourReview.slice(0, 3).map((review) => (
                   <div key={review.id}>
                     <p className="font-medium text-foreground">{review.fullName}</p>
                     <p className="text-xs text-muted-foreground">
@@ -452,6 +453,46 @@ export default async function TourDetailPage({ params }: TourDetailPageProps) {
             )}
           </div>
         </aside>
+      </section>
+
+      {/* Full Reviews Section */}
+      <section className="container mx-auto px-4 py-16 bg-muted/30">
+        <div className="space-y-8">
+          {/* Section Header */}
+          <div className="text-center space-y-2">
+            <h2 className="text-3xl font-bold">Đánh giá từ khách hàng</h2>
+            {tour.TourReview && tour.TourReview.length > 0 && (
+              <p className="text-muted-foreground">
+                Xem {tour.TourReview.length} đánh giá thực tế từ khách đã tham gia tour
+              </p>
+            )}
+          </div>
+          
+          <div className="grid lg:grid-cols-3 gap-8">
+            {/* Review Form */}
+            <div className="lg:col-span-1">
+              <div className="sticky top-24">
+                <ReviewForm itemId={tour.id} itemType="tour" />
+              </div>
+            </div>
+
+            {/* Review List */}
+            <div className="lg:col-span-2">
+              <ReviewList 
+                reviews={tour.TourReview?.map(review => ({
+                  id: review.id,
+                  rating: review.rating,
+                  comment: review.content,
+                  createdAt: review.createdAt,
+                  adminResponse: review.adminResponse,
+                  respondedAt: review.respondedAt,
+                  User: { name: review.fullName, image: null },
+                })) || []} 
+                type="tour" 
+              />
+            </div>
+          </div>
+        </div>
       </section>
     </article>
     </>

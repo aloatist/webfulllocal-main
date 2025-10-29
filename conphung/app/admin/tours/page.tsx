@@ -66,11 +66,24 @@ const statusColorMap: Record<TourStatus, string> = {
   ARCHIVED: 'bg-amber-100 text-amber-800',
 };
 
+const statusLabelMap: Record<TourStatus, string> = {
+  DRAFT: 'Bản nháp',
+  PUBLISHED: 'Đang hiển thị',
+  ARCHIVED: 'Đã lưu trữ',
+};
+
 const difficultyColorMap: Record<TourDifficulty, string> = {
   EASY: 'bg-blue-100 text-blue-800',
   MODERATE: 'bg-sky-100 text-sky-800',
   CHALLENGING: 'bg-orange-100 text-orange-800',
   EXTREME: 'bg-red-100 text-red-800',
+};
+
+const difficultyLabelMap: Record<TourDifficulty, string> = {
+  EASY: 'Dễ',
+  MODERATE: 'Trung bình',
+  CHALLENGING: 'Thử thách',
+  EXTREME: 'Cực khó',
 };
 
 function formatPrice(amount?: string | null, currency = 'VND') {
@@ -91,11 +104,11 @@ function formatPrice(amount?: string | null, currency = 'VND') {
 }
 
 function formatStatus(status: TourStatus) {
-  return status.charAt(0) + status.slice(1).toLowerCase();
+  return statusLabelMap[status] ?? status;
 }
 
 function formatDifficulty(difficulty: TourDifficulty) {
-  return difficulty.charAt(0) + difficulty.slice(1).toLowerCase();
+  return difficultyLabelMap[difficulty] ?? difficulty;
 }
 
 function getUpcomingDeparture(tour: TourWithRelations) {
@@ -231,24 +244,73 @@ export default function ToursPage() {
     });
   };
 
-  const handleDelete = async (tour: TourWithRelations) => {
-    const confirmed = window.confirm(
-      `Bạn có chắc muốn xóa tour "${tour.title}"?`
-    );
-    if (!confirmed) return;
+  const handleDelete = async (tour: TourWithRelations, forceDelete = false) => {
+    if (!forceDelete) {
+      const confirmed = window.confirm(
+        `Bạn có chắc muốn xóa tour "${tour.title}"?`
+      );
+      if (!confirmed) return;
+    }
 
     try {
-      const response = await fetch(`/api/tours/${tour.id}`, {
+      const url = forceDelete 
+        ? `/api/tours/${tour.id}?force=true`
+        : `/api/tours/${tour.id}`;
+        
+      const response = await fetch(url, {
         method: 'DELETE',
       });
+      
       if (!response.ok) {
         const body = await response.json().catch(() => null);
+        
+        console.error('❌ Delete error:', body);
+        
+        // Handle conflict error (409) with detailed info
+        if (response.status === 409 && body?.details) {
+          const { bookings, departures, reviews, total } = body.details;
+          
+          let detailedMessage = body.error || 'Không thể xóa tour có dữ liệu liên quan.';
+          
+          detailedMessage += '\n\n📊 Dữ liệu liên quan:';
+          if (bookings > 0) detailedMessage += `\n• ${bookings} đơn đặt tour`;
+          if (departures > 0) detailedMessage += `\n• ${departures} lịch khởi hành`;
+          if (reviews > 0) detailedMessage += `\n• ${reviews} đánh giá`;
+          detailedMessage += `\n\n📝 Tổng: ${total} bản ghi`;
+          
+          detailedMessage += '\n\n💡 Bạn có muốn XÓA TOÀN BỘ (tour + tất cả dữ liệu liên quan)?';
+          
+          console.warn('⚠️ Cannot delete tour:', body.details);
+          
+          // Ask for force delete
+          const forceConfirmed = window.confirm(
+            detailedMessage + '\n\n⚠️ CẢNH BÁO: Hành động này KHÔNG THỂ HOÀN TÁC!'
+          );
+          
+          if (forceConfirmed) {
+            return handleDelete(tour, true); // Recursive call with force=true
+          }
+          
+          throw new Error(detailedMessage);
+        }
+        
         throw new Error(
           body?.error ??
             'Không thể xóa tour. Vui lòng kiểm tra các booking liên quan.'
         );
       }
+      
+      const result = await response.json();
       setTours((prev) => prev.filter((item) => item.id !== tour.id));
+      
+      if (result.deleted) {
+        alert(
+          `✅ Đã xóa tour cùng ${result.deleted.bookings} đơn đặt, ` +
+          `${result.deleted.departures} lịch khởi hành, ${result.deleted.reviews} đánh giá!`
+        );
+      } else {
+        alert('✅ Đã xóa tour thành công!');
+      }
     } catch (deleteError) {
       setError(
         deleteError instanceof Error
@@ -261,9 +323,9 @@ export default function ToursPage() {
   const statusOptions = useMemo(
     () => [
       { value: 'all', label: 'Tất cả trạng thái' },
-      { value: 'DRAFT', label: 'Draft' },
-      { value: 'PUBLISHED', label: 'Published' },
-      { value: 'ARCHIVED', label: 'Archived' },
+      { value: 'DRAFT', label: statusLabelMap.DRAFT },
+      { value: 'PUBLISHED', label: statusLabelMap.PUBLISHED },
+      { value: 'ARCHIVED', label: statusLabelMap.ARCHIVED },
     ],
     []
   );
@@ -271,10 +333,10 @@ export default function ToursPage() {
   const difficultyOptions = useMemo(
     () => [
       { value: 'all', label: 'Mọi độ khó' },
-      { value: 'EASY', label: 'Easy' },
-      { value: 'MODERATE', label: 'Moderate' },
-      { value: 'CHALLENGING', label: 'Challenging' },
-      { value: 'EXTREME', label: 'Extreme' },
+      { value: 'EASY', label: difficultyLabelMap.EASY },
+      { value: 'MODERATE', label: difficultyLabelMap.MODERATE },
+      { value: 'CHALLENGING', label: difficultyLabelMap.CHALLENGING },
+      { value: 'EXTREME', label: difficultyLabelMap.EXTREME },
     ],
     []
   );
@@ -283,7 +345,7 @@ export default function ToursPage() {
     <div className="space-y-6 p-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Tour Management</h1>
+          <h1 className="text-2xl font-bold">Quản lý tour</h1>
           <p className="text-sm text-muted-foreground">
             Tạo, chỉnh sửa và quản lý lịch khởi hành, giá bán, dịch vụ của tour du lịch.
           </p>
@@ -405,7 +467,7 @@ export default function ToursPage() {
                         </div>
                         {tour.isFeatured && (
                           <Badge className="bg-purple-100 text-purple-800">
-                            Featured
+                            Nổi bật
                           </Badge>
                         )}
                       </div>

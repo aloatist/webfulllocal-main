@@ -60,9 +60,9 @@ type PostResponseItem = {
 };
 
 const TARGET_OPTION_PRESETS = [
-  { value: '', label: 'Mặc định (same tab)' },
+  { value: '', label: 'Mặc định (cùng tab)' },
   { value: '_blank', label: 'Mở tab mới (_blank)' },
-  { value: '_self', label: 'Tải lại trang hiện tại (_self)' },
+  { value: '_self', label: 'Tải lại tab hiện tại (_self)' },
 ];
 
 const ICON_PRESET_SUGGESTIONS = [
@@ -379,7 +379,7 @@ export default function NavigationAdminPage() {
     <div className="space-y-8">
       <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold sm:text-3xl">Navigation Management</h1>
+          <h1 className="text-2xl font-semibold sm:text-3xl">Quản lý điều hướng</h1>
           <p className="text-sm text-muted-foreground">
             Tạo, chỉnh sửa và sắp xếp các menu điều hướng cho trang web.
           </p>
@@ -425,7 +425,7 @@ export default function NavigationAdminPage() {
                   <span>{menu.name}</span>
                   {menu.isDefault && (
                     <Badge variant="outline" className="text-xs">
-                      Default
+                      Mặc định
                     </Badge>
                   )}
                 </button>
@@ -513,7 +513,7 @@ export default function NavigationAdminPage() {
                   <table className="min-w-full text-sm">
                     <thead className="bg-muted/60 text-xs uppercase tracking-[0.3em] text-muted-foreground">
                       <tr>
-                        <th className="px-4 py-3 text-left">Label</th>
+                        <th className="px-4 py-3 text-left">Tiêu đề</th>
                         <th className="px-4 py-3 text-left">Đường dẫn</th>
                         <th className="px-4 py-3 text-left">Thứ tự</th>
                         <th className="px-4 py-3 text-left">Trạng thái</th>
@@ -620,7 +620,7 @@ export default function NavigationAdminPage() {
                     )}
                   </label>
                   <label className="grid gap-2 text-sm">
-                    <span>Icon</span>
+                    <span>Biểu tượng</span>
                     <Input
                       value={itemForm.icon}
                       onChange={(event) => setItemForm((prev) => ({ ...prev, icon: event.target.value }))}
@@ -634,7 +634,7 @@ export default function NavigationAdminPage() {
                     </datalist>
                   </label>
                   <label className="grid gap-2 text-sm">
-                    <span>Target</span>
+                    <span>Thuộc tính target</span>
                     <Input
                       value={itemForm.target}
                       onChange={(event) => setItemForm((prev) => ({ ...prev, target: event.target.value }))}

@@ -3,26 +3,22 @@ import { Prisma } from '@prisma/client'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { requireEditor } from '@/lib/tours/permissions'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth/auth-options'
+import { nanoid } from 'nanoid'
 
 const paramsSchema = z.object({
   homestayId: z.string(),
 })
 
 const createReviewSchema = z.object({
-  reviewerId: z.string(),
-  bookingId: z.string().optional(),
-  status: z.enum(['PENDING', 'APPROVED', 'REJECTED', 'HIDDEN']).default('PENDING'),
-  overallRating: z.number().min(1).max(5),
+  rating: z.number().min(1).max(5),
+  comment: z.string().optional().nullable(),
   cleanlinessRating: z.number().min(1).max(5).optional(),
   communicationRating: z.number().min(1).max(5).optional(),
-  checkinRating: z.number().min(1).max(5).optional(),
   accuracyRating: z.number().min(1).max(5).optional(),
   locationRating: z.number().min(1).max(5).optional(),
   valueRating: z.number().min(1).max(5).optional(),
-  title: z.string().optional(),
-  content: z.string().optional(),
-  isAnonymous: z.boolean().default(false),
-  isVerified: z.boolean().default(false),
 })
 
 const updateReviewSchema = createReviewSchema.partial().extend({
@@ -33,45 +29,46 @@ export async function GET(
   request: NextRequest,
   context: { params: { homestayId: string } }
 ) {
-  const auth = await requireEditor()
-  if (auth.status !== 200) {
-    return NextResponse.json({ error: auth.error }, { status: auth.status })
-  }
+  // Public endpoint - no auth required for viewing reviews
 
   try {
     const { homestayId } = paramsSchema.parse(context.params)
     const { searchParams } = new URL(request.url)
     const status = searchParams.get('status')
 
-    const where: Prisma.HomestayReviewWhereInput = { homestayId }
-    if (status) {
-      where.status = status as any
+    const where: Prisma.HomestayReviewWhereInput = { 
+      homestayId,
+      status: 'APPROVED', // Only show approved reviews for public
     }
 
     const reviews = await prisma.homestayReview.findMany({
       where,
       include: {
-        reviewer: {
+        User: {
           select: {
-            id: true,
             name: true,
-            email: true,
             image: true,
-          },
-        },
-        booking: {
-          select: {
-            id: true,
-            reference: true,
-            checkIn: true,
-            checkOut: true,
           },
         },
       },
       orderBy: { createdAt: 'desc' },
     })
 
-    return NextResponse.json({ data: reviews })
+    // Format for frontend
+    const formattedReviews = reviews.map(review => ({
+      id: review.id,
+      rating: Number(review.overallRating),
+      comment: review.content,
+      createdAt: review.createdAt.toISOString(),
+      User: review.User,
+      cleanlinessRating: review.cleanlinessRating ? Number(review.cleanlinessRating) : null,
+      accuracyRating: review.accuracyRating ? Number(review.accuracyRating) : null,
+      communicationRating: review.communicationRating ? Number(review.communicationRating) : null,
+      locationRating: review.locationRating ? Number(review.locationRating) : null,
+      valueRating: review.valueRating ? Number(review.valueRating) : null,
+    }));
+
+    return NextResponse.json(formattedReviews)
   } catch (error) {
     console.error('Failed to fetch reviews:', error)
     if (error instanceof z.ZodError) {
@@ -91,9 +88,14 @@ export async function POST(
   request: NextRequest,
   context: { params: { homestayId: string } }
 ) {
-  const auth = await requireEditor()
-  if (auth.status !== 200) {
-    return NextResponse.json({ error: auth.error }, { status: auth.status })
+  // Require authentication
+  const session = await getServerSession(authOptions);
+  
+  if (!session?.user?.id) {
+    return NextResponse.json(
+      { error: 'Bạn cần đăng nhập để đánh giá' },
+      { status: 401 }
+    );
   }
 
   try {
@@ -107,38 +109,33 @@ export async function POST(
     })
 
     if (!homestay) {
-      return NextResponse.json({ error: 'Homestay not found' }, { status: 404 })
+      return NextResponse.json({ error: 'Homestay không tồn tại' }, { status: 404 })
     }
 
-    // Verify reviewer exists
-    const reviewer = await prisma.user.findUnique({
-      where: { id: data.reviewerId },
-    })
-
-    if (!reviewer) {
-      return NextResponse.json({ error: 'Reviewer not found' }, { status: 404 })
-    }
+    // Get reviewerId from session
+    const reviewerId = session.user.id;
 
     const review = await prisma.homestayReview.create({
       data: {
-        ...data,
+        id: nanoid(),
         homestayId,
+        reviewerId,
+        overallRating: data.rating,
+        content: data.comment,
+        cleanlinessRating: data.cleanlinessRating,
+        communicationRating: data.communicationRating,
+        accuracyRating: data.accuracyRating,
+        locationRating: data.locationRating,
+        valueRating: data.valueRating,
+        status: 'PENDING',
+        createdAt: new Date(),
+        updatedAt: new Date(),
       },
       include: {
-        reviewer: {
+        User: {
           select: {
-            id: true,
             name: true,
-            email: true,
             image: true,
-          },
-        },
-        booking: {
-          select: {
-            id: true,
-            reference: true,
-            checkIn: true,
-            checkOut: true,
           },
         },
       },
@@ -147,7 +144,14 @@ export async function POST(
     // Update homestay rating average
     await updateHomestayRating(homestayId)
 
-    return NextResponse.json(review, { status: 201 })
+    return NextResponse.json({
+      id: review.id,
+      rating: Number(review.overallRating),
+      comment: review.content,
+      createdAt: review.createdAt.toISOString(),
+      User: review.User,
+      message: 'Đánh giá của bạn đã được gửi và đang chờ kiểm duyệt',
+    }, { status: 201 })
   } catch (error) {
     console.error('Failed to create review:', error)
     if (error instanceof z.ZodError) {

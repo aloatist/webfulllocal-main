@@ -54,13 +54,13 @@ export default function PostsPage() {
   const loadPosts = useCallback(async () => {
     try {
       const response = await fetch('/api/posts');
-      if (!response.ok) throw new Error('Failed to load posts');
+      if (!response.ok) throw new Error('Không thể tải danh sách bài viết');
       
       const data = (await response.json()) as PostsResponse;
       setPosts(data.posts ?? []);
       setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load posts');
+      setError(err instanceof Error ? err.message : 'Không thể tải danh sách bài viết');
     } finally {
       setLoading(false);
     }
@@ -71,7 +71,7 @@ export default function PostsPage() {
   }, [loadPosts]);
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this post?')) {
+    if (!window.confirm('Bạn có chắc muốn xóa bài viết này?')) {
       return;
     }
 
@@ -80,7 +80,7 @@ export default function PostsPage() {
         method: 'DELETE',
       });
 
-      if (!response.ok) throw new Error('Failed to delete post');
+      if (!response.ok) throw new Error('Không thể xóa bài viết');
       
       setPosts((prev) => prev.filter((post) => post.id !== id));
       setSelectedIds((prev) => {
@@ -90,7 +90,7 @@ export default function PostsPage() {
       });
       setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to delete post');
+      setError(err instanceof Error ? err.message : 'Không thể xóa bài viết');
     }
   };
 
@@ -110,7 +110,7 @@ export default function PostsPage() {
       setSelectedIds(new Set());
       setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to delete posts');
+      setError(err instanceof Error ? err.message : 'Không thể xóa bài viết đã chọn');
     }
   };
 
@@ -130,7 +130,7 @@ export default function PostsPage() {
       setSelectedIds(new Set());
       setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to publish posts');
+      setError(err instanceof Error ? err.message : 'Không thể xuất bản bài viết đã chọn');
     }
   };
 
@@ -150,7 +150,7 @@ export default function PostsPage() {
       setSelectedIds(new Set());
       setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to unpublish posts');
+      setError(err instanceof Error ? err.message : 'Không thể chuyển bài viết về trạng thái nháp');
     }
   };
 
@@ -177,31 +177,31 @@ export default function PostsPage() {
   const getStatusBadge = (status: Post['status']) => {
     switch (status) {
       case 'PUBLISHED':
-        return <Badge>Published</Badge>;
+        return <Badge>Đã xuất bản</Badge>;
       case 'DRAFT':
-        return <Badge variant="secondary">Draft</Badge>;
+        return <Badge variant="secondary">Bản nháp</Badge>;
       default:
         return null;
     }
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div>Đang tải...</div>;
   }
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Posts</h1>
+          <h1 className="text-2xl font-bold">Bài viết</h1>
           <p className="text-muted-foreground">
-            Manage your blog posts here.
+            Quản lý các bài viết blog tại đây.
           </p>
         </div>
         <Button asChild>
           <Link href="/admin/posts/new">
             <Plus className="mr-2 h-4 w-4" />
-            New Post
+            Bài viết mới
           </Link>
         </Button>
       </div>
@@ -239,11 +239,11 @@ export default function PostsPage() {
                   }}
                 />
               </TableHead>
-              <TableHead>Title</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Author</TableHead>
-              <TableHead>Created</TableHead>
-              <TableHead>Updated</TableHead>
+              <TableHead>Tiêu đề</TableHead>
+              <TableHead>Trạng thái</TableHead>
+              <TableHead>Tác giả</TableHead>
+              <TableHead>Ngày tạo</TableHead>
+              <TableHead>Ngày cập nhật</TableHead>
               <TableHead className="w-[70px]"></TableHead>
             </TableRow>
           </TableHeader>
@@ -265,12 +265,12 @@ export default function PostsPage() {
                   </Link>
                 </TableCell>
                 <TableCell>{getStatusBadge(post.status)}</TableCell>
-                <TableCell>{post.User?.name ?? 'Unknown'}</TableCell>
+                <TableCell>{post.User?.name ?? 'Chưa xác định'}</TableCell>
                 <TableCell>
-                  {format(new Date(post.createdAt), 'MMM d, yyyy')}
+                  {format(new Date(post.createdAt), 'dd/MM/yyyy')}
                 </TableCell>
                 <TableCell>
-                  {format(new Date(post.updatedAt), 'MMM d, yyyy')}
+                  {format(new Date(post.updatedAt), 'dd/MM/yyyy')}
                 </TableCell>
                 <TableCell>
                   <DropdownMenu>
@@ -287,13 +287,13 @@ export default function PostsPage() {
                       <DropdownMenuItem asChild>
                         <Link href={`/admin/posts/${post.id}`}>
                           <Pencil className="mr-2 h-4 w-4" />
-                          Edit
+                            Chỉnh sửa
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
                         <Link href={`/posts/${post.slug}`} target="_blank">
                           <Eye className="mr-2 h-4 w-4" />
-                          View
+                          Xem bài viết
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem
@@ -301,7 +301,7 @@ export default function PostsPage() {
                         className="text-destructive"
                       >
                         <Trash2 className="mr-2 h-4 w-4" />
-                        Delete
+                        Xóa
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -311,7 +311,7 @@ export default function PostsPage() {
             {posts.length === 0 && (
               <TableRow>
                 <TableCell colSpan={6} className="text-center">
-                  No posts found. Create your first post!
+                  Chưa có bài viết nào. Hãy tạo bài viết đầu tiên!
                 </TableCell>
               </TableRow>
             )}

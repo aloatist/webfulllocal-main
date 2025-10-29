@@ -99,4 +99,58 @@ export async function PATCH(
   }
 }
 
+export async function DELETE(
+  _request: NextRequest,
+  context: { params: { id: string } }
+) {
+  const auth = await requireEditor()
+  if (auth.status !== 200) {
+    return NextResponse.json({ error: auth.error }, { status: auth.status })
+  }
+
+  try {
+    const { id } = paramsSchema.parse(context.params)
+    
+    // Check if booking exists
+    const booking = await prisma.booking.findUnique({
+      where: { id },
+      select: { id: true, reference: true, status: true },
+    })
+
+    if (!booking) {
+      return NextResponse.json({ error: 'Booking không tồn tại' }, { status: 404 })
+    }
+
+    // Delete booking and related records in transaction
+    await prisma.$transaction([
+      // Delete booking addons first
+      prisma.bookingAddon.deleteMany({ where: { bookingId: id } }),
+      // Delete payments
+      prisma.payment.deleteMany({ where: { bookingId: id } }),
+      // Delete booking
+      prisma.booking.delete({ where: { id } }),
+    ])
+
+    console.log(`✅ Deleted booking ${booking.reference} (${id})`)
+    
+    return NextResponse.json({ 
+      success: true,
+      message: `Đã xóa booking ${booking.reference}`,
+    })
+  } catch (error) {
+    console.error('Failed to delete booking:', error)
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { error: 'Tham số không hợp lệ', details: error.flatten() },
+        { status: 400 }
+      )
+    }
+
+    return NextResponse.json(
+      { error: 'Không thể xóa booking' },
+      { status: 500 }
+    )
+  }
+}
+
 export const dynamic = 'force-dynamic'

@@ -13,6 +13,13 @@ const ICONS: Record<DashboardTool['category'], JSX.Element> = {
   management: <ExternalLink className="h-5 w-5" />,
 };
 
+const CATEGORY_LABELS: Record<DashboardTool['category'], string> = {
+  attendance: 'Điểm danh',
+  automation: 'Tự động hóa',
+  reports: 'Báo cáo',
+  management: 'Quản trị',
+};
+
 interface ToolCardProps {
   tool: DashboardTool;
 }
@@ -33,7 +40,9 @@ export function ToolCard({ tool }: ToolCardProps) {
         <span className="rounded-full bg-primary/10 p-2 text-primary">{ICONS[tool.category] ?? ICONS.management}</span>
         <div>
           <p className="text-base font-semibold">{tool.name}</p>
-          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{tool.category}</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+            {CATEGORY_LABELS[tool.category] ?? 'Khác'}
+          </p>
         </div>
       </div>
       <p className="mt-4 text-sm text-muted-foreground">{tool.description}</p>

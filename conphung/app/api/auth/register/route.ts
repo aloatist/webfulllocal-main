@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
 import { prisma } from '@/lib/prisma'
 import { Role } from '@prisma/client'
+import { nanoid } from 'nanoid'
 
 export async function POST(req: NextRequest) {
   try {
@@ -9,7 +10,14 @@ export async function POST(req: NextRequest) {
 
     if (!email || !password) {
       return NextResponse.json(
-        { error: 'Email and password are required' },
+        { error: 'Email và mật khẩu là bắt buộc' },
+        { status: 400 }
+      )
+    }
+
+    if (!name) {
+      return NextResponse.json(
+        { error: 'Họ tên là bắt buộc' },
         { status: 400 }
       )
     }
@@ -21,7 +29,7 @@ export async function POST(req: NextRequest) {
 
     if (existingUser) {
       return NextResponse.json(
-        { error: 'User already exists' },
+        { error: 'Email này đã được đăng ký' },
         { status: 400 }
       )
     }
@@ -30,13 +38,14 @@ export async function POST(req: NextRequest) {
     const hashedPassword = await bcrypt.hash(password, 10)
 
     // Create user
-    // @ts-ignore
     const user = await prisma.user.create({
       data: {
+        id: nanoid(),
         name,
         email,
         password: hashedPassword,
-        role: Role.USER
+        role: Role.USER,
+        updatedAt: new Date(),
       },
       select: {
         id: true,

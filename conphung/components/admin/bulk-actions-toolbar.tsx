@@ -92,7 +92,7 @@ export function BulkActionsToolbar({
             onClick={onBulkExport}
             className="h-8"
           >
-            Export
+            Xuất dữ liệu
           </Button>
         )}
 

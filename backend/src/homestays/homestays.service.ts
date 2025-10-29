@@ -310,7 +310,7 @@ export class HomestaysService {
       ? await this.tagRepository.find({ where: { id: In(dto.tagIds) } })
       : [];
 
-    const { destinationId, tagIds, ...rest } = dto;
+    const { destinationId, tagIds, rooms, availabilityBlocks, ...rest } = dto;
 
     const homestay = this.homestayRepository.create({
       ...rest,
@@ -319,7 +319,28 @@ export class HomestaysService {
       tags,
     });
 
-    return this.homestayRepository.save(homestay);
+    const savedHomestay = await this.homestayRepository.save(homestay);
+
+    // Create nested rooms if provided
+    if (rooms && rooms.length > 0) {
+      for (const roomDto of rooms) {
+        await this.createRoom(savedHomestay.id, roomDto as any);
+      }
+    }
+
+    // Create nested availability blocks if provided
+    if (availabilityBlocks && availabilityBlocks.length > 0) {
+      const bulkItems = availabilityBlocks.map((blockDto) => ({
+        startDate: blockDto.startDate,
+        endDate: blockDto.endDate,
+        notes: blockDto.notes || '',
+        status: HomestayAvailabilityStatus.BLOCKED,
+        roomId: undefined, // No specific room, applies to entire homestay
+      }));
+      await this.createAvailabilityBulk(savedHomestay.id, bulkItems as any);
+    }
+
+    return this.findById(savedHomestay.id);
   }
 
   async update(
@@ -370,14 +391,64 @@ export class HomestaysService {
         : [];
     }
 
-    const { destinationId, tagIds, ...rest } = dto as UpdateHomestayDto & {
+    const { destinationId, tagIds, rooms, availabilityBlocks, ...rest } = dto as UpdateHomestayDto & {
       destinationId?: string | null;
       tagIds?: string[];
+      rooms?: any[];
+      availabilityBlocks?: any[];
     };
 
     Object.assign(homestay, rest);
 
-    return this.homestayRepository.save(homestay);
+    const savedHomestay = await this.homestayRepository.save(homestay);
+
+    // Update nested rooms if provided
+    if (rooms !== undefined) {
+      // Remove all existing rooms that are not in the new list
+      const existingRooms = await this.roomRepository.find({
+        where: { homestay: { id } },
+      });
+      
+      for (const existingRoom of existingRooms) {
+        await this.roomRepository.remove(existingRoom);
+      }
+
+      // Create new rooms
+      if (rooms.length > 0) {
+        for (const roomDto of rooms) {
+          await this.createRoom(savedHomestay.id, roomDto as any);
+        }
+      }
+    }
+
+    // Update nested availability blocks if provided
+    if (availabilityBlocks !== undefined) {
+      // Remove all existing blocked availability for this homestay
+      const existingBlocks = await this.availabilityRepository.find({
+        where: {
+          homestay: { id },
+          status: HomestayAvailabilityStatus.BLOCKED,
+        },
+      });
+
+      for (const block of existingBlocks) {
+        await this.availabilityRepository.remove(block);
+      }
+
+      // Create new availability blocks
+      if (availabilityBlocks.length > 0) {
+        const bulkItems = availabilityBlocks.map((blockDto) => ({
+          startDate: blockDto.startDate,
+          endDate: blockDto.endDate,
+          notes: blockDto.notes || '',
+          status: HomestayAvailabilityStatus.BLOCKED,
+          roomId: undefined, // No specific room, applies to entire homestay
+        }));
+        await this.createAvailabilityBulk(savedHomestay.id, bulkItems as any);
+      }
+    }
+
+    return this.findById(savedHomestay.id);
   }
 
   async remove(id: string): Promise<void> {

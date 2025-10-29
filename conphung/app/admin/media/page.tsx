@@ -30,7 +30,7 @@ export default function MediaPage() {
         setLoading(true);
       }
       const response = await fetch(`/api/media?page=${pageNum}&limit=12`);
-      if (!response.ok) throw new Error('Failed to load media');
+      if (!response.ok) throw new Error('Không thể tải thư viện ảnh');
       
       const data = (await response.json()) as MediaListResponse;
       if (pageNum === 1) {
@@ -41,7 +41,7 @@ export default function MediaPage() {
       setHasMore(data.pagination.page < data.pagination.totalPages);
       setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load media');
+      setError(err instanceof Error ? err.message : 'Không thể tải thư viện ảnh');
     } finally {
       setLoading(false);
     }
@@ -61,11 +61,11 @@ export default function MediaPage() {
         method: 'DELETE',
       });
 
-      if (!response.ok) throw new Error('Failed to delete media');
+      if (!response.ok) throw new Error('Không thể xóa media');
       
       setMedia((prev) => prev.filter((item) => item.id !== id));
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to delete media');
+      setError(err instanceof Error ? err.message : 'Không thể xóa media');
     }
   };
 
@@ -79,7 +79,7 @@ export default function MediaPage() {
         body: JSON.stringify(data),
       });
 
-      if (!response.ok) throw new Error('Failed to update media');
+      if (!response.ok) throw new Error('Không thể cập nhật media');
       
       const updatedMedia = await response.json();
       setMedia((prev) =>
@@ -87,7 +87,7 @@ export default function MediaPage() {
       );
       setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to update media');
+      setError(err instanceof Error ? err.message : 'Không thể cập nhật media');
     }
   };
 
@@ -100,9 +100,9 @@ export default function MediaPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold">Media Library</h1>
+        <h1 className="text-2xl font-bold">Thư viện media</h1>
         <p className="text-muted-foreground">
-          Upload and manage your media files.
+          Tải lên và quản lý các tệp đa phương tiện.
         </p>
       </div>
 
@@ -129,7 +129,7 @@ export default function MediaPage() {
           {hasMore && (
             <div className="flex justify-center pt-4">
               <Button onClick={loadMore} variant="outline">
-                Load More
+                Tải thêm
               </Button>
             </div>
           )}

@@ -134,7 +134,7 @@ export default function TagsPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this tag?')) {
+    if (!window.confirm('Bạn có chắc muốn xóa thẻ này?')) {
       return;
     }
 

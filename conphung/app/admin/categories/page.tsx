@@ -51,14 +51,14 @@ export default function CategoriesPage() {
   const loadCategories = async () => {
     try {
       const response = await fetch('/api/categories?limit=1000');
-      if (!response.ok) throw new Error('Failed to load categories');
+      if (!response.ok) throw new Error('Không thể tải danh mục');
       
       const data = await response.json();
       // API returns {categories: [], pagination: {}}
       setCategories(Array.isArray(data) ? data : data.categories || []);
       setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load categories');
+      setError(err instanceof Error ? err.message : 'Không thể tải danh mục');
     } finally {
       setLoading(false);
     }
@@ -82,7 +82,7 @@ export default function CategoriesPage() {
             body: JSON.stringify(categoryData),
           });
 
-      if (!response.ok) throw new Error('Failed to save category');
+      if (!response.ok) throw new Error('Không thể lưu danh mục');
       
       const category = await response.json();
       setCategories((prev) =>
@@ -94,12 +94,12 @@ export default function CategoriesPage() {
       setDialogOpen(false);
       setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save category');
+      setError(err instanceof Error ? err.message : 'Không thể lưu danh mục');
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this category?')) {
+    if (!window.confirm('Bạn có chắc muốn xóa danh mục này?')) {
       return;
     }
 
@@ -108,12 +108,12 @@ export default function CategoriesPage() {
         method: 'DELETE',
       });
 
-      if (!response.ok) throw new Error('Failed to delete category');
+      if (!response.ok) throw new Error('Không thể xóa danh mục');
       
       setCategories((prev) => prev.filter((c) => c.id !== id));
       setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to delete category');
+      setError(err instanceof Error ? err.message : 'Không thể xóa danh mục');
     }
   };
 
@@ -123,16 +123,16 @@ export default function CategoriesPage() {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div>Đang tải...</div>;
   }
 
   return (
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Categories</h1>
+        <h1 className="text-2xl font-bold">Danh mục</h1>
         <Button onClick={() => setDialogOpen(true)}>
           <Plus className="w-4 h-4 mr-2" />
-          Add Category
+          Thêm danh mục
         </Button>
       </div>
 
@@ -146,11 +146,11 @@ export default function CategoriesPage() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Name</TableHead>
+              <TableHead>Tên danh mục</TableHead>
               <TableHead>Slug</TableHead>
-              <TableHead>Description</TableHead>
-              <TableHead>Created</TableHead>
-              <TableHead>Updated</TableHead>
+              <TableHead>Mô tả</TableHead>
+              <TableHead>Ngày tạo</TableHead>
+              <TableHead>Ngày cập nhật</TableHead>
               <TableHead className="w-[50px]"></TableHead>
             </TableRow>
           </TableHeader>
@@ -161,10 +161,10 @@ export default function CategoriesPage() {
                 <TableCell>{category.slug}</TableCell>
                 <TableCell>{category.description}</TableCell>
                 <TableCell>
-                  {format(new Date(category.createdAt), 'MMM d, yyyy')}
+                  {format(new Date(category.createdAt), 'dd/MM/yyyy')}
                 </TableCell>
                 <TableCell>
-                  {format(new Date(category.updatedAt), 'MMM d, yyyy')}
+                  {format(new Date(category.updatedAt), 'dd/MM/yyyy')}
                 </TableCell>
                 <TableCell>
                   <DropdownMenu>
@@ -180,14 +180,14 @@ export default function CategoriesPage() {
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem onClick={() => handleEdit(category)}>
                         <Edit2 className="mr-2 h-4 w-4" />
-                        Edit
+                        Chỉnh sửa
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={() => handleDelete(category.id)}
                         className="text-destructive"
                       >
                         <Trash2 className="mr-2 h-4 w-4" />
-                        Delete
+                        Xóa
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -197,7 +197,7 @@ export default function CategoriesPage() {
             {categories.length === 0 && (
               <TableRow>
                 <TableCell colSpan={6} className="text-center">
-                  No categories found.
+                  Chưa có danh mục nào.
                 </TableCell>
               </TableRow>
             )}
@@ -209,13 +209,13 @@ export default function CategoriesPage() {
         <DialogTrigger asChild>
           <Button>
             <Plus className="mr-2 h-4 w-4" />
-            New Category
+            Danh mục mới
           </Button>
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {selectedCategory ? 'Edit Category' : 'Create Category'}
+              {selectedCategory ? 'Chỉnh sửa danh mục' : 'Tạo danh mục'}
             </DialogTitle>
           </DialogHeader>
           <CategoryForm

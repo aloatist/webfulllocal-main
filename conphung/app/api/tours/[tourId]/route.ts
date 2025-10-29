@@ -6,6 +6,7 @@ import type { UpdateTourInput } from '@/lib/tours/schemas'
 import { requireEditor } from '@/lib/tours/permissions'
 import { slugify, toDecimal, toOptionalDecimal } from '@/lib/tours/utils'
 import { DepartureStatus, Prisma } from '@prisma/client'
+import { nanoid } from 'nanoid'
 
 type DepartureInput = NonNullable<UpdateTourInput['departures']>[number]
 type AddonInput = NonNullable<UpdateTourInput['addons']>[number]
@@ -17,24 +18,24 @@ const paramsSchema = z.object({
 })
 
 const tourInclude = {
-  itineraryDays: {
+  ItineraryDay: {
     orderBy: { dayNumber: 'asc' as const },
   },
-  departures: {
+  TourDeparture: {
     orderBy: { startDate: 'asc' as const },
   },
-  addons: {
+  TourAddon: {
     orderBy: { price: 'asc' as const },
   },
-  categories: true,
-  promotions: true,
-  mediaItems: {
+  Category: true,
+  Promotion: true,
+  TourMedia: {
     orderBy: { position: 'asc' as const },
     include: {
-      media: true,
+      Media: true,
     },
   },
-  reviews: {
+  TourReview: {
     orderBy: { createdAt: 'desc' as const },
   },
 } satisfies Prisma.TourInclude
@@ -60,7 +61,31 @@ export async function GET(
       return NextResponse.json({ error: 'Tour not found' }, { status: 404 })
     }
 
-    return NextResponse.json(tour)
+    // Transform Prisma field names to match frontend expectations
+    const transformedTour = {
+      ...tour,
+      itineraryDays: tour.ItineraryDay,
+      departures: tour.TourDeparture,
+      addons: tour.TourAddon,
+      categories: tour.Category,
+      promotions: tour.Promotion,
+      mediaItems: tour.TourMedia?.map(item => ({
+        ...item,
+        media: item.Media,
+        Media: undefined,
+      })),
+      reviews: tour.TourReview,
+      // Remove capitalized fields
+      ItineraryDay: undefined,
+      TourDeparture: undefined,
+      TourAddon: undefined,
+      Category: undefined,
+      Promotion: undefined,
+      TourMedia: undefined,
+      TourReview: undefined,
+    }
+
+    return NextResponse.json(transformedTour)
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -257,6 +282,7 @@ export async function PUT(
       const mapDeparture = (
         departure: DepartureInput
       ): Prisma.TourDepartureCreateWithoutTourInput => ({
+        id: departure.id ?? nanoid(),
         startDate: departure.startDate,
         endDate: departure.endDate ?? null,
         seatsTotal: departure.seatsTotal,
@@ -267,6 +293,7 @@ export async function PUT(
         priceInfant: toOptionalDecimal(departure.priceInfant),
         status: departure.status ?? DepartureStatus.SCHEDULED,
         notes: departure.notes ?? null,
+        updatedAt: new Date(),
       })
 
       for (const departure of departures) {
@@ -305,7 +332,7 @@ export async function PUT(
           where: { addonId: { in: addonsToDelete } },
           select: {
             addonId: true,
-            booking: {
+            Booking: {
               select: { reference: true },
             },
           },
@@ -320,7 +347,7 @@ export async function PUT(
                 new Set(referencedBookingAddons.map((item) => item.addonId))
               ),
               bookingReferences: referencedBookingAddons
-                .map((item) => item.booking?.reference)
+                .map((item) => item.Booking?.reference)
                 .filter((reference): reference is string => Boolean(reference)),
             },
             { status: 409 }
@@ -331,11 +358,13 @@ export async function PUT(
       const mapAddon = (
         addon: AddonInput
       ): Prisma.TourAddonCreateWithoutTourInput => ({
+        id: addon.id ?? nanoid(),
         name: addon.name,
         description: addon.description ?? null,
         price: toDecimal(addon.price),
         perPerson: addon.perPerson ?? true,
         isActive: addon.isActive ?? true,
+        updatedAt: new Date(),
       })
 
       for (const addon of addons) {
@@ -386,22 +415,26 @@ export async function PUT(
 
     const itineraryCreateInput = data.itineraryDays
       ? (data.itineraryDays as ItineraryDayInput[]).map((day) => ({
+          id: nanoid(),
           dayNumber: day.dayNumber,
           title: day.title,
           description: day.description,
           meals: day.meals ?? [],
           activities: day.activities ?? [],
           stayInfo: day.stayInfo,
+          updatedAt: new Date(),
         }))
       : undefined
 
     const mediaCreateInput = data.media
       ? (data.media as MediaInput[]).map((mediaItem, index) => ({
-          media: {
+          id: nanoid(),
+          Media: {
             connect: { id: mediaItem.mediaId },
           },
           type: mediaItem.type ?? 'IMAGE',
           position: mediaItem.position ?? index,
+          updatedAt: new Date(),
         }))
       : undefined
 
@@ -461,7 +494,7 @@ export async function PUT(
           : {}),
         ...(itineraryCreateInput
           ? {
-              itineraryDays: {
+              ItineraryDay: {
                 deleteMany: { tourId },
                 create: itineraryCreateInput,
               },
@@ -469,31 +502,31 @@ export async function PUT(
           : {}),
         ...(departuresNestedUpdate
           ? {
-              departures: departuresNestedUpdate,
+              TourDeparture: departuresNestedUpdate,
             }
           : {}),
         ...(addonsNestedUpdate
           ? {
-              addons: addonsNestedUpdate,
+              TourAddon: addonsNestedUpdate,
             }
           : {}),
         ...(data.categoryIds
           ? {
-              categories: {
+              Category: {
                 set: data.categoryIds.map((categoryId) => ({ id: categoryId })),
               },
             }
           : {}),
         ...(data.promotionIds
           ? {
-              promotions: {
+              Promotion: {
                 set: data.promotionIds.map((promotionId) => ({ id: promotionId })),
               },
             }
           : {}),
         ...(mediaCreateInput
           ? {
-              mediaItems: {
+              TourMedia: {
                 deleteMany: { tourId },
                 create: mediaCreateInput,
               },
@@ -503,7 +536,31 @@ export async function PUT(
       include: tourInclude,
     })
 
-    return NextResponse.json(updatedTour)
+    // Transform Prisma field names to match frontend expectations
+    const transformedTour = {
+      ...updatedTour,
+      itineraryDays: updatedTour.ItineraryDay,
+      departures: updatedTour.TourDeparture,
+      addons: updatedTour.TourAddon,
+      categories: updatedTour.Category,
+      promotions: updatedTour.Promotion,
+      mediaItems: updatedTour.TourMedia?.map(item => ({
+        ...item,
+        media: item.Media,
+        Media: undefined,
+      })),
+      reviews: updatedTour.TourReview,
+      // Remove capitalized fields
+      ItineraryDay: undefined,
+      TourDeparture: undefined,
+      TourAddon: undefined,
+      Category: undefined,
+      Promotion: undefined,
+      TourMedia: undefined,
+      TourReview: undefined,
+    }
+
+    return NextResponse.json(transformedTour)
   } catch (error) {
     console.error('Failed to update tour:', error)
 
@@ -526,7 +583,7 @@ export async function PUT(
 }
 
 export async function DELETE(
-  _request: NextRequest,
+  request: NextRequest,
   context: { params: Record<string, string> }
 ) {
   const auth = await requireEditor()
@@ -536,6 +593,84 @@ export async function DELETE(
 
   try {
     const { tourId } = paramsSchema.parse(context.params)
+    
+    // Check for force delete flag
+    const url = new URL(request.url)
+    const forceDelete = url.searchParams.get('force') === 'true'
+
+    // Check for related records before deleting
+    const [bookingsCount, departuresCount, reviewsCount] = await Promise.all([
+      prisma.booking.count({ where: { tourId } }),
+      prisma.tourDeparture.count({ where: { tourId } }),
+      prisma.tourReview.count({ where: { tourId } }),
+    ])
+
+    const totalRelated = bookingsCount + departuresCount + reviewsCount
+
+    if (totalRelated > 0 && !forceDelete) {
+      return NextResponse.json(
+        {
+          error: 'Cannot delete tour that has related records.',
+          details: {
+            bookings: bookingsCount,
+            departures: departuresCount,
+            reviews: reviewsCount,
+            total: totalRelated,
+          },
+          suggestion:
+            'Please delete all related bookings, departures, and reviews first, or archive the tour instead.',
+        },
+        { status: 409 }
+      )
+    }
+
+    // Force delete: Delete all related records first
+    if (forceDelete && totalRelated > 0) {
+      console.log(`🗑️ Force deleting tour ${tourId} with ${totalRelated} related records`)
+      
+      // Get all booking IDs for this tour
+      const bookingIds = await prisma.booking.findMany({
+        where: { tourId },
+        select: { id: true },
+      })
+      const bookingIdList = bookingIds.map(b => b.id)
+      
+      await prisma.$transaction([
+        // Delete booking addons first (child of booking)
+        prisma.bookingAddon.deleteMany({ 
+          where: { bookingId: { in: bookingIdList } } 
+        }),
+        // Delete payments (child of booking)
+        prisma.payment.deleteMany({ 
+          where: { bookingId: { in: bookingIdList } } 
+        }),
+        // Delete bookings
+        prisma.booking.deleteMany({ where: { tourId } }),
+        // Delete departures
+        prisma.tourDeparture.deleteMany({ where: { tourId } }),
+        // Delete reviews
+        prisma.tourReview.deleteMany({ where: { tourId } }),
+        // Delete tour addons
+        prisma.tourAddon.deleteMany({ where: { tourId } }),
+        // Delete tour media
+        prisma.tourMedia.deleteMany({ where: { tourId } }),
+        // Delete itinerary days
+        prisma.itineraryDay.deleteMany({ where: { tourId } }),
+        // Finally delete tour
+        prisma.tour.delete({ where: { id: tourId } }),
+      ])
+      
+      console.log(`✅ Force deleted tour ${tourId} and ${totalRelated} related records`)
+      return NextResponse.json({ 
+        success: true, 
+        message: `Deleted tour and ${totalRelated} related records`,
+        deleted: {
+          bookings: bookingsCount,
+          departures: departuresCount,
+          reviews: reviewsCount,
+        }
+      })
+    }
 
     await prisma.tour.delete({
       where: { id: tourId },

@@ -311,6 +311,75 @@ export async function POST(request: NextRequest) {
       include: homestayInclude,
     })
 
+    // Process availability blocks for new homestay
+    console.log('🔍 API CREATE DEBUG:', {
+      hasAvailabilityBlocks: !!data.availabilityBlocks,
+      blockCount: data.availabilityBlocks?.length || 0,
+      blocks: data.availabilityBlocks,
+    });
+
+    if (data.availabilityBlocks && data.availabilityBlocks.length > 0) {
+      console.log('✅ Processing availability blocks for new homestay...');
+      
+      // Get or create a default room for availability
+      let targetRoomId = homestay.HomestayRoom[0]?.id;
+      
+      if (!targetRoomId) {
+        // Create a default room if none exists
+        const defaultRoom = await prisma.homestayRoom.create({
+          data: {
+            id: nanoid(),
+            homestayId: homestay.id,
+            name: 'Phòng chính',
+            slug: 'phong-chinh',
+            status: HomestayRoomStatus.ACTIVE,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          },
+        });
+        targetRoomId = defaultRoom.id;
+      }
+
+      const availabilityRecords: Prisma.HomestayAvailabilityCreateManyInput[] = []
+      
+      for (const block of data.availabilityBlocks) {
+        const startDate = new Date(block.startDate)
+        const endDate = new Date(block.endDate)
+        
+        // Generate a date for each day in the range
+        const currentDate = new Date(startDate)
+        while (currentDate <= endDate) {
+          availabilityRecords.push({
+            id: nanoid(),
+            homestayId: homestay.id,
+            roomId: targetRoomId,
+            date: new Date(currentDate),
+            totalUnits: 1,
+            reservedUnits: 1,
+            status: 'BLOCKED',
+            source: block.notes || 'Manual block',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          })
+          
+          currentDate.setDate(currentDate.getDate() + 1)
+        }
+      }
+
+      if (availabilityRecords.length > 0) {
+        console.log(`✅ Creating ${availabilityRecords.length} availability records for new homestay...`);
+        const result = await prisma.homestayAvailability.createMany({
+          data: availabilityRecords,
+          skipDuplicates: true,
+        });
+        console.log(`✅ Created ${result.count} availability records successfully!`);
+      } else {
+        console.log('⚠️ No availability records to create');
+      }
+    } else {
+      console.log('⚠️ No availability blocks in data or length is 0');
+    }
+
     return NextResponse.json(serializeHomestay(homestay), { status: 201 })
   } catch (error) {
     console.error('Failed to create homestay:', error)

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Star, ThumbsUp, ThumbsDown, MessageSquare, Eye, Trash2 } from 'lucide-react';
+import { Star, ThumbsUp, ThumbsDown, MessageSquare, Eye, Trash2, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -41,10 +41,11 @@ interface Review {
     email: string;
   };
   booking?: {
-    tour?: { title: string };
-    homestay?: { title: string };
+    tour?: { id: string; title: string; slug: string };
+    homestay?: { id: string; title: string; slug: string };
   };
   adminResponse?: string;
+  type?: 'tour' | 'homestay';
 }
 
 export default function ReviewsManagementPage() {
@@ -54,6 +55,13 @@ export default function ReviewsManagementPage() {
   const [selectedReview, setSelectedReview] = useState<Review | null>(null);
   const [response, setResponse] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  
+  // Word counter for admin response
+  const countWords = (text: string) => {
+    return text.trim().split(/\s+/).filter(word => word.length > 0).length;
+  };
+  const responseWordCount = countWords(response);
+  const MAX_RESPONSE_WORDS = 500;
 
   const loadReviews = useCallback(async () => {
     try {
@@ -64,12 +72,19 @@ export default function ReviewsManagementPage() {
       }
       
       const res = await fetch(`/api/admin/reviews?${params.toString()}`);
-      if (!res.ok) throw new Error('Failed to load reviews');
+      if (!res.ok) {
+        const error = await res.json();
+        console.error('Failed to load reviews:', error);
+        throw new Error(error.error || 'Failed to load reviews');
+      }
       
       const data = await res.json();
+      console.log('Loaded reviews:', data.reviews?.length || 0, 'reviews');
+      console.log('Sample review:', data.reviews?.[0]);
       setReviews(data.reviews || []);
     } catch (error) {
       console.error('Error loading reviews:', error);
+      alert('Không thể tải danh sách đánh giá. Vui lòng thử lại.');
     } finally {
       setLoading(false);
     }
@@ -87,14 +102,24 @@ export default function ReviewsManagementPage() {
         body: JSON.stringify({ status: 'APPROVED' }),
       });
       
-      if (!res.ok) throw new Error('Failed to approve review');
+      const data = await res.json();
+      
+      if (!res.ok) {
+        alert(`Lỗi: ${data.error || 'Không thể duyệt đánh giá'}`);
+        return;
+      }
+      
+      alert('Đã duyệt đánh giá thành công!');
       await loadReviews();
     } catch (error) {
       console.error('Error approving review:', error);
+      alert('Có lỗi xảy ra khi duyệt đánh giá');
     }
   };
 
   const handleReject = async (id: string) => {
+    if (!window.confirm('Bạn có chắc muốn từ chối đánh giá này?')) return;
+    
     try {
       const res = await fetch(`/api/admin/reviews/${id}`, {
         method: 'PATCH',
@@ -102,10 +127,18 @@ export default function ReviewsManagementPage() {
         body: JSON.stringify({ status: 'REJECTED' }),
       });
       
-      if (!res.ok) throw new Error('Failed to reject review');
+      const data = await res.json();
+      
+      if (!res.ok) {
+        alert(`Lỗi: ${data.error || 'Không thể từ chối đánh giá'}`);
+        return;
+      }
+      
+      alert('Đã từ chối đánh giá thành công!');
       await loadReviews();
     } catch (error) {
       console.error('Error rejecting review:', error);
+      alert('Có lỗi xảy ra khi từ chối đánh giá');
     }
   };
 
@@ -133,6 +166,11 @@ export default function ReviewsManagementPage() {
   const handleSubmitResponse = async () => {
     if (!selectedReview) return;
     
+    if (responseWordCount > MAX_RESPONSE_WORDS) {
+      alert(`Phản hồi quá dài! Vui lòng giới hạn trong ${MAX_RESPONSE_WORDS} từ (hiện tại: ${responseWordCount} từ)`);
+      return;
+    }
+
     try {
       const res = await fetch(`/api/admin/reviews/${selectedReview.id}`, {
         method: 'PATCH',
@@ -140,14 +178,21 @@ export default function ReviewsManagementPage() {
         body: JSON.stringify({ adminResponse: response }),
       });
       
-      if (!res.ok) throw new Error('Failed to submit response');
+      const data = await res.json();
       
+      if (!res.ok) {
+        alert(`Lỗi: ${data.error || 'Không thể gửi phản hồi'}`);
+        return;
+      }
+      
+      alert('Đã gửi phản hồi thành công!');
       setIsDialogOpen(false);
       setSelectedReview(null);
       setResponse('');
       await loadReviews();
     } catch (error) {
       console.error('Error submitting response:', error);
+      alert('Có lỗi xảy ra khi gửi phản hồi');
     }
   };
 
@@ -279,11 +324,53 @@ export default function ReviewsManagementPage() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    {review.booking?.tour?.title || review.booking?.homestay?.title || 'N/A'}
+                    {review.booking?.tour ? (
+                      <a
+                        href={`/tours/${review.booking.tour.slug}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary hover:underline font-medium inline-flex items-center gap-1"
+                        title="Xem chi tiết tour"
+                      >
+                        {review.booking.tour.title}
+                        <ExternalLink className="h-3 w-3" />
+                      </a>
+                    ) : review.booking?.homestay ? (
+                      <a
+                        href={`/homestays/${review.booking.homestay.slug}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary hover:underline font-medium inline-flex items-center gap-1"
+                        title="Xem chi tiết homestay"
+                      >
+                        {review.booking.homestay.title}
+                        <ExternalLink className="h-3 w-3" />
+                      </a>
+                    ) : (
+                      'N/A'
+                    )}
                   </TableCell>
                   <TableCell>{renderStars(review.rating)}</TableCell>
-                  <TableCell className="max-w-xs truncate">
-                    {review.comment}
+                  <TableCell className="max-w-md">
+                    <div className="space-y-2">
+                      <div className="line-clamp-2 text-sm break-words overflow-wrap-anywhere">
+                        {review.comment || <span className="text-muted-foreground italic">Không có nội dung</span>}
+                      </div>
+                      {review.adminResponse && (
+                        <div className="rounded bg-blue-50 p-2 text-xs dark:bg-blue-950">
+                          <span className="font-medium text-blue-700 dark:text-blue-300">Phản hồi: </span>
+                          <span className="text-blue-600 dark:text-blue-400 break-words overflow-wrap-anywhere">{review.adminResponse}</span>
+                        </div>
+                      )}
+                      {review.comment && review.comment.length > 100 && (
+                        <button
+                          onClick={() => handleRespond(review)}
+                          className="text-xs text-primary hover:underline"
+                        >
+                          Xem đầy đủ
+                        </button>
+                      )}
+                    </div>
                   </TableCell>
                   <TableCell>{getStatusBadge(review.status)}</TableCell>
                   <TableCell>
@@ -295,17 +382,21 @@ export default function ReviewsManagementPage() {
                         <>
                           <Button
                             size="sm"
-                            variant="outline"
+                            className="bg-green-600 hover:bg-green-700"
                             onClick={() => handleApprove(review.id)}
+                            title="Phê duyệt"
                           >
-                            <ThumbsUp className="h-4 w-4" />
+                            <ThumbsUp className="mr-1 h-4 w-4" />
+                            Duyệt
                           </Button>
                           <Button
                             size="sm"
-                            variant="outline"
+                            variant="destructive"
                             onClick={() => handleReject(review.id)}
+                            title="Từ chối"
                           >
-                            <ThumbsDown className="h-4 w-4" />
+                            <ThumbsDown className="mr-1 h-4 w-4" />
+                            Từ chối
                           </Button>
                         </>
                       )}
@@ -313,13 +404,17 @@ export default function ReviewsManagementPage() {
                         size="sm"
                         variant="outline"
                         onClick={() => handleRespond(review)}
+                        title="Phản hồi"
                       >
-                        <MessageSquare className="h-4 w-4" />
+                        <MessageSquare className="mr-1 h-4 w-4" />
+                        Phản hồi
                       </Button>
                       <Button
                         size="sm"
-                        variant="destructive"
+                        variant="outline"
+                        className="text-red-600 hover:bg-red-50"
                         onClick={() => handleDelete(review.id)}
+                        title="Xóa"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -334,7 +429,7 @@ export default function ReviewsManagementPage() {
 
       {/* Response Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>Phản hồi đánh giá</DialogTitle>
             <DialogDescription>
@@ -346,20 +441,39 @@ export default function ReviewsManagementPage() {
             <div className="space-y-4">
               <div className="rounded-lg bg-muted p-4">
                 <div className="mb-2 flex items-center justify-between">
-                  <p className="font-medium">{selectedReview.user.name}</p>
+                  <p className="font-medium break-words">{selectedReview.user.name}</p>
                   {renderStars(selectedReview.rating)}
                 </div>
-                <p className="text-sm">{selectedReview.comment}</p>
+                <div className="max-h-[200px] overflow-y-auto">
+                  <p className="text-sm break-all whitespace-pre-wrap">{selectedReview.comment}</p>
+                </div>
               </div>
               
               <div className="space-y-2">
-                <label className="text-sm font-medium">Phản hồi của bạn</label>
+                <div className="flex items-center justify-between">
+                  <label className="text-sm font-medium">Phản hồi của bạn</label>
+                  <span className={`text-xs font-medium ${
+                    responseWordCount > MAX_RESPONSE_WORDS 
+                      ? 'text-destructive' 
+                      : responseWordCount > MAX_RESPONSE_WORDS * 0.9 
+                        ? 'text-orange-500' 
+                        : 'text-muted-foreground'
+                  }`}>
+                    {responseWordCount} / {MAX_RESPONSE_WORDS} từ
+                  </span>
+                </div>
                 <Textarea
                   value={response}
                   onChange={(e) => setResponse(e.target.value)}
                   placeholder="Nhập phản hồi..."
                   rows={4}
+                  className={responseWordCount > MAX_RESPONSE_WORDS ? 'border-destructive focus-visible:ring-destructive' : ''}
                 />
+                {responseWordCount > MAX_RESPONSE_WORDS && (
+                  <p className="text-xs text-destructive font-medium">
+                    Vượt quá {responseWordCount - MAX_RESPONSE_WORDS} từ!
+                  </p>
+                )}
               </div>
             </div>
           )}

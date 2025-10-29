@@ -109,7 +109,7 @@ export function SettingField({
               type="text"
               value={value}
               onChange={(e) => onChange(e.target.value)}
-              placeholder={placeholder || '/path/to/image.jpg'}
+              placeholder={placeholder || '/duong-dan/anh.jpg'}
               required={required}
               disabled={disabled}
             />
@@ -117,12 +117,12 @@ export function SettingField({
               <div className="relative w-32 h-32 border rounded overflow-hidden">
                 <Image
                   src={value}
-                  alt="Setting image"
+                  alt="Ảnh cấu hình"
                   width={100}
                   height={100}
                   className="rounded-md"
                   onError={(e) => {
-                    e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect width="200" height="200" fill="%23ddd"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="14" fill="%23999"%3ENo Image%3C/text%3E%3C/svg%3E'
+                    e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect width="200" height="200" fill="%23ddd"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="14" fill="%23999"%3EKh%C3%B4ng c%C3%B3 %E1%BA%A3nh%3C/text%3E%3C/svg%3E'
                   }}
                 />
               </div>

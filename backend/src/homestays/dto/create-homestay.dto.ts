@@ -2,6 +2,7 @@ import { Transform, Type } from 'class-transformer';
 import {
   IsArray,
   IsBoolean,
+  IsDateString,
   IsEnum,
   IsNumber,
   IsOptional,
@@ -11,6 +12,7 @@ import {
   Length,
   MaxLength,
   Min,
+  ValidateNested,
 } from 'class-validator';
 import { HomestayCategory, HomestayStatus, HomestayType } from '../homestay.entity';
 
@@ -189,4 +191,54 @@ export class CreateHomestayDto {
   @IsArray()
   @IsUUID(undefined, { each: true })
   tagIds?: string[];
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreateHomestayRoomNestedDto)
+  rooms?: CreateHomestayRoomNestedDto[];
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreateHomestayAvailabilityNestedDto)
+  availabilityBlocks?: CreateHomestayAvailabilityNestedDto[];
+}
+
+export class CreateHomestayRoomNestedDto {
+  @IsString()
+  @Length(2, 120)
+  name!: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(180)
+  slug?: string;
+
+  @Type(() => Number)
+  @IsNumber()
+  @Min(1)
+  maxGuests!: number;
+
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  basePrice!: number;
+
+  @IsOptional()
+  @IsEnum(['ACTIVE', 'INACTIVE', 'MAINTENANCE'])
+  status?: 'ACTIVE' | 'INACTIVE' | 'MAINTENANCE';
+}
+
+export class CreateHomestayAvailabilityNestedDto {
+  @IsDateString()
+  startDate!: string;
+
+  @IsDateString()
+  endDate!: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(255)
+  notes?: string;
 }

@@ -1125,7 +1125,7 @@ export function TourForm({
       <div>
         <h2 className="text-xl font-semibold">{title}</h2>
         <p className="text-sm text-muted-foreground">
-          Manage core tour details, itinerary, departures and pricing.
+          Quản lý thông tin tour, lịch trình, chuyến khởi hành và giá bán.
         </p>
       </div>
 
@@ -1138,10 +1138,10 @@ export function TourForm({
       <ScrollArea className="max-h-[70vh] pr-4">
         <div className="flex flex-col gap-8 pb-4">
           <section className="space-y-4">
-            <h3 className="text-lg font-semibold">Basic Information</h3>
+            <h3 className="text-lg font-semibold">Thông tin cơ bản</h3>
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="title">Title</Label>
+                <Label htmlFor="title">Tiêu đề tour</Label>
                 <Input
                   id="title"
                   value={formData.title}
@@ -1151,12 +1151,12 @@ export function TourForm({
                       title: event.target.value,
                     }))
                   }
-                  placeholder="Discover Mekong Delta in 3 Days"
+                  placeholder="Khám phá miền Tây trong 3 ngày"
                   required
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="slug">Slug</Label>
+                <Label htmlFor="slug">Đường dẫn (slug)</Label>
                 <Input
                   id="slug"
                   value={formData.slug}
@@ -1166,13 +1166,13 @@ export function TourForm({
                       slug: event.target.value,
                     }))
                   }
-                  placeholder="discover-mekong-delta-3-days"
+                  placeholder="tour-mien-tay-3-ngay"
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="summary">Summary</Label>
+              <Label htmlFor="summary">Tóm tắt</Label>
               <Textarea
                 id="summary"
                 value={formData.summary}
@@ -1182,13 +1182,13 @@ export function TourForm({
                     summary: event.target.value,
                   }))
                 }
-                placeholder="Short overview shown on listings and meta descriptions."
+                placeholder="Mô tả ngắn hiển thị trên danh sách tour và thẻ meta."
               />
             </div>
 
             <div className="grid gap-4 md:grid-cols-3">
               <div className="space-y-2">
-                <Label htmlFor="durationDays">Duration (Days)</Label>
+                <Label htmlFor="durationDays">Thời lượng (ngày)</Label>
                 <Input
                   id="durationDays"
                   type="number"
@@ -1237,7 +1237,7 @@ export function TourForm({
                 ) : null}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="durationNights">Duration (Nights)</Label>
+                <Label htmlFor="durationNights">Thời lượng (đêm)</Label>
                 <Input
                   id="durationNights"
                   type="number"
@@ -1280,7 +1280,7 @@ export function TourForm({
                 ) : null}
               </div>
               <div className="space-y-2">
-                <Label>Difficulty</Label>
+                <Label>Độ khó</Label>
                 <Select
                   value={formData.difficulty}
                   onValueChange={(value: TourDifficulty) =>
@@ -1291,7 +1291,7 @@ export function TourForm({
                   }
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select difficulty" />
+                    <SelectValue placeholder="Chọn độ khó" />
                   </SelectTrigger>
                   <SelectContent>
                     {difficultyOptions.map((option) => (
@@ -1306,7 +1306,7 @@ export function TourForm({
 
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="basePrice">Base Price</Label>
+                <Label htmlFor="basePrice">Giá cơ bản</Label>
                 <Input
                   id="basePrice"
                   type="number"
@@ -1322,7 +1322,7 @@ export function TourForm({
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="currency">Currency</Label>
+                <Label htmlFor="currency">Đơn vị tiền tệ</Label>
                 <Input
                   id="currency"
                   value={formData.currency}
@@ -1339,7 +1339,7 @@ export function TourForm({
 
             <div className="grid gap-4 md:grid-cols-3">
               <div className="space-y-2">
-                <Label htmlFor="maxGuests">Max Guests</Label>
+                <Label htmlFor="maxGuests">Số khách tối đa</Label>
                 <Input
                   id="maxGuests"
                   type="number"
@@ -1375,7 +1375,7 @@ export function TourForm({
                 ) : null}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="meetingPoint">Meeting Point</Label>
+                <Label htmlFor="meetingPoint">Điểm tập trung</Label>
                 <Input
                   id="meetingPoint"
                   value={formData.meetingPoint}
@@ -1388,7 +1388,7 @@ export function TourForm({
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="heroImageUrl">Hero Image URL</Label>
+                <Label htmlFor="heroImageUrl">Đường dẫn ảnh chính</Label>
                 <Input
                   id="heroImageUrl"
                   value={formData.heroImageUrl}
@@ -1404,7 +1404,7 @@ export function TourForm({
 
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="departureCity">Departure City</Label>
+                <Label htmlFor="departureCity">Thành phố khởi hành</Label>
                 <Input
                   id="departureCity"
                   value={formData.departureCity}
@@ -1417,7 +1417,7 @@ export function TourForm({
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="arrivalCity">Arrival City</Label>
+                <Label htmlFor="arrivalCity">Điểm đến</Label>
                 <Input
                   id="arrivalCity"
                   value={formData.arrivalCity}
@@ -1433,7 +1433,7 @@ export function TourForm({
 
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
-                <Label>Status</Label>
+                <Label>Trạng thái</Label>
                 <Select
                   value={formData.status}
                   onValueChange={(value: TourStatus) =>
@@ -1444,7 +1444,7 @@ export function TourForm({
                   }
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select status" />
+                    <SelectValue placeholder="Chọn trạng thái" />
                   </SelectTrigger>
                   <SelectContent>
                     {statusOptions.map((option) => (
@@ -1456,7 +1456,7 @@ export function TourForm({
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Featured Tour</Label>
+                <Label>Tour nổi bật</Label>
                 <div className="flex items-center gap-3 rounded-md border px-3 py-2">
                   <input
                     id="isFeatured"
@@ -1469,7 +1469,7 @@ export function TourForm({
                     htmlFor="isFeatured"
                     className="cursor-pointer font-normal"
                   >
-                    Highlight this tour on landing sections & homepage
+                    Hiển thị tour này ở các khu vực nổi bật và trang chủ
                   </Label>
                 </div>
               </div>
@@ -1477,10 +1477,10 @@ export function TourForm({
           </section>
 
           <section className="space-y-4">
-            <h3 className="text-lg font-semibold">Highlights & Content</h3>
+            <h3 className="text-lg font-semibold">Điểm nổi bật & Nội dung</h3>
             <div className="grid gap-4 md:grid-cols-3">
               <div className="space-y-2">
-                <Label>Highlights (one per line)</Label>
+                <Label>Điểm nổi bật (mỗi dòng một ý)</Label>
                 <Textarea
                   value={formData.highlights}
                   onChange={(event) =>
@@ -1489,12 +1489,12 @@ export function TourForm({
                       highlights: event.target.value,
                     }))
                   }
-                  placeholder="Authentic river homestay&#10;Boat trip through coconut groves"
+                  placeholder="Homestay ven sông đích thực&#10;Du ngoạn ghe qua rừng dừa nước"
                   rows={5}
                 />
               </div>
               <div className="space-y-2">
-                <Label>Inclusions</Label>
+                <Label>Bao gồm</Label>
                 <Textarea
                   value={formData.inclusions}
                   onChange={(event) =>
@@ -1503,12 +1503,12 @@ export function TourForm({
                       inclusions: event.target.value,
                     }))
                   }
-                  placeholder="Meals&#10;Accommodation&#10;Local guide"
+                  placeholder="Bữa ăn&#10;Lưu trú&#10;Hướng dẫn viên địa phương"
                   rows={5}
                 />
               </div>
               <div className="space-y-2">
-                <Label>Exclusions</Label>
+                <Label>Không bao gồm</Label>
                 <Textarea
                   value={formData.exclusions}
                   onChange={(event) =>
@@ -1517,7 +1517,7 @@ export function TourForm({
                       exclusions: event.target.value,
                     }))
                   }
-                  placeholder="Flights&#10;Travel insurance"
+                  placeholder="Vé máy bay&#10;Bảo hiểm du lịch"
                   rows={5}
                 />
               </div>
@@ -1526,7 +1526,7 @@ export function TourForm({
 
           <section className="space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold">Itinerary</h3>
+              <h3 className="text-lg font-semibold">Lịch trình chi tiết</h3>
               <Button
                 type="button"
                 variant="outline"
@@ -1540,14 +1540,13 @@ export function TourForm({
                   }))
                 }
               >
-                Add Day
+                Thêm ngày
               </Button>
             </div>
 
             {formData.itineraryDays.length === 0 && (
               <p className="text-sm text-muted-foreground">
-                No itinerary days added yet. Click &quot;Add Day&quot; to start
-                describing the journey.
+                Chưa có ngày nào trong lịch trình. Nhấn "Thêm ngày" để bắt đầu mô tả hành trình.
               </p>
             )}
 
@@ -1560,7 +1559,7 @@ export function TourForm({
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex items-center gap-4">
                       <div className="space-y-2">
-                        <Label>Day</Label>
+                        <Label>Ngày</Label>
                         <Input
                           type="number"
                           min={1}
@@ -1579,7 +1578,7 @@ export function TourForm({
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label>Title</Label>
+                        <Label>Tiêu đề</Label>
                         <Input
                           value={day.title}
                           onChange={(event) =>
@@ -1592,7 +1591,7 @@ export function TourForm({
                               return { ...prev, itineraryDays: next }
                             })
                           }
-                          placeholder="Floating markets & homestay"
+                          placeholder="Chợ nổi & nghỉ tại homestay"
                         />
                       </div>
                     </div>
@@ -1615,7 +1614,7 @@ export function TourForm({
 
                   <div className="grid gap-4 md:grid-cols-2">
                     <div className="space-y-2">
-                      <Label>Description</Label>
+                      <Label>Mô tả</Label>
                       <Textarea
                         value={day.description}
                         onChange={(event) =>
@@ -1628,11 +1627,11 @@ export function TourForm({
                             return { ...prev, itineraryDays: next }
                           })
                         }
-                        placeholder="Morning visit to Cai Rang Market..."
+                        placeholder="Buổi sáng tham quan chợ nổi Cái Răng..."
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label>Stay Info</Label>
+                      <Label>Thông tin lưu trú</Label>
                       <Textarea
                         value={day.stayInfo}
                         onChange={(event) =>
@@ -1645,14 +1644,14 @@ export function TourForm({
                             return { ...prev, itineraryDays: next }
                           })
                         }
-                        placeholder="Overnight at local homestay with dinner"
+                        placeholder="Nghỉ đêm tại homestay địa phương kèm bữa tối"
                       />
                     </div>
                   </div>
 
                   <div className="grid gap-4 md:grid-cols-2">
                     <div className="space-y-2">
-                      <Label>Meals (one per line)</Label>
+                      <Label>Bữa ăn (mỗi dòng một món)</Label>
                       <Textarea
                         value={day.meals}
                         onChange={(event) =>
@@ -1665,11 +1664,11 @@ export function TourForm({
                             return { ...prev, itineraryDays: next }
                           })
                         }
-                        placeholder="Breakfast&#10;Lunch"
+                        placeholder="Bữa sáng&#10;Bữa trưa"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label>Activities (one per line)</Label>
+                      <Label>Hoạt động (mỗi dòng một hoạt động)</Label>
                       <Textarea
                         value={day.activities}
                         onChange={(event) =>
@@ -1682,7 +1681,7 @@ export function TourForm({
                             return { ...prev, itineraryDays: next }
                           })
                         }
-                        placeholder="Boat ride&#10;Cycling through coconut groves"
+                        placeholder="Đi ghe&#10;Đạp xe qua vườn dừa"
                       />
                     </div>
                   </div>
@@ -1693,7 +1692,7 @@ export function TourForm({
 
           <section className="space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold">Departures & Pricing</h3>
+              <h3 className="text-lg font-semibold">Lịch khởi hành & Giá bán</h3>
               <Button
                 type="button"
                 variant="outline"
@@ -1704,13 +1703,13 @@ export function TourForm({
                   }))
                 }
               >
-                Add Departure
+                Thêm lịch khởi hành
               </Button>
             </div>
 
             {formData.departures.length === 0 && (
               <p className="text-sm text-muted-foreground">
-                Add departure windows with availability and tiered pricing.
+                Thêm các đợt khởi hành kèm số chỗ và mức giá tương ứng.
               </p>
             )}
 
@@ -1792,7 +1791,7 @@ export function TourForm({
                     <div className="flex items-center justify-between gap-4">
                       <div className="grid flex-1 gap-4 md:grid-cols-4">
                         <div className="space-y-2">
-                          <Label>Start Date</Label>
+                          <Label>Ngày bắt đầu</Label>
                           <Input
                             type="date"
                             value={departure.startDate}
@@ -1802,7 +1801,7 @@ export function TourForm({
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label>End Date</Label>
+                          <Label>Ngày kết thúc</Label>
                           <Input
                             type="date"
                             value={departure.endDate}
@@ -1812,7 +1811,7 @@ export function TourForm({
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label>Total Seats</Label>
+                          <Label>Tổng số chỗ</Label>
                           <Input
                             type="number"
                             min={1}
@@ -1839,7 +1838,7 @@ export function TourForm({
                           ) : null}
                         </div>
                         <div className="space-y-2">
-                          <Label>Available Seats</Label>
+                          <Label>Số chỗ còn trống</Label>
                           <Input
                             type="number"
                             min={0}
@@ -1888,7 +1887,7 @@ export function TourForm({
 
                     <div className="grid gap-4 md:grid-cols-3">
                       <div className="space-y-2">
-                        <Label>Adult Price</Label>
+                        <Label>Giá người lớn</Label>
                         <Input
                           type="number"
                           min={0}
@@ -1900,7 +1899,7 @@ export function TourForm({
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label>Child Price</Label>
+                        <Label>Giá trẻ em</Label>
                         <Input
                           type="number"
                           min={0}
@@ -1912,7 +1911,7 @@ export function TourForm({
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label>Infant Price</Label>
+                        <Label>Giá em bé</Label>
                         <Input
                           type="number"
                           min={0}
@@ -1927,7 +1926,7 @@ export function TourForm({
 
                     <div className="grid gap-4 md:grid-cols-2">
                       <div className="space-y-2">
-                        <Label>Status</Label>
+                        <Label>Trạng thái</Label>
                         <Select
                           value={departure.status}
                           onValueChange={(value: DepartureStatus) =>
@@ -1935,7 +1934,7 @@ export function TourForm({
                           }
                         >
                           <SelectTrigger>
-                            <SelectValue placeholder="Select status" />
+                            <SelectValue placeholder="Chọn trạng thái" />
                           </SelectTrigger>
                           <SelectContent>
                             {departureStatusOptions.map((option) => (
@@ -1947,7 +1946,7 @@ export function TourForm({
                         </Select>
                       </div>
                       <div className="space-y-2">
-                        <Label>Notes</Label>
+                        <Label>Ghi chú</Label>
                         <Textarea
                           value={departure.notes}
                           onChange={(event) =>
@@ -1964,7 +1963,7 @@ export function TourForm({
 
           <section className="space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold">Optional Add-ons</h3>
+              <h3 className="text-lg font-semibold">Dịch vụ bổ sung tùy chọn</h3>
               <Button
                 type="button"
                 variant="outline"
@@ -1975,13 +1974,13 @@ export function TourForm({
                   }))
                 }
               >
-                Add Add-on
+                Thêm dịch vụ
               </Button>
             </div>
 
             {formData.addons.length === 0 && (
               <p className="text-sm text-muted-foreground">
-                Include upsell items such as transfers, meals, or premium rooms.
+                Thêm các dịch vụ bán kèm như đưa đón, bữa ăn hoặc phòng cao cấp.
               </p>
             )}
 
@@ -1994,7 +1993,7 @@ export function TourForm({
                   <div className="flex items-start justify-between gap-4">
                     <div className="grid flex-1 gap-4 md:grid-cols-3">
                       <div className="space-y-2 md:col-span-2">
-                        <Label>Name</Label>
+                        <Label>Tên dịch vụ</Label>
                         <Input
                           value={addon.name}
                           onChange={(event) =>
@@ -2007,11 +2006,11 @@ export function TourForm({
                               return { ...prev, addons: next }
                             })
                           }
-                          placeholder="Private airport transfer"
+                          placeholder="Đưa đón sân bay riêng"
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label>Price</Label>
+                        <Label>Giá</Label>
                         <Input
                           type="number"
                           min={0}
@@ -2049,7 +2048,7 @@ export function TourForm({
 
                   <div className="grid gap-4 md:grid-cols-2">
                     <div className="space-y-2">
-                      <Label>Description</Label>
+                      <Label>Mô tả</Label>
                       <Textarea
                         value={addon.description}
                         onChange={(event) =>
@@ -2065,7 +2064,7 @@ export function TourForm({
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label>Options</Label>
+                      <Label>Tùy chọn</Label>
                       <div className="flex flex-col gap-3 rounded-md border p-3">
                         <label className="flex items-center gap-3 text-sm">
                           <input
@@ -2083,7 +2082,7 @@ export function TourForm({
                             }
                             className="h-4 w-4"
                           />
-                          Priced per person
+                          Tính theo đầu người
                         </label>
                         <label className="flex items-center gap-3 text-sm">
                           <input
@@ -2101,7 +2100,7 @@ export function TourForm({
                             }
                             className="h-4 w-4"
                           />
-                          Available for customers
+                          Cho phép khách chọn
                         </label>
                       </div>
                     </div>
@@ -2140,7 +2139,7 @@ export function TourForm({
                       <div className="relative h-48 w-full">
                         <Image
                           src={item.url}
-                          alt={item.alt ?? `Media ${index + 1}`}
+                          alt={item.alt ?? `Hình ảnh ${index + 1}`}
                           fill
                           className="object-cover"
                           sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
@@ -2210,10 +2209,10 @@ export function TourForm({
           </section>
 
           <section className="space-y-4">
-            <h3 className="text-lg font-semibold">SEO & Promotions</h3>
+            <h3 className="text-lg font-semibold">SEO & Khuyến mãi</h3>
             <div className="grid gap-4 md:grid-cols-3">
               <div className="space-y-2">
-                <Label htmlFor="seoTitle">SEO Title</Label>
+                <Label htmlFor="seoTitle">Tiêu đề SEO</Label>
                 <Input
                   id="seoTitle"
                   value={formData.seoTitle}
@@ -2226,7 +2225,7 @@ export function TourForm({
                 />
               </div>
               <div className="space-y-2 md:col-span-2">
-                <Label htmlFor="seoDescription">SEO Description</Label>
+                <Label htmlFor="seoDescription">Mô tả SEO</Label>
                 <Textarea
                   id="seoDescription"
                   value={formData.seoDescription}
@@ -2242,7 +2241,7 @@ export function TourForm({
             </div>
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
-                <Label>SEO Keywords (one per line)</Label>
+                <Label>Từ khóa SEO (mỗi dòng một từ khóa)</Label>
                 <Textarea
                   value={formData.seoKeywords}
                   onChange={(event) =>
@@ -2434,7 +2433,7 @@ export function TourForm({
                       code: event.target.value.toUpperCase(),
                     }))
                   }
-                  placeholder="SUMMER2025"
+                  placeholder="UUDAI2025"
                   autoComplete="off"
                 />
               </div>

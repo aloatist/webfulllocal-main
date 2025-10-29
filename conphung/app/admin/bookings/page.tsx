@@ -28,7 +28,7 @@ import {
 } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { BookingStatus } from '@prisma/client';
-import { RefreshCw } from 'lucide-react';
+import { RefreshCw, Trash2 } from 'lucide-react';
 
 interface BookingListItem {
   id: string;
@@ -174,6 +174,54 @@ export default function AdminBookingsPage() {
     }
   };
 
+  const handleDeleteBooking = async () => {
+    if (!selectedBooking) return;
+
+    const confirmed = window.confirm(
+      `Bạn có chắc muốn xóa booking ${selectedBooking.reference}?\n\n` +
+      `Khách hàng: ${selectedBooking.customer.fullName}\n` +
+      `Tour: ${selectedBooking.tour.title}\n\n` +
+      `⚠️ Hành động này KHÔNG THỂ HOÀN TÁC!`
+    );
+    
+    if (!confirmed) return;
+
+    setUpdating(true);
+    setError(null);
+
+    try {
+      const response = await fetch(`/api/bookings/${selectedBooking.id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        const payload = await response.json().catch(() => null);
+        throw new Error(payload?.error ?? 'Không thể xóa booking');
+      }
+
+      const result = await response.json();
+      
+      // Remove from list
+      setBookings((prev) => prev.filter((item) => item.id !== selectedBooking.id));
+      
+      // Close dialog
+      setDialogOpen(false);
+      setSelectedBooking(null);
+      
+      // Show success message
+      alert(result.message || '✅ Đã xóa booking thành công!');
+      
+      console.log(`✅ Deleted booking: ${selectedBooking.reference}`);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Không thể xóa booking';
+      setError(errorMessage);
+      alert('❌ ' + errorMessage);
+      console.error('Failed to delete booking:', err);
+    } finally {
+      setUpdating(false);
+    }
+  };
+
   const statusOptions = useMemo(
     () => [
       { value: 'ALL', label: 'Tất cả trạng thái' },
@@ -189,7 +237,7 @@ export default function AdminBookingsPage() {
     <div className="space-y-6 p-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Quản lý booking</h1>
+          <h1 className="text-2xl font-bold">Quản lý đặt tour</h1>
           <p className="text-sm text-muted-foreground">
             Theo dõi và quản lý các yêu cầu đặt tour từ khách hàng.
           </p>
@@ -389,13 +437,24 @@ export default function AdminBookingsPage() {
                     />
                   </div>
 
-                  <div className="flex justify-end gap-2">
-                    <Button variant="outline" onClick={() => setDialogOpen(false)}>
-                      Đóng
+                  <div className="flex justify-between gap-2">
+                    <Button 
+                      variant="destructive" 
+                      onClick={handleDeleteBooking} 
+                      disabled={updating}
+                      className="gap-2"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      Xóa booking
                     </Button>
-                    <Button onClick={handleUpdateBooking} disabled={updating}>
-                      {updating ? 'Đang lưu...' : 'Lưu thay đổi'}
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button variant="outline" onClick={() => setDialogOpen(false)}>
+                        Đóng
+                      </Button>
+                      <Button onClick={handleUpdateBooking} disabled={updating}>
+                        {updating ? 'Đang lưu...' : 'Lưu thay đổi'}
+                      </Button>
+                    </div>
                   </div>
                 </section>
               </div>

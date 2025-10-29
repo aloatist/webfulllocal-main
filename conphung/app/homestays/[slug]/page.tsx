@@ -47,7 +47,18 @@ export default async function HomestayDetailPage({ params }: PageProps) {
         where: { status: 'APPROVED' },
         take: 10,
         orderBy: { createdAt: 'desc' },
-        include: { 
+        select: {
+          id: true,
+          overallRating: true,
+          cleanlinessRating: true,
+          accuracyRating: true,
+          communicationRating: true,
+          locationRating: true,
+          valueRating: true,
+          content: true,
+          hostResponse: true,
+          hostResponseAt: true,
+          createdAt: true,
           User: {
             select: {
               name: true,
@@ -144,33 +155,36 @@ export default async function HomestayDetailPage({ params }: PageProps) {
         <Container>
           <div className="space-y-8">
             {/* Header */}
-            <div>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-                <span>{typeLabels[homestay.type]}</span>
-                <span>•</span>
-                <span>{categoryLabels[homestay.category]}</span>
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 text-sm font-medium">
+                <span className="rounded-full bg-primary/10 px-3 py-1 text-primary">
+                  {typeLabels[homestay.type]}
+                </span>
+                <span className="rounded-full bg-secondary/50 px-3 py-1">
+                  {categoryLabels[homestay.category]}
+                </span>
               </div>
               
-              <h1 className="text-3xl font-bold tracking-tight sm:text-4xl mb-2">
+              <h1 className="text-4xl font-bold tracking-tight sm:text-5xl bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
                 {homestay.title}
               </h1>
               
               {homestay.subtitle && (
-                <p className="text-lg text-muted-foreground mb-3">
+                <p className="text-xl text-muted-foreground font-medium">
                   {homestay.subtitle}
                 </p>
               )}
 
-              <div className="flex flex-wrap items-center justify-between gap-4">
-                <div className="flex flex-wrap items-center gap-4">
+              <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-xl bg-muted/30 border">
+                <div className="flex flex-wrap items-center gap-6">
                   {/* Rating */}
                   {homestay.ratingAverage && homestay.reviewCount > 0 && (
-                    <div className="flex items-center gap-1">
-                      <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
-                      <span className="font-semibold">
+                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-yellow-50 dark:bg-yellow-950 border border-yellow-200 dark:border-yellow-800">
+                      <Star className="h-5 w-5 fill-yellow-500 text-yellow-500" />
+                      <span className="font-bold text-lg">
                         {Number(homestay.ratingAverage).toFixed(1)}
                       </span>
-                      <span className="text-muted-foreground">
+                      <span className="text-sm text-muted-foreground">
                         ({homestay.reviewCount} đánh giá)
                       </span>
                     </div>
@@ -178,9 +192,9 @@ export default async function HomestayDetailPage({ params }: PageProps) {
 
                   {/* Location */}
                   {homestay.city && (
-                    <div className="flex items-center gap-1 text-muted-foreground">
-                      <MapPin className="h-4 w-4" />
-                      <span>
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <MapPin className="h-5 w-5 text-primary" />
+                      <span className="font-medium">
                         {homestay.city}
                         {homestay.country && `, ${homestay.country}`}
                       </span>
@@ -190,12 +204,14 @@ export default async function HomestayDetailPage({ params }: PageProps) {
                   {/* Badges */}
                   <div className="flex gap-2">
                     {homestay.isVerified && (
-                      <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700">
+                      <span className="flex items-center gap-1 rounded-full bg-blue-100 dark:bg-blue-950 px-3 py-1.5 text-xs font-bold text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                        <Check className="h-3 w-3" />
                         Đã xác minh
                       </span>
                     )}
                     {homestay.isSuperhost && (
-                      <span className="rounded-full bg-purple-100 px-3 py-1 text-xs font-semibold text-purple-700">
+                      <span className="flex items-center gap-1 rounded-full bg-purple-100 dark:bg-purple-950 px-3 py-1.5 text-xs font-bold text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
+                        <Star className="h-3 w-3 fill-current" />
                         Superhost
                       </span>
                     )}
@@ -217,47 +233,59 @@ export default async function HomestayDetailPage({ params }: PageProps) {
               {/* Left Column - Details */}
               <div className="lg:col-span-2 space-y-8">
                 {/* Quick Info */}
-                <div className="flex flex-wrap gap-6 border-b pb-6">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-6 rounded-xl bg-gradient-to-br from-primary/5 to-primary/10 border-2 border-primary/20">
                   {homestay.maxGuests && (
-                    <div className="flex items-center gap-2">
-                      <Users className="h-5 w-5 text-muted-foreground" />
-                      <span>{homestay.maxGuests} khách</span>
+                    <div className="flex flex-col items-center gap-2 p-4 rounded-lg bg-background/80 backdrop-blur">
+                      <Users className="h-6 w-6 text-primary" />
+                      <span className="font-bold text-lg">{homestay.maxGuests}</span>
+                      <span className="text-xs text-muted-foreground">Khách</span>
                     </div>
                   )}
                   {homestay.bedrooms && (
-                    <div className="flex items-center gap-2">
-                      <Bed className="h-5 w-5 text-muted-foreground" />
-                      <span>{homestay.bedrooms} phòng ngủ</span>
+                    <div className="flex flex-col items-center gap-2 p-4 rounded-lg bg-background/80 backdrop-blur">
+                      <Bed className="h-6 w-6 text-primary" />
+                      <span className="font-bold text-lg">{homestay.bedrooms}</span>
+                      <span className="text-xs text-muted-foreground">Phòng ngủ</span>
                     </div>
                   )}
                   {homestay.bathrooms && (
-                    <div className="flex items-center gap-2">
-                      <Bath className="h-5 w-5 text-muted-foreground" />
-                      <span>{homestay.bathrooms} phòng tắm</span>
+                    <div className="flex flex-col items-center gap-2 p-4 rounded-lg bg-background/80 backdrop-blur">
+                      <Bath className="h-6 w-6 text-primary" />
+                      <span className="font-bold text-lg">{homestay.bathrooms}</span>
+                      <span className="text-xs text-muted-foreground">Phòng tắm</span>
                     </div>
                   )}
                   {homestay.sizeSquareMeters && (
-                    <div className="flex items-center gap-2">
-                      <Maximize className="h-5 w-5 text-muted-foreground" />
-                      <span>{Number(homestay.sizeSquareMeters)} m²</span>
+                    <div className="flex flex-col items-center gap-2 p-4 rounded-lg bg-background/80 backdrop-blur">
+                      <Maximize className="h-6 w-6 text-primary" />
+                      <span className="font-bold text-lg">{Number(homestay.sizeSquareMeters)}</span>
+                      <span className="text-xs text-muted-foreground">m²</span>
                     </div>
                   )}
                 </div>
 
                 {/* Description */}
                 {homestay.description && (
-                  <div className="border-b pb-6">
-                    <h2 className="text-2xl font-bold mb-4">Mô tả</h2>
-                    <div className="prose max-w-none">
-                      <p className="whitespace-pre-line">{homestay.description}</p>
+                  <div className="p-6 rounded-xl bg-card border-2">
+                    <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+                      <div className="h-1 w-12 bg-gradient-to-r from-primary to-primary/30 rounded-full" />
+                      Mô tả
+                    </h2>
+                    <div className="prose prose-lg max-w-none dark:prose-invert">
+                      <p className="whitespace-pre-line text-muted-foreground leading-relaxed">
+                        {homestay.description}
+                      </p>
                     </div>
                   </div>
                 )}
 
                 {/* Amenities */}
-                <div className="border-b pb-6">
-                  <h2 className="text-2xl font-bold mb-4">Tiện nghi</h2>
-                  <div className="grid gap-4 sm:grid-cols-2">
+                <div className="p-6 rounded-xl bg-card border-2">
+                  <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+                    <div className="h-1 w-12 bg-gradient-to-r from-primary to-primary/30 rounded-full" />
+                    Tiện nghi
+                  </h2>
+                  <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
                     {homestay.hasWifi && (
                       <div className="flex items-center gap-3">
                         <Wifi className="h-5 w-5 text-primary" />
@@ -369,17 +397,6 @@ export default async function HomestayDetailPage({ params }: PageProps) {
                   </div>
                 </div>
 
-                {/* Reviews */}
-                {homestay.HomestayReview.length > 0 && (
-                  <Suspense fallback={<Loader />}>
-                    <ReviewsSection 
-                      reviews={homestay.HomestayReview}
-                      averageRating={homestay.ratingAverage ? Number(homestay.ratingAverage) : 0}
-                      totalReviews={homestay.reviewCount}
-                    />
-                  </Suspense>
-                )}
-
                 {/* Location Map */}
                 <div className="border-b pb-6">
                   <LocationMap
@@ -430,6 +447,20 @@ export default async function HomestayDetailPage({ params }: PageProps) {
               />
             </Suspense>
           </div>
+        </Container>
+      </Section>
+
+      {/* Reviews Section - Moved to bottom */}
+      <Section className="bg-muted/30">
+        <Container>
+          <Suspense fallback={<Loader />}>
+            <ReviewsSection 
+              homestayId={homestay.id}
+              reviews={homestay.HomestayReview}
+              averageRating={homestay.ratingAverage ? Number(homestay.ratingAverage) : 0}
+              totalReviews={homestay.reviewCount}
+            />
+          </Suspense>
         </Container>
       </Section>
     </>

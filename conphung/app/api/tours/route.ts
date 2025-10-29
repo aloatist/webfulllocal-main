@@ -153,8 +153,32 @@ export async function GET(request: NextRequest) {
       }),
     ])
 
+    // Transform Prisma field names to match frontend expectations
+    const transformedTours = tours.map(tour => ({
+      ...tour,
+      itineraryDays: tour.ItineraryDay,
+      departures: tour.TourDeparture,
+      addons: tour.TourAddon,
+      categories: tour.Category,
+      promotions: tour.Promotion,
+      mediaItems: tour.TourMedia?.map(item => ({
+        ...item,
+        media: item.Media,
+        Media: undefined,
+      })),
+      reviews: tour.TourReview,
+      // Remove capitalized fields
+      ItineraryDay: undefined,
+      TourDeparture: undefined,
+      TourAddon: undefined,
+      Category: undefined,
+      Promotion: undefined,
+      TourMedia: undefined,
+      TourReview: undefined,
+    }))
+
     return NextResponse.json({
-      data: tours,
+      data: transformedTours,
       pagination: {
         total,
         page,
@@ -327,7 +351,31 @@ export async function POST(request: NextRequest) {
       include: tourInclude,
     })
 
-    return NextResponse.json(tour, { status: 201 })
+    // Transform Prisma field names to match frontend expectations
+    const transformedTour = {
+      ...tour,
+      itineraryDays: tour.ItineraryDay,
+      departures: tour.TourDeparture,
+      addons: tour.TourAddon,
+      categories: tour.Category,
+      promotions: tour.Promotion,
+      mediaItems: tour.TourMedia?.map(item => ({
+        ...item,
+        media: item.Media,
+        Media: undefined,
+      })),
+      reviews: tour.TourReview,
+      // Remove capitalized fields
+      ItineraryDay: undefined,
+      TourDeparture: undefined,
+      TourAddon: undefined,
+      Category: undefined,
+      Promotion: undefined,
+      TourMedia: undefined,
+      TourReview: undefined,
+    }
+
+    return NextResponse.json(transformedTour, { status: 201 })
   } catch (error) {
     console.error('Failed to create tour:', error)
     if (error instanceof z.ZodError) {

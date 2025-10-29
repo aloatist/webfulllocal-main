@@ -11,6 +11,9 @@ interface AvailabilityCalendarProps {
 
 export function AvailabilityCalendar({ homestayId, bookedDates = [] }: AvailabilityCalendarProps) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  
+  // Debug: Log booked dates
+  console.log('AvailabilityCalendar - bookedDates:', bookedDates.length, bookedDates.slice(0, 5));
 
   const getDaysInMonth = (date: Date) => {
     const year = date.getFullYear();
@@ -54,13 +57,18 @@ export function AvailabilityCalendar({ homestayId, bookedDates = [] }: Availabil
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="flex items-center gap-2 text-lg font-semibold">
-          <CalendarIcon className="h-5 w-5" />
-          Lịch trống
+        <h3 className="flex items-center gap-2 text-xl font-bold">
+          <CalendarIcon className="h-6 w-6 text-primary" />
+          Lịch Trống
         </h3>
+        {bookedDates.length > 0 && (
+          <span className="text-sm text-muted-foreground">
+            {bookedDates.length} ngày đã chặn
+          </span>
+        )}
       </div>
 
-      <div className="rounded-lg border p-4">
+      <div className="rounded-xl border-2 border-border bg-card p-6 shadow-sm">
         {/* Month Navigation */}
         <div className="mb-4 flex items-center justify-between">
           <Button
@@ -70,7 +78,7 @@ export function AvailabilityCalendar({ homestayId, bookedDates = [] }: Availabil
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          <h4 className="font-semibold capitalize">{monthName}</h4>
+          <h4 className="text-lg font-bold capitalize">{monthName}</h4>
           <Button
             variant="ghost"
             size="sm"
@@ -81,7 +89,7 @@ export function AvailabilityCalendar({ homestayId, bookedDates = [] }: Availabil
         </div>
 
         {/* Calendar Grid */}
-        <div className="grid grid-cols-7 gap-1">
+        <div className="grid grid-cols-7 gap-2">
           {/* Week Day Headers */}
           {weekDays.map((day) => (
             <div
@@ -108,40 +116,49 @@ export function AvailabilityCalendar({ homestayId, bookedDates = [] }: Availabil
             return (
               <div
                 key={day}
-                className={`flex h-10 items-center justify-center rounded-md text-sm ${
+                className={`flex h-12 items-center justify-center rounded-lg text-sm font-medium transition-colors ${
                   isPast
-                    ? 'text-muted-foreground/40'
+                    ? 'text-muted-foreground/30 bg-muted/20'
                     : isBooked
-                    ? 'bg-destructive/10 text-destructive line-through'
-                    : 'bg-green-50 text-green-700 font-medium'
+                    ? 'bg-red-100 dark:bg-red-950 text-red-700 dark:text-red-300 border-2 border-red-300 dark:border-red-800 relative'
+                    : 'bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-300 border-2 border-green-200 dark:border-green-800 hover:bg-green-100 dark:hover:bg-green-900 cursor-pointer'
                 }`}
                 title={
                   isPast
                     ? 'Đã qua'
                     : isBooked
-                    ? 'Đã đặt'
-                    : 'Còn trống'
+                    ? 'Đã chặn - Không thể đặt'
+                    : 'Còn trống - Có thể đặt'
                 }
               >
                 {day}
+                {isBooked && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="h-0.5 w-full bg-red-500 dark:bg-red-400 rotate-[-45deg]" />
+                  </div>
+                )}
               </div>
             );
           })}
         </div>
 
         {/* Legend */}
-        <div className="mt-4 flex flex-wrap gap-4 border-t pt-4 text-xs">
+        <div className="mt-6 flex flex-wrap gap-6 border-t-2 pt-4 text-sm">
           <div className="flex items-center gap-2">
-            <div className="h-4 w-4 rounded bg-green-50 border border-green-200" />
-            <span>Còn trống</span>
+            <div className="h-6 w-6 rounded-lg bg-green-50 dark:bg-green-950 border-2 border-green-200 dark:border-green-800" />
+            <span className="font-medium">Còn trống</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="h-4 w-4 rounded bg-destructive/10 border border-destructive/20" />
-            <span>Đã đặt</span>
+            <div className="h-6 w-6 rounded-lg bg-red-100 dark:bg-red-950 border-2 border-red-300 dark:border-red-800 relative">
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="h-0.5 w-full bg-red-500 dark:bg-red-400 rotate-[-45deg]" />
+              </div>
+            </div>
+            <span className="font-medium">Đã chặn</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="h-4 w-4 rounded bg-muted" />
-            <span>Đã qua</span>
+            <div className="h-6 w-6 rounded-lg bg-muted/20" />
+            <span className="font-medium text-muted-foreground">Đã qua</span>
           </div>
         </div>
       </div>

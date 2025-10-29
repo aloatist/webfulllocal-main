@@ -110,7 +110,7 @@ export default function AdminHomestaysPage() {
   return (
     <div className="p-4">
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-base font-semibold">Homestays</h1>
+        <h1 className="text-base font-semibold">Danh sách homestay</h1>
         <Link href="/admin/homestays/new" className="underline text-sm">Tạo homestay</Link>
       </div>
 
@@ -164,7 +164,7 @@ export default function AdminHomestaysPage() {
                         Xem trang
                       </Link>
                       <Link href={`/admin/homestays/${h.id}`} className="underline">Sửa</Link>
-                      <Link href={`/admin/homestays/${h.id}/bookings`} className="underline">Booking</Link>
+                      <Link href={`/admin/homestays/${h.id}/bookings`} className="underline">Đặt phòng</Link>
                       <button
                         type="button"
                         className="underline text-red-600 disabled:opacity-60"
