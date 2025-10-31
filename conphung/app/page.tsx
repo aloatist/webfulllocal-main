@@ -10,21 +10,7 @@ import { format } from 'date-fns';
 import { prisma } from '@/lib/prisma';
 import { ImageWrapper } from '@/components/ui/image-wrapper';
 import { FadeIn, StaggerContainer, StaggerItem } from '@/components/ui/fade-in';
-import { HeroSection } from '@/components/home/hero-section';
-import { PromotionSection } from '@/components/home/promotion-section';
-import { RestaurantSection } from '@/components/home/restaurant-section';
-import { FeaturesSection } from '@/components/home/features-section';
-import { MapSection } from '@/components/home/map-section';
-import { GallerySection } from '@/components/home/gallery-section';
-import { CTABookingSection } from '@/components/home/cta-booking-section';
-import { VideoGuideSection } from '@/components/home/video-guide-section';
-
 export const dynamic = 'force-dynamic';
-import { TicketSection } from '@/components/home/ticket-section';
-import { TourPricingSection } from '@/components/home/tour-pricing-section';
-import { HomestaySection } from '@/components/home/homestay-section';
-import { getHomepageConfig } from '@/lib/homepage/sections';
-import type { HomepageConfig } from '@/lib/homepage/schema';
 
 // Components
 
@@ -44,7 +30,6 @@ type LatestPost = {
 
 // This page is using the craft.tsx component and design system
 export default async function Home() {
-  const config = await getHomepageConfig();
   const latestPosts = await prisma.post.findMany({
     where: { status: 'PUBLISHED' },
     orderBy: { createdAt: 'desc' },
@@ -70,7 +55,7 @@ export default async function Home() {
    
    
 
-      <ExampleJsx posts={latestPosts} config={config} />
+      <ExampleJsx posts={latestPosts} />
     
       </Container>
     </Section>
@@ -78,28 +63,16 @@ export default async function Home() {
 }
 
 // This is just some example JS to demonstrate automatic styling from brijr/craft
-const ExampleJsx = ({ posts, config }: { posts: LatestPost[], config: HomepageConfig }) => {
+const ExampleJsx = ({ posts }: { posts: LatestPost[] }) => {
   return (
     <article className="prose-m-none">
-      {/* Modern Hero Section */}
-      <HeroSection data={config.hero} />
+      <TypingEffect />
+      <Vethamquanconphung />
+      <Tourconphungthoison />
+      <CarouselSlider />
+      <HomestayCocoIsland />
 
-      {/* Modern Promotion Section */}
-      <PromotionSection data={config.promotion} />
-
-      {/* Modern Ticket Section */}
-      <TicketSection data={config.ticket} />
-
-      {/* Modern Tour Pricing Section */}
-      <TourPricingSection data={config.tourPricing} />
-
-      {/* Modern Homestay Section */}
-      <HomestaySection />
-
-      <LatestPostsSection posts={posts} config={config.latestPosts} />
-
-      {/* Modern Restaurant Section */}
-      <RestaurantSection />
+      <LatestPostsSection posts={posts} />
 
 
  {/* thông tin về chúng tôi */} 
@@ -226,21 +199,6 @@ const ExampleJsx = ({ posts, config }: { posts: LatestPost[], config: HomepageCo
 </div>
 </FadeIn>
 
-      {/* Modern Map Section */}
-      <MapSection data={config.map} />
-
-      {/* Modern Gallery Section */}
-      <GallerySection data={config.gallery} />
-
-      {/* Modern CTA Booking Section */}
-      <CTABookingSection data={config.ctaBooking} />
-
-      {/* Modern Video Guide Section */}
-      <VideoGuideSection data={config.videoGuide} />
-
-      {/* Modern Features Section */}
-      <FeaturesSection data={config.features} />
-
 {/* chính sách bảo mật*/}
 <div
       className="flex flex-wrap justify-center items-center border-b-2 border-dashed py-6 "
@@ -303,7 +261,7 @@ const ExampleJsx = ({ posts, config }: { posts: LatestPost[], config: HomepageCo
   );
 };
 
-const LatestPostsSection = ({ posts, config }: { posts: LatestPost[], config: any }) => {
+const LatestPostsSection = ({ posts }: { posts: LatestPost[] }) => {
   if (posts.length === 0) {
     return null;
   }
@@ -311,9 +269,9 @@ const LatestPostsSection = ({ posts, config }: { posts: LatestPost[], config: an
   return (
     <section className="mt-12 rounded-3xl bg-gradient-to-br from-emerald-700/10 via-primary/5 to-background px-6 py-10 shadow-lg">
       <div className="mb-8 text-center">
-        <h2 className="text-3xl font-bold tracking-tight text-foreground">{config?.heading || 'Bài viết mới nhất'}</h2>
+        <h2 className="text-3xl font-bold tracking-tight text-foreground">Bài viết mới nhất</h2>
         <p className="mt-2 text-muted-foreground">
-          {config?.description || 'Những câu chuyện và mẹo hữu ích dành cho hành trình khám phá Cồn Phụng.'}
+          Những câu chuyện và mẹo hữu ích dành cho hành trình khám phá Cồn Phụng.
         </p>
       </div>
 

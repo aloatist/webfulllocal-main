@@ -1,13 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Loader2, LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { signIn, useSession, getProviders } from 'next-auth/react';
 import Link from 'next/link';
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams?.get('callbackUrl') || '/admin';
@@ -184,5 +184,17 @@ export default function LoginPage() {
         Admin: <span className="font-medium">conphung87@yahoo.com.vn</span> / <span className="font-medium">ChangeMe123!</span>
       </p>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="mx-auto flex min-h-screen w-full max-w-md flex-col justify-center items-center px-4 py-12">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    }>
+      <LoginForm />
+    </Suspense>
   );
 }
