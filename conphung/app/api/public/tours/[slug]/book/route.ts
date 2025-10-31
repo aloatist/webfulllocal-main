@@ -1,9 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { BookingStatus, TourStatus, Prisma } from '@prisma/client'
+import {
+  BookingStatus,
+  TourStatus,
+  Prisma,
+} from '@prisma/client'
 import { z } from 'zod'
 import { nanoid } from 'nanoid'
 import { sendBookingConfirmationEmail } from '@/lib/bookings/notifications'
+import { sendN8nEvent } from '@/lib/integrations/n8n-client'
+import {
+  getActiveGuestCount,
+  recalculateDepartureAvailability,
+} from '@/lib/bookings/availability'
 
 const bookingSchema = z.object({
   customer: z.object({
@@ -75,12 +84,29 @@ export async function POST(
         throw new BookingError('Lịch khởi hành không hợp lệ', 404)
       }
 
-      const seatsAvailable =
-        departure.seatsAvailable ?? departure.seatsTotal ?? 0
-
-      if (seatsAvailable < totalGuests) {
+      const seatsTotal = departure.seatsTotal ?? 0
+      if (seatsTotal <= 0) {
         throw new BookingError(
-          `Lịch khởi hành chỉ còn ${seatsAvailable} chỗ trống`,
+          'Lịch khởi hành chưa được cấu hình số chỗ ngồi hợp lệ',
+          400
+        )
+      }
+
+      const bookedGuests = await getActiveGuestCount(tx, departure.id)
+      const seatsRemaining = Math.max(seatsTotal - bookedGuests, 0)
+
+      console.debug('tour-booking:availability-check', {
+        departureId: departure.id,
+        slug,
+        seatsTotal,
+        bookedGuests,
+        seatsRemaining,
+        requestedGuests: totalGuests,
+      })
+
+      if (seatsRemaining < totalGuests) {
+        throw new BookingError(
+          `Lịch khởi hành chỉ còn ${seatsRemaining} chỗ trống`,
           409
         )
       }
@@ -187,12 +213,19 @@ export async function POST(
         },
       })
 
-      await tx.tourDeparture.update({
-        where: { id: departure.id },
-        data: {
-          seatsAvailable: seatsAvailable - totalGuests,
-        },
-      })
+      const availability = await recalculateDepartureAvailability(
+        tx,
+        departure.id
+      )
+
+      if (availability) {
+        booking.TourDeparture = {
+          ...booking.TourDeparture,
+          seatsAvailable: availability.departure.seatsAvailable,
+          seatsTotal: availability.departure.seatsTotal,
+          status: availability.departure.status,
+        }
+      }
 
       return {
         bookingId: booking.id,
@@ -212,6 +245,28 @@ export async function POST(
 
     await sendBookingConfirmationEmail(result).catch((notificationError) => {
       console.error('Failed to queue confirmation email', notificationError)
+    })
+
+    sendN8nEvent(
+      'tour-booking-request',
+      {
+        bookingReference: result.reference,
+        bookingId: result.bookingId,
+        totalAmount: result.totalAmount,
+        currency: result.currency,
+        status: result.status,
+        tour: result.tour,
+        departure: result.departure,
+        customer: result.customer,
+      },
+      {
+        context: {
+          trigger: 'tour-booking-form',
+        },
+        webhookUrl: process.env.N8N_TOUR_BOOKING_WEBHOOK_URL,
+      },
+    ).catch((n8nError) => {
+      console.warn('n8n tour booking webhook failed:', n8nError)
     })
 
     return NextResponse.json(result, { status: 201 })

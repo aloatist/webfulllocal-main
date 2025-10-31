@@ -1,5 +1,10 @@
 import { prisma } from '@/lib/prisma'
 import { Prisma, TourStatus } from '@prisma/client'
+import {
+  activeBookingStatuses,
+  countGuests,
+  deriveDepartureStatus,
+} from '@/lib/bookings/availability'
 
 const publicTourInclude = {
   TourMedia: {
@@ -32,12 +37,26 @@ function serializeDecimal(value: any) {
   return value
 }
 
-function serializeTour(tour: any) {
+function serializeTour(
+  tour: any,
+  occupancy?: Map<string, number>
+) {
   return {
     ...tour,
     basePrice: serializeDecimal(tour.basePrice),
     TourDeparture: tour.TourDeparture?.map((dep: any) => ({
       ...dep,
+      seatsAvailable: (() => {
+        const seatsTotal = dep.seatsTotal ?? 0
+        const booked = occupancy?.get(dep.id) ?? 0
+        return Math.max(seatsTotal - booked, 0)
+      })(),
+      status: (() => {
+        const seatsTotal = dep.seatsTotal ?? 0
+        const booked = occupancy?.get(dep.id) ?? 0
+        const seatsRemaining = Math.max(seatsTotal - booked, 0)
+        return deriveDepartureStatus(dep.status, seatsRemaining, seatsTotal)
+      })(),
       priceAdult: serializeDecimal(dep.priceAdult),
       priceChild: serializeDecimal(dep.priceChild),
       priceInfant: serializeDecimal(dep.priceInfant),
@@ -47,6 +66,40 @@ function serializeTour(tour: any) {
       price: serializeDecimal(addon.price),
     })),
   }
+}
+
+async function buildDepartureOccupancyMap(
+  departureIds: string[]
+) {
+  if (departureIds.length === 0) {
+    return new Map<string, number>()
+  }
+
+  const grouped = await prisma.booking.groupBy({
+    by: ['departureId'],
+    where: {
+      departureId: { in: departureIds },
+      status: { in: activeBookingStatuses },
+    },
+    _sum: {
+      adults: true,
+      children: true,
+      infants: true,
+    },
+  })
+
+  const map = new Map<string, number>()
+
+  grouped.forEach((group) => {
+    const booked = countGuests(
+      group._sum.adults,
+      group._sum.children,
+      group._sum.infants
+    )
+    map.set(group.departureId, booked)
+  })
+
+  return map
 }
 
 export async function getPublishedTours(options?: {
@@ -91,7 +144,13 @@ export async function getPublishedTours(options?: {
     take: limit,
   })
 
-  return tours.map(serializeTour)
+  const departureIds = tours.flatMap((tour) =>
+    tour.TourDeparture?.map((dep) => dep.id) ?? []
+  )
+
+  const occupancy = await buildDepartureOccupancyMap(departureIds)
+
+  return tours.map((tour) => serializeTour(tour, occupancy))
 }
 
 export async function getTourBySlug(slug: string) {
@@ -124,8 +183,17 @@ export async function getTourBySlug(slug: string) {
       },
     },
   })
-  
-  return tour ? serializeTour(tour) : null
+
+  if (!tour) {
+    return null
+  }
+
+  const departureIds =
+    tour.TourDeparture?.map((departure) => departure.id) ?? []
+
+  const occupancy = await buildDepartureOccupancyMap(departureIds)
+
+  return serializeTour(tour, occupancy)
 }
 
 export type PublicTour = Awaited<ReturnType<typeof getPublishedTours>> extends Array<infer T> ? T : never
