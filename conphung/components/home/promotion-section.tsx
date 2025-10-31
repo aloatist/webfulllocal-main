@@ -9,7 +9,16 @@ interface PromotionSectionProps {
   data?: PromotionData;
 }
 
-export function PromotionSection({ data }: PromotionSectionProps) {
+const defaultData: PromotionData = {
+  eyebrow: "Ưu đãi đặc biệt",
+  heading: "🎉 GIẢM GIÁ 30% CHO TẤT CẢ CÁC GÓI TOUR",
+  description: "Đặt tour trước 7 ngày để nhận ưu đãi tốt nhất. Áp dụng cho nhóm từ 10 người. Số lượng có hạn!",
+  imageUrl: "/uploads/combo-3-con-phung-768x768.webp",
+  discount: "30%",
+  isActive: true
+};
+
+export function PromotionSection({ data = defaultData }: PromotionSectionProps) {
   if (!data || !data.isActive) return null;
 
   return (

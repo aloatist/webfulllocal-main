@@ -5,10 +5,33 @@ import { FadeIn, StaggerContainer, StaggerItem } from '@/components/ui/fade-in'
 import type { FeaturesSection as FeaturesData } from '@/lib/homepage/schema'
 
 interface FeaturesSectionProps {
-  data: FeaturesData;
+  data?: FeaturesData;
 }
 
-export function FeaturesSection({ data }: FeaturesSectionProps) {
+const defaultData: FeaturesData = {
+  features: [
+    {
+      icon: "Heart",
+      title: "TẬN TÂM VỚI KHÁCH HÀNG",
+      description: "Chúng tôi luôn tâm niệm phải tận tâm chăm sóc khách hàng từ những việc nhỏ nhất",
+      color: "from-red-500 to-pink-500"
+    },
+    {
+      icon: "DollarSign",
+      title: "ĐẢM BẢO MỨC GIÁ TỐT NHẤT",
+      description: "Giá tour dịch vụ cung cấp đến quý khách luôn là mức giá ưu đãi hấp dẫn nhất",
+      color: "from-emerald-500 to-green-500"
+    },
+    {
+      icon: "Headphones",
+      title: "HỖ TRỢ KHÁCH HÀNG 24/7",
+      description: "Chúng tôi luôn sẵn sàng phục vụ quý khách trước, trong và sau chuyến đi",
+      color: "from-blue-500 to-cyan-500"
+    }
+  ]
+};
+
+export function FeaturesSection({ data = defaultData }: FeaturesSectionProps) {
   if (!data || !data.features || data.features.length === 0) return null;
 
   return (

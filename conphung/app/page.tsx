@@ -10,6 +10,18 @@ import { format } from 'date-fns';
 import { prisma } from '@/lib/prisma';
 import { ImageWrapper } from '@/components/ui/image-wrapper';
 import { FadeIn, StaggerContainer, StaggerItem } from '@/components/ui/fade-in';
+import { HeroSection } from '@/components/home/hero-section';
+import { PromotionSection } from '@/components/home/promotion-section';
+import { TicketSection } from '@/components/home/ticket-section';
+import { TourPricingSection } from '@/components/home/tour-pricing-section';
+import { HomestaySection } from '@/components/home/homestay-section';
+import { RestaurantSection } from '@/components/home/restaurant-section';
+import { GallerySection } from '@/components/home/gallery-section';
+import { VideoGuideSection } from '@/components/home/video-guide-section';
+import { FeaturesSection } from '@/components/home/features-section';
+import { MapSection } from '@/components/home/map-section';
+import { CTABookingSection } from '@/components/home/cta-booking-section';
+
 export const dynamic = 'force-dynamic';
 
 // Components
@@ -66,13 +78,26 @@ export default async function Home() {
 const ExampleJsx = ({ posts }: { posts: LatestPost[] }) => {
   return (
     <article className="prose-m-none">
-      <TypingEffect />
-      <Vethamquanconphung />
-      <Tourconphungthoison />
-      <CarouselSlider />
-      <HomestayCocoIsland />
+      {/* Hero Section - Banner chính */}
+      <HeroSection />
 
+      {/* Promotion Section - Khuyến mãi */}
+      <PromotionSection />
+
+      {/* Ticket Section - Vé cổng */}
+      <TicketSection />
+
+      {/* Tour Pricing Section - Tour khám phá */}
+      <TourPricingSection />
+
+      {/* Homestay Section - Coco Island */}
+      <HomestaySection />
+
+      {/* Latest Posts Section - Bài viết mới nhất */}
       <LatestPostsSection posts={posts} />
+
+      {/* Restaurant Section - Nhà hàng */}
+      <RestaurantSection />
 
 
  {/* thông tin về chúng tôi */} 
@@ -198,7 +223,8 @@ const ExampleJsx = ({ posts }: { posts: LatestPost[] }) => {
   </div>
 </div>
 </FadeIn>
-
+    {/* Bài viết mới nhất */}
+      <LatestPostsSection posts={posts} />
 {/* chính sách bảo mật*/}
 <div
       className="flex flex-wrap justify-center items-center border-b-2 border-dashed py-6 "
@@ -255,7 +281,20 @@ const ExampleJsx = ({ posts }: { posts: LatestPost[] }) => {
       
 </div>
 
+      {/* Map Section - Bản đồ chỉ đường */}
+      <MapSection />
 
+      {/* Gallery Section - Hình ảnh */}
+      <GallerySection />
+
+      {/* CTA Booking Section - Nhanh tay đặt chỗ */}
+      <CTABookingSection />
+
+      {/* Video Guide Section - Video hướng dẫn */}
+      <VideoGuideSection />
+
+      {/* Features Section - Tận tâm, Giá tốt, Hỗ trợ 24/7 */}
+      <FeaturesSection />
 
 </article>
   );

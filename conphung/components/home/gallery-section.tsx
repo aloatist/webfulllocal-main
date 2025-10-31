@@ -9,7 +9,18 @@ interface GallerySectionProps {
   data?: GalleryData;
 }
 
-export function GallerySection({ data }: GallerySectionProps) {
+const defaultData: GalleryData = {
+  heading: "MỘT SỐ HÌNH ẢNH",
+  description: "Khám phá vẻ đẹp thiên nhiên và văn hóa độc đáo của Cồn Phụng",
+  images: [
+    { url: "/uploads/gallery-1.jpg", alt: "Cồn Phụng - Vườn dừa xanh mát" },
+    { url: "/uploads/gallery-2.jpg", alt: "Công trình kiến trúc Đạo Dừa" },
+    { url: "/uploads/gallery-3.jpg", alt: "Rạch dừa thơ mộng" },
+    { url: "/uploads/gallery-4.jpg", alt: "Trải nghiệm văn hóa miền Tây" }
+  ]
+};
+
+export function GallerySection({ data = defaultData }: GallerySectionProps) {
   if (!data) return null;
 
   return (

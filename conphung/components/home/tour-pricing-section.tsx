@@ -9,7 +9,33 @@ interface TourPricingSectionProps {
   data?: TourData;
 }
 
-export function TourPricingSection({ data }: TourPricingSectionProps) {
+const defaultData: TourData = {
+  eyebrow: "Tour khám phá",
+  heading: "TOUR KHÁM PHÁ TRONG NGÀY CỒN THỚI SƠN – CỒN PHỤNG",
+  description: "Trải nghiệm đầy đủ văn hóa miền Tây với giá ưu đãi",
+  tours: [{
+    id: "tour-1",
+    name: "Tour Cồn Thới Sơn - Cồn Phụng",
+    description: "Tour khám phá đầy đủ 2 cồn nổi tiếng nhất miền Tây",
+    originalPrice: 600000,
+    discount: 0,
+    finalPrice: 600000,
+    currency: "₫",
+    imageUrl: "/uploads/tour-thumbnail.jpg",
+    duration: "1 ngày",
+    isActive: true,
+    order: 1,
+    includedItems: [
+      "🚢 Vé tàu khứ hồi",
+      "🎭 Nghe Đờn ca tài tử Nam Bộ",
+      "🥥 Thưởng thức trái cây theo mùa",
+      "🛶 Đi xuồng ba lá trong rạch dừa",
+      "👨‍🏫 Hướng dẫn viên địa phương"
+    ]
+  }]
+};
+
+export function TourPricingSection({ data = defaultData }: TourPricingSectionProps) {
   if (!data) return null;
 
   return (

@@ -13,7 +13,7 @@ export default function TourSection() {
       {/* Hình ảnh */}
       <div className="lg:w-1/2 h-80 lg:h-auto relative group overflow-hidden">
         <Image
-          src="/uploads/2024/10/trochoidangianconphungbentre-2.conphungtourist.com_-767x1024.webp"
+          src="/uploads/toursinhthaiconphungbentre-2.webp"
           alt="Tour sinh thái Cồn Phụng Bến Tre"
           className="w-full h-full object-cover transition-transform duration-700 hover:scale-110"
           loading="lazy"

@@ -9,7 +9,20 @@ interface CTABookingSectionProps {
   data?: CTAData;
 }
 
-export function CTABookingSection({ data }: CTABookingSectionProps) {
+const defaultData: CTAData = {
+  heading: "NHANH TAY ĐẶT CHỖ - SỐ LƯỢNG CÓ HẠN",
+  description: "Đặt tour ngay hôm nay để nhận ưu đãi tốt nhất và đảm bảo chỗ cho nhóm của bạn",
+  ctaText: "☎️ Đặt Tour Ngay",
+  ctaLink: "tel:+84918267715",
+  phone: "+84918267715",
+  features: [
+    "✅ Giá tốt nhất - Chính chủ",
+    "✅ Hỗ trợ 24/7",
+    "✅ Đảm bảo chất lượng"
+  ]
+};
+
+export function CTABookingSection({ data = defaultData }: CTABookingSectionProps) {
   if (!data) return null;
 
   return (

@@ -9,7 +9,26 @@ interface VideoGuideSectionProps {
   data?: VideoData;
 }
 
-export function VideoGuideSection({ data }: VideoGuideSectionProps) {
+const defaultData: VideoData = {
+  heading: "VIDEO HƯỚNG DẪN ĐƯỜNG ĐI",
+  description: "Xem video để biết cách di chuyển đến Cồn Phụng dễ dàng nhất từ TP.HCM và các tỉnh lân cận",
+  videos: [
+    {
+      title: "Hướng dẫn đi Cồn Phụng từ TP.HCM",
+      url: "https://www.youtube.com/watch?v=example1",
+      thumbnail: "/uploads/video-thumb-1.jpg",
+      duration: "5:30"
+    },
+    {
+      title: "Trải nghiệm 1 ngày tại Cồn Phụng",
+      url: "https://www.youtube.com/watch?v=example2",
+      thumbnail: "/uploads/video-thumb-2.jpg",
+      duration: "8:45"
+    }
+  ]
+};
+
+export function VideoGuideSection({ data = defaultData }: VideoGuideSectionProps) {
   if (!data || !data.videos || data.videos.length === 0) return null;
 
   return (

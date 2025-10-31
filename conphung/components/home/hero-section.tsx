@@ -8,10 +8,28 @@ import Link from 'next/link'
 import type { HeroSection as HeroData } from '@/lib/homepage/schema'
 
 interface HeroSectionProps {
-  data: HeroData;
+  data?: HeroData;
 }
 
-export function HeroSection({ data }: HeroSectionProps) {
+const defaultData: HeroData = {
+  mainTitle: "KHU DU LỊCH SINH THÁI CỒN PHỤNG BẾN TRE",
+  subtitle: "Công Trình Kiến Trúc Đạo Dừa",
+  description: "🌿 Du lịch sinh thái - Trải nghiệm thiên nhiên và văn hóa miền Tây. Đặt tour chính chủ để nhận ưu đãi tốt nhất!",
+  phone: "+84918267715",
+  address: "Tờ bản đồ số 3, thửa đất số 32, Ấp Tân Vinh, Xã Phú Túc, tỉnh Vĩnh Long",
+  openingHours: "7:00 - 18:00",
+  backgroundImage: "/uploads/anhbiadulichconphung.webp",
+  primaryCta: {
+    text: "☎️ Đặt Tour Ngay",
+    link: "tel:+84918267715"
+  },
+  secondaryCta: {
+    text: "Xem Tour",
+    link: "/tours"
+  }
+};
+
+export function HeroSection({ data = defaultData }: HeroSectionProps) {
   return (
     <FadeIn>
       <div className="relative h-[600px] w-full overflow-hidden rounded-3xl shadow-2xl mb-12">

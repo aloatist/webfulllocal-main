@@ -9,7 +9,30 @@ interface TicketSectionProps {
   data?: TicketData;
 }
 
-export function TicketSection({ data }: TicketSectionProps) {
+const defaultData: TicketData = {
+  eyebrow: "Vé tham quan",
+  heading: "VÉ CỔNG CHÍNH CHỦ KHU DU LỊCH CỒN PHỤNG",
+  subheading: "Giá vé ưu đãi - Trực tiếp chính chủ",
+  description: "Vé đã bao gồm tàu khứ hồi và tham quan các điểm trong khu du lịch",
+  prices: {
+    adult: 50000,
+    child: 30000,
+    currency: "₫"
+  },
+  includedItems: [
+    "🚢 Miễn phí vé tàu khứ hồi",
+    "🐊 Tham quan trại nuôi cá sấu",
+    "🍬 Tham quan sản xuất kẹo Dừa",
+    "🎨 Thủ công mỹ nghệ từ Dừa",
+    "🏛️ Tham quan di tích Đạo Dừa",
+    "🥥 Bảo tàng Dừa"
+  ],
+  pickupLocation: "Bến phà Rạch Miễu cũ, xã Tân Thạch, huyện Châu Thành, tỉnh Bến Tre",
+  warningNote: "Đến bến phà, vui lòng gọi Hotline để được hỗ trợ tàu đón, tránh nhầm lẫn không phải chính chủ",
+  imageUrl: "/uploads/ve-cong.jpg"
+};
+
+export function TicketSection({ data = defaultData }: TicketSectionProps) {
   if (!data) return null;
 
   return (
