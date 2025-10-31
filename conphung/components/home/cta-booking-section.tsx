@@ -3,8 +3,15 @@
 import { FadeIn } from '@/components/ui/fade-in'
 import { Phone, Gift, Clock, Sparkles } from 'lucide-react'
 import Link from 'next/link'
+import type { CTABookingSection as CTAData } from '@/lib/homepage/schema'
 
-export function CTABookingSection() {
+interface CTABookingSectionProps {
+  data?: CTAData;
+}
+
+export function CTABookingSection({ data }: CTABookingSectionProps) {
+  if (!data) return null;
+
   return (
     <FadeIn delay={0.2}>
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-orange-500 via-red-500 to-pink-500 p-8 md:p-12 shadow-2xl mb-12">
@@ -33,12 +40,11 @@ export function CTABookingSection() {
 
           {/* Main Title */}
           <h2 className="text-3xl md:text-5xl font-bold text-white text-center mb-4 drop-shadow-2xl">
-            🎉 Nhanh Tay Đặt Chỗ – Số Lượng Có Hạn
+            {data.heading}
           </h2>
           
           <p className="text-lg md:text-xl text-white/95 text-center mb-8 max-w-3xl mx-auto drop-shadow-lg leading-relaxed">
-            Đặt chỗ ngay hôm nay để nhận <span className="font-bold text-yellow-300">ưu đãi giá cực tốt</span> cùng các phần quà và dịch vụ VIP. 
-            Đừng bỏ lỡ cơ hội trải nghiệm <span className="font-bold text-yellow-300">du lịch sinh thái</span> tại Cồn Phụng Bến Tre!
+            {data.description}
           </p>
 
           {/* Features Grid */}
@@ -77,24 +83,26 @@ export function CTABookingSection() {
           {/* CTA Button */}
           <div className="text-center">
             <Link 
-              href="tel:+84918267715"
+              href={data.ctaLink || `tel:${data.phone}`}
               className="group relative inline-flex overflow-hidden rounded-full p-[3px] focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-red-500"
             >
               <span className="absolute inset-[-1000%] animate-[spin_3s_linear_infinite] bg-gradient-to-r from-yellow-400 via-white to-yellow-400" />
               
               <span className="inline-flex h-full w-full cursor-pointer items-center justify-center rounded-full bg-gradient-to-r from-yellow-400 via-orange-400 to-yellow-400 px-10 py-5 text-xl font-bold text-gray-900 backdrop-blur-3xl transition-all duration-300 group-hover:scale-105 shadow-2xl">
                 <Phone className="mr-3 h-6 w-6 transition-transform duration-300 group-hover:rotate-12" />
-                ☎️ ĐẶT TOUR NGAY -
+                {data.ctaText} -
                 <span className="ml-2 inline-flex items-center justify-center rounded-full border border-white/70 bg-white/20 px-3 py-1 text-2xl font-extrabold tracking-wide text-white shadow-lg transition-all duration-300 group-hover:bg-white/30 group-hover:text-yellow-900 group-hover:shadow-[0_0_25px_rgba(255,255,255,0.45)]">
-                  0918 267 715
+                  {data.phone}
                 </span>
                 <Sparkles className="ml-3 h-6 w-6 animate-pulse" />
               </span>
             </Link>
 
-            <p className="mt-4 text-white/80 text-sm">
-              ⏰ Ưu đãi có hạn - Chỉ áp dụng trong tháng này!
-            </p>
+            {data.features && data.features.length > 0 && (
+              <p className="mt-4 text-white/80 text-sm">
+                {data.features[0]}
+              </p>
+            )}
           </div>
         </div>
       </div>

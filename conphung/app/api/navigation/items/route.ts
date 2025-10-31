@@ -4,10 +4,13 @@ import { Role } from '@prisma/client';
 import { nanoid } from 'nanoid';
 import { authOptions } from '@/lib/auth/auth-options';
 import { prisma } from '@/lib/prisma';
+import { revalidateNavigation } from '@/lib/navigation/cache';
+
+const ALLOWED_ROLES = new Set([Role.ADMIN, Role.SUPER_ADMIN]);
 
 async function requireAdmin() {
   const session = await getServerSession(authOptions);
-  if (!session?.user || session.user.role !== Role.ADMIN) {
+  if (!session?.user || !ALLOWED_ROLES.has(session.user.role)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   return null;
@@ -62,5 +65,6 @@ export async function POST(request: Request) {
     },
   });
 
+  revalidateNavigation();
   return NextResponse.json(item, { status: 201 });
 }

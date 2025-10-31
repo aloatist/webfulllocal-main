@@ -59,8 +59,8 @@ model Category {
   Category       Category?  @relation("CategoryToCategory", fields: [parentId], references: [id])
   other_Category Category[] @relation("CategoryToCategory")
   SEO            SEO?
-  Post           Post[]
-  Tour           Tour[]
+  Post           Post[]     @relation("CategoryToPost")
+  Tour           Tour[]     @relation("CategoryToTour")
 }
 
 model ChannelSyncLog {
@@ -413,7 +413,7 @@ model HomestayPricingRule {
   minimumGuests             Int?
   maximumGuests             Int?
   priceAdjustmentType       String            @default("percentage")
-  priceAdjustmentValue      Decimal           @db.Decimal(10, 2)
+  priceAdjustmentValue      Decimal           @db.Decimal(12, 2)
   newBasePrice              Decimal?          @db.Decimal(12, 2)
   cleaningFeeAdjustment     Decimal?          @db.Decimal(12, 2)
   securityDepositAdjustment Decimal?          @db.Decimal(12, 2)
@@ -606,9 +606,9 @@ model Post {
   User            User              @relation(fields: [authorId], references: [id])
   Media           Media?            @relation(fields: [featuredImageId], references: [id])
   SEO             SEO?
-  Category        Category[]
-  Tag             Tag[]
   SocialMediaPost SocialMediaPost[]
+  Category        Category[]        @relation("CategoryToPost")
+  Tag             Tag[]             @relation("PostToTag")
 }
 
 model Promotion {
@@ -617,14 +617,14 @@ model Promotion {
   name          String
   description   String?
   discountType  DiscountType @default(PERCENTAGE)
-  discountValue Decimal      @db.Decimal(10, 2)
-  maxDiscount   Decimal?     @db.Decimal(10, 2)
+  discountValue Decimal      @db.Decimal(12, 2)
+  maxDiscount   Decimal?     @db.Decimal(12, 2)
   startDate     DateTime?
   endDate       DateTime?
   usageLimit    Int?
   usageCount    Int          @default(0)
   isActive      Boolean      @default(true)
-  minimumOrder  Decimal?     @db.Decimal(10, 2)
+  minimumOrder  Decimal?     @db.Decimal(12, 2)
   createdAt     DateTime     @default(now())
   updatedAt     DateTime
   Booking       Booking[]
@@ -668,7 +668,7 @@ model Tag {
   description String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime
-  Post        Post[]
+  Post        Post[]   @relation("PostToTag")
 }
 
 model Tour {
@@ -680,7 +680,7 @@ model Tour {
   durationDays   Int
   durationNights Int?
   difficulty     TourDifficulty  @default(EASY)
-  basePrice      Decimal?        @db.Decimal(10, 2)
+  basePrice      Decimal?        @db.Decimal(12, 2)
   currency       String          @default("VND")
   maxGuests      Int?
   meetingPoint   String?
@@ -702,7 +702,7 @@ model Tour {
   TourDeparture  TourDeparture[]
   TourMedia      TourMedia[]
   TourReview     TourReview[]
-  Category       Category[]
+  Category       Category[]      @relation("CategoryToTour")
   Promotion      Promotion[]     @relation("TourPromotions")
 
   @@index([status, isFeatured])
@@ -714,7 +714,7 @@ model TourAddon {
   tourId       String
   name         String
   description  String?
-  price        Decimal        @db.Decimal(10, 2)
+  price        Decimal        @db.Decimal(12, 2)
   perPerson    Boolean        @default(true)
   isActive     Boolean        @default(true)
   createdAt    DateTime       @default(now())
@@ -732,9 +732,9 @@ model TourDeparture {
   endDate        DateTime?
   seatsTotal     Int
   seatsAvailable Int
-  priceAdult     Decimal?        @db.Decimal(10, 2)
-  priceChild     Decimal?        @db.Decimal(10, 2)
-  priceInfant    Decimal?        @db.Decimal(10, 2)
+  priceAdult     Decimal?        @db.Decimal(12, 2)
+  priceChild     Decimal?        @db.Decimal(12, 2)
+  priceInfant    Decimal?        @db.Decimal(12, 2)
   status         DepartureStatus @default(SCHEDULED)
   notes          String?
   createdAt      DateTime        @default(now())
@@ -788,7 +788,7 @@ model User {
   password          String
   image             String?
   role              Role                @default(USER)
-  permissions       String[]            // Custom permissions for this user
+  permissions       String[]
   isActive          Boolean             @default(true)
   lastLoginAt       DateTime?
   createdAt         DateTime            @default(now())
@@ -798,8 +798,184 @@ model User {
   HomestayReview    HomestayReview[]
   Media             Media[]
   Post              Post[]
-  TeamMember        TeamMember[]
   SocialMediaPost   SocialMediaPost[]
+  TeamMember        TeamMember[]
+}
+
+model Team {
+  id          String       @id
+  name        String
+  slug        String       @unique
+  description String?
+  isActive    Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime
+  members     TeamMember[]
+}
+
+model TeamMember {
+  id          String   @id
+  userId      String
+  teamId      String
+  role        String
+  permissions String[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+  team        Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, teamId])
+  @@index([userId])
+  @@index([teamId])
+}
+
+model Permission {
+  id          String   @id
+  code        String   @unique
+  name        String
+  description String?
+  category    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+
+  @@index([category])
+}
+
+model RoleDefinition {
+  id          String   @id
+  code        String   @unique
+  name        String
+  permissions String[]
+  description String?
+  isSystem    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+}
+
+model SocialMediaAccount {
+  id           String            @id
+  platform     String
+  accountName  String
+  accountId    String
+  accessToken  String?
+  refreshToken String?
+  expiresAt    DateTime?
+  isActive     Boolean           @default(true)
+  settings     Json?
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime
+  posts        SocialMediaPost[]
+
+  @@unique([platform, accountId])
+  @@index([platform])
+  @@index([isActive])
+}
+
+model SocialMediaPost {
+  id             String             @id
+  postId         String
+  userId         String?
+  accountId      String
+  platform       String
+  status         SocialMediaStatus
+  scheduledAt    DateTime?
+  publishedAt    DateTime?
+  platformPostId String?
+  platformUrl    String?
+  content        Json
+  media          Json?
+  error          String?
+  errorDetails   Json?
+  retryCount     Int                @default(0)
+  maxRetries     Int                @default(3)
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime
+  account        SocialMediaAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  Post           Post               @relation(fields: [postId], references: [id], onDelete: Cascade)
+  User           User?              @relation(fields: [userId], references: [id])
+
+  @@index([postId])
+  @@index([accountId])
+  @@index([status])
+  @@index([scheduledAt])
+  @@index([platform])
+}
+
+model SocialMediaTemplate {
+  id        String   @id
+  platform  String
+  name      String
+  content   String
+  isDefault Boolean  @default(false)
+  settings  Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+
+  @@index([platform])
+  @@index([isDefault])
+}
+
+model SocialMediaSync {
+  id        String   @id
+  operation String
+  platform  String?
+  status    String
+  payload   Json
+  response  Json?
+  error     String?
+  createdAt DateTime @default(now())
+
+  @@index([operation])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model N8nWebhook {
+  id               String          @id @default(cuid())
+  name             String
+  eventType        String
+  url              String
+  method           String          @default("POST")
+  headers          Json?
+  authentication   Json?
+  isActive         Boolean         @default(true)
+  description      String?
+  timeout          Int             @default(10000)
+  retryAttempts    Int             @default(3)
+  retryDelay       Int             @default(5000)
+  transformPayload Boolean         @default(false)
+  payloadTemplate  String?
+  conditions       Json?
+  triggerCount     Int             @default(0)
+  successCount     Int             @default(0)
+  errorCount       Int             @default(0)
+  lastTriggered    DateTime?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  logs             N8nWebhookLog[]
+
+  @@index([eventType])
+  @@index([isActive])
+}
+
+model N8nWebhookLog {
+  id             String     @id @default(cuid())
+  webhookId      String
+  webhookName    String
+  eventType      String
+  status         String
+  statusCode     Int?
+  requestPayload Json
+  responseData   Json?
+  errorMessage   String?
+  duration       Int
+  retryAttempt   Int        @default(0)
+  timestamp      DateTime   @default(now())
+  webhook        N8nWebhook @relation(fields: [webhookId], references: [id], onDelete: Cascade)
+
+  @@index([webhookId])
+  @@index([status])
+  @@index([timestamp])
 }
 
 enum AvailabilityStatus {
@@ -961,157 +1137,6 @@ enum TourStatus {
   PUBLISHED
   ARCHIVED
 }
-
-// ============================================
-// USER MANAGEMENT & PERMISSIONS SYSTEM
-// ============================================
-
-// Team/Organization for multi-tenancy
-model Team {
-  id          String       @id
-  name        String
-  slug        String       @unique
-  description String?
-  isActive    Boolean      @default(true)
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime
-  members     TeamMember[]
-}
-
-// Team membership with roles
-model TeamMember {
-  id          String   @id
-  userId      String
-  teamId      String
-  role        String   // team_owner, team_admin, team_member
-  permissions String[] // Team-specific permissions
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime
-  
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  team        Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  
-  @@unique([userId, teamId])
-  @@index([userId])
-  @@index([teamId])
-}
-
-// Permission definitions
-model Permission {
-  id          String   @id
-  code        String   @unique // e.g., 'post.create', 'media.upload'
-  name        String
-  description String?
-  category    String   // post, media, user, social_media, analytics
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime
-  
-  @@index([category])
-}
-
-// Role definitions with default permissions
-model RoleDefinition {
-  id          String   @id
-  code        String   @unique // admin, editor, marketing
-  name        String
-  permissions String[] // Array of permission codes
-  description String?
-  isSystem    Boolean  @default(false) // System roles can't be deleted
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime
-}
-
-// ============================================
-// SOCIAL MEDIA AUTOMATION SYSTEM
-// ============================================
-
-// Social media platform accounts
-model SocialMediaAccount {
-  id           String            @id
-  platform     String            // facebook, instagram, youtube, twitter, linkedin, tiktok
-  accountName  String
-  accountId    String            // Platform-specific account ID
-  accessToken  String?           // Encrypted access token
-  refreshToken String?           // Encrypted refresh token
-  expiresAt    DateTime?
-  isActive     Boolean           @default(true)
-  settings     Json?             // Platform-specific settings
-  createdAt    DateTime          @default(now())
-  updatedAt    DateTime
-  
-  posts        SocialMediaPost[]
-  
-  @@unique([platform, accountId])
-  @@index([platform])
-  @@index([isActive])
-}
-
-// Posts to social media platforms
-model SocialMediaPost {
-  id              String   @id
-  postId          String              // Reference to Post.id
-  userId          String?             // User who triggered the post
-  accountId       String              // Social media account
-  platform        String              // facebook, instagram, youtube, etc
-  status          SocialMediaStatus   // pending, processing, published, failed, scheduled
-  scheduledAt     DateTime?
-  publishedAt     DateTime?
-  platformPostId  String?             // ID on the platform (for edit/delete)
-  platformUrl     String?             // Link to the post on platform
-  content         Json                // Customized content for platform
-  media           Json?               // URLs of media files
-  error           String?
-  errorDetails    Json?
-  retryCount      Int                 @default(0)
-  maxRetries      Int                 @default(3)
-  createdAt       DateTime            @default(now())
-  updatedAt       DateTime
-  
-  account         SocialMediaAccount  @relation(fields: [accountId], references: [id], onDelete: Cascade)
-  Post            Post                @relation(fields: [postId], references: [id], onDelete: Cascade)
-  User            User?               @relation(fields: [userId], references: [id], onDelete: SetNull)
-  
-  @@index([postId])
-  @@index([accountId])
-  @@index([status])
-  @@index([scheduledAt])
-  @@index([platform])
-}
-
-// Content templates for each platform
-model SocialMediaTemplate {
-  id          String   @id
-  platform    String   // facebook, instagram, youtube, etc
-  name        String
-  content     String   // Template with placeholders: {{title}}, {{excerpt}}, {{url}}
-  isDefault   Boolean  @default(false)
-  settings    Json?    // Platform-specific settings (hashtags, mentions, etc)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime
-  
-  @@index([platform])
-  @@index([isDefault])
-}
-
-// Sync history/logs
-model SocialMediaSync {
-  id          String   @id
-  operation   String   // post_created, post_published, post_deleted, retry
-  platform    String?
-  status      String   // success, failed, pending
-  payload     Json
-  response    Json?
-  error       String?
-  createdAt   DateTime @default(now())
-  
-  @@index([operation])
-  @@index([status])
-  @@index([createdAt])
-}
-
-// ============================================
-// ENUMS FOR SOCIAL MEDIA
-// ============================================
 
 enum SocialMediaStatus {
   PENDING

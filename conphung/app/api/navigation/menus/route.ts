@@ -4,10 +4,14 @@ import { Prisma, Role } from '@prisma/client';
 import { authOptions } from '@/lib/auth/auth-options';
 import { prisma } from '@/lib/prisma';
 import { nanoid } from 'nanoid';
+import { mapMenuRecord } from '@/lib/navigation/mappers';
+import { revalidateNavigation } from '@/lib/navigation/cache';
+
+const ALLOWED_ROLES = new Set([Role.ADMIN, Role.SUPER_ADMIN]);
 
 async function requireAdmin() {
   const session = await getServerSession(authOptions);
-  if (!session?.user || session.user.role !== Role.ADMIN) {
+  if (!session?.user || !ALLOWED_ROLES.has(session.user.role)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   return null;
@@ -38,7 +42,7 @@ export async function GET() {
       orderBy: [{ isDefault: 'desc' }, { createdAt: 'asc' }],
       include: buildMenuInclude(),
     });
-    return NextResponse.json({ menus });
+    return NextResponse.json({ menus: menus.map(mapMenuRecord) });
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2021') {
       return NextResponse.json({ menus: [] });
@@ -76,7 +80,8 @@ export async function POST(request: Request) {
       include: buildMenuInclude(),
     });
 
-    return NextResponse.json(menu, { status: 201 });
+    revalidateNavigation();
+    return NextResponse.json(mapMenuRecord(menu), { status: 201 });
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2021') {
       return NextResponse.json(

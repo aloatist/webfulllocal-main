@@ -40,15 +40,17 @@ export const NAV_GROUPS: NavGroup[] = [
     title: "Tự động hóa",
     items: [
       { href: "/admin/social-media", label: "Social Media" },
+      { href: "/admin/n8n", label: "🔗 n8n Webhooks" },
     ],
   },
   {
     title: "Hệ thống",
     items: [
-      { href: "/admin/homepage", label: "Trang chủ" },
+      { href: "/admin/homepage", label: "🏠 Trang chủ CMS" },
       { href: "/admin/navigation", label: "Điều hướng" },
+      { href: "/admin/settings", label: "⚙️ Thiết lập" },
+      { href: "/admin/settings/env", label: "🔐 Environment Vars" },
       { href: "/admin/users-management", label: "Quản lý Users" },
-      { href: "/admin/settings", label: "Thiết lập", status: "coming-soon" },
     ],
   },
 ];

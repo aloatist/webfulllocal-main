@@ -1,47 +1,74 @@
 import { prisma } from '@/lib/prisma';
 import { cocoIslandConfigSchema, type CocoIslandConfig } from './schema';
+import {
+  heroContent,
+  stayPerks,
+  experiences,
+  restaurantSection,
+  discoverySection,
+  testimonials,
+  services,
+  contactInfo,
+  newsletterContent,
+} from './data';
 
 const DEFAULT_CONFIG: CocoIslandConfig = {
   hero: {
-    title: 'Coco Island Homestay',
-    subtitle: 'Trải nghiệm nghỉ dưỡng tuyệt vời tại Cồn Phụng',
-    backgroundImage: 'https://cocoisland.vn/wp-content/uploads/2023/01/coco-island-con-phung-ben-tre3.jpg',
-    ctaText: 'Đặt phòng ngay',
-    ctaLink: '/cocoisland',
+    ...heroContent,
+    video: {
+      ...heroContent.video,
+      overlayTitle: 'Video trải nghiệm Coco Island',
+      overlaySubtitle: 'Cồn Phụng nhìn từ trên cao',
+    },
   },
-  about: {
-    title: 'Về Coco Island',
-    content: 'Coco Island là homestay nghỉ dưỡng cao cấp tại Cồn Phụng, Bến Tre...',
-    images: [
-      'https://cocoisland.vn/wp-content/uploads/2023/01/coco-island-con-phung-ben-tre3.jpg',
-      'https://cocoisland.vn/wp-content/uploads/2023/01/coco-island-con-phung-ben-tre12.jpg',
+  stayPerks: {
+    ...stayPerks,
+    eyebrow: 'Ở lại',
+    description: 'Mỗi du khách lưu trú tại Coco Island đều được chăm chút từ bữa sáng đậm chất miền Tây cho đến những món quà nhỏ xinh mang về.',
+    ctaText: 'Xem toàn bộ phòng',
+    ctaHref: '#rooms',
+  },
+  roomShowcase: {
+    eyebrow: 'Phòng nghỉ',
+    heading: 'Lựa chọn phòng tại Coco Island',
+    description: 'Các bungalow gỗ nhìn thẳng ra sông, nội thất ấm cúng, phù hợp cho cặp đôi, gia đình và nhóm bạn muốn tận hưởng không khí miệt vườn.',
+    ctaText: 'Liên hệ đặt phòng',
+    ctaHref: '#booking',
+  },
+  experiences: {
+    eyebrow: 'Trải nghiệm',
+    heading: 'Coco Island chính chủ – điểm đến chuẩn miền Tây',
+    description: 'Hành trình tái tạo năng lượng của bạn bắt đầu từ khoảnh khắc bước chân lên bến tàu. Ở Coco Island, mọi trải nghiệm đều được chính chủ chăm chút để giữ trọn bản sắc Cồn Phụng.',
+    experiences: experiences,
+  },
+  restaurant: {
+    ...restaurantSection,
+    features: [
+      'Thực đơn đặc sản miền Tây',
+      'Không gian ven sông thoáng mát',
+      'Đặt tiệc gia đình & doanh nghiệp',
+      'Phục vụ theo nhu cầu 24/7',
     ],
   },
-  rooms: {
-    title: 'Phòng nghỉ',
-    subtitle: 'Chọn phòng phù hợp với nhu cầu của bạn',
+  discovery: discoverySection,
+  testimonials: {
+    eyebrow: 'Khách hàng nói gì',
+    heading: 'Những lời yêu thương dành cho Coco Island',
+    testimonials: testimonials,
   },
-  services: [
-    {
-      title: 'Nhà hàng',
-      description: 'Thưởng thức ẩm thực miền Tây',
-      icon: '🍽️',
-      image: 'https://cocoisland.vn/wp-content/uploads/2021/06/coco-island-con-phung-ben-tre20.jpg',
-    },
-    {
-      title: 'Khu vui chơi',
-      description: 'Vui chơi giải trí cho mọi lứa tuổi',
-      icon: '🎮',
-      image: 'https://cocoisland.vn/wp-content/uploads/2021/06/coco-island-con-phung-ben-tre13.jpg',
-    },
-  ],
+  services: {
+    eyebrow: 'Dịch vụ',
+    heading: 'Những tiện ích khi đồng hành cùng Coco Island',
+    services: services,
+  },
   contact: {
-    title: 'Liên hệ',
-    address: 'Cồn Phụng, Bến Tre, Việt Nam',
-    phone: '+84 917 645 039',
-    email: 'info@cocoisland.vn',
-    mapUrl: 'https://maps.google.com/?q=Cồn+Phụng+Bến+Tre',
+    ...contactInfo,
+    eyebrow: 'Liên hệ',
+    description: 'Đội ngũ tư vấn của Coco Island sẵn sàng hỗ trợ 24/7 để giúp bạn chọn phòng, lên lịch trình và đặt combo trải nghiệm phù hợp.',
+    formHeading: 'Gửi yêu cầu tư vấn',
+    formDescription: 'Điền thông tin để nhận báo giá chi tiết cho chuyến đi của bạn. Chúng tôi sẽ liên hệ trong vòng 30 phút.',
   },
+  newsletter: newsletterContent,
 };
 
 export async function getCocoIslandConfig(): Promise<CocoIslandConfig> {
@@ -83,18 +110,28 @@ export async function saveCocoIslandConfig(
 
     // Save each section
     const promises = Object.entries(config).map(async ([key, value]) => {
-      return prisma.cocoIslandSection.upsert({
+      const existing = await prisma.cocoIslandSection.findUnique({
         where: { key },
-        update: {
-          data: JSON.stringify(value),
-          updatedById: options?.updatedById,
-        },
-        create: {
-          key,
-          data: JSON.stringify(value),
-          updatedById: options?.updatedById,
-        },
       });
+
+      if (existing) {
+        return prisma.cocoIslandSection.update({
+          where: { key },
+          data: {
+            data: JSON.stringify(value),
+            updatedById: options?.updatedById,
+          },
+        });
+      } else {
+        return prisma.cocoIslandSection.create({
+          data: {
+            id: `coco_${key}_${Date.now()}`,
+            key,
+            data: JSON.stringify(value),
+            updatedAt: new Date(),
+          },
+        });
+      }
     });
 
     await Promise.all(promises);

@@ -26,6 +26,9 @@ import {
   Megaphone,
   ChevronDown,
   ChevronRight,
+  Zap,
+  Shield,
+  Webhook,
 } from 'lucide-react'
 import { useState } from 'react'
 
@@ -136,12 +139,6 @@ const navigation: NavItem[] = [
     href: '/admin/media',
     icon: Image,
   },
-  // Tạm thời ẩn - Cần tích hợp backend authentication
-  // {
-  //   title: 'Users',
-  //   href: '/admin/users',
-  //   icon: Users,
-  // },
   {
     title: 'Tích hợp',
     icon: Link2,
@@ -159,14 +156,46 @@ const navigation: NavItem[] = [
     ],
   },
   {
-    title: 'Điều hướng',
-    href: '/admin/navigation',
-    icon: Link2,
+    title: 'Tự động hóa',
+    icon: Zap,
+    children: [
+      {
+        title: '🔗 n8n Webhooks',
+        href: '/admin/n8n',
+        icon: Webhook,
+      },
+    ],
   },
   {
-    title: 'Cài đặt',
-    href: '/admin/settings',
+    title: 'Hệ thống',
     icon: Settings,
+    children: [
+      {
+        title: '🏠 Trang chủ CMS',
+        href: '/admin/homepage',
+        icon: Home,
+      },
+      {
+        title: 'Điều hướng',
+        href: '/admin/navigation',
+        icon: Link2,
+      },
+      {
+        title: '⚙️ Thiết lập',
+        href: '/admin/settings',
+        icon: Settings,
+      },
+      {
+        title: '🔐 Environment Vars',
+        href: '/admin/settings/env',
+        icon: Shield,
+      },
+      {
+        title: 'Quản lý Users',
+        href: '/admin/users-management',
+        icon: Users,
+      },
+    ],
   },
 ]
 

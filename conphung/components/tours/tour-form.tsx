@@ -1546,7 +1546,7 @@ export function TourForm({
 
             {formData.itineraryDays.length === 0 && (
               <p className="text-sm text-muted-foreground">
-                Chưa có ngày nào trong lịch trình. Nhấn "Thêm ngày" để bắt đầu mô tả hành trình.
+                Chưa có ngày nào trong lịch trình. Nhấn &quot;Thêm ngày&quot; để bắt đầu mô tả hành trình.
               </p>
             )}
 

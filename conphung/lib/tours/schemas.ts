@@ -5,24 +5,30 @@ import {
   TourStatus,
 } from '@prisma/client'
 
-// Max value for Decimal(10, 2): 99,999,999.99
-const MAX_DECIMAL_VALUE = 99999999.99
+// Max value for Decimal(12, 2): 9,999,999,999.99
+const MAX_DECIMAL_VALUE = 9999999999.99
 
 const numericLikeSchema = z
   .union([z.number(), z.string(), z.null(), z.undefined()])
   .transform((value) => {
     if (value === null || value === undefined) return undefined
-    if (typeof value === 'number') return value
-    const parsed = Number(value)
+
+    const parsed =
+      typeof value === 'number'
+        ? value
+        : Number(value)
+
     if (Number.isNaN(parsed)) {
       throw new Error(`Giá trị không hợp lệ: ${value}`)
     }
+
     if (Math.abs(parsed) >= MAX_DECIMAL_VALUE) {
       throw new Error(
         `Giá trị ${parsed.toLocaleString('vi-VN')} vượt quá giới hạn cho phép (${MAX_DECIMAL_VALUE.toLocaleString('vi-VN')}). ` +
-        `Vui lòng nhập số nhỏ hơn 100 triệu.`
+        `Vui lòng nhập số nhỏ hơn 10 tỷ.`
       )
     }
+
     return parsed
   })
   .optional()

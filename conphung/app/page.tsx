@@ -23,7 +23,8 @@ export const dynamic = 'force-dynamic';
 import { TicketSection } from '@/components/home/ticket-section';
 import { TourPricingSection } from '@/components/home/tour-pricing-section';
 import { HomestaySection } from '@/components/home/homestay-section';
-import { getHomepageContent } from '@/lib/api/homepage';
+import { getHomepageConfig } from '@/lib/homepage/sections';
+import type { HomepageConfig } from '@/lib/homepage/schema';
 
 // Components
 
@@ -43,7 +44,7 @@ type LatestPost = {
 
 // This page is using the craft.tsx component and design system
 export default async function Home() {
-  const homepageData = await getHomepageContent();
+  const config = await getHomepageConfig();
   const latestPosts = await prisma.post.findMany({
     where: { status: 'PUBLISHED' },
     orderBy: { createdAt: 'desc' },
@@ -69,7 +70,7 @@ export default async function Home() {
    
    
 
-      <ExampleJsx posts={latestPosts} data={homepageData} />
+      <ExampleJsx posts={latestPosts} config={config} />
     
       </Container>
     </Section>
@@ -77,26 +78,25 @@ export default async function Home() {
 }
 
 // This is just some example JS to demonstrate automatic styling from brijr/craft
-const ExampleJsx = ({ posts, data }: { posts: LatestPost[], data: any }) => {
+const ExampleJsx = ({ posts, config }: { posts: LatestPost[], config: HomepageConfig }) => {
   return (
     <article className="prose-m-none">
       {/* Modern Hero Section */}
-      {/* @ts-ignore */}
-      <HeroSection data={data.find(d => d.section === 'hero')} />
+      <HeroSection data={config.hero} />
 
       {/* Modern Promotion Section */}
-      <PromotionSection />
+      <PromotionSection data={config.promotion} />
 
       {/* Modern Ticket Section */}
-      <TicketSection />
+      <TicketSection data={config.ticket} />
 
       {/* Modern Tour Pricing Section */}
-      <TourPricingSection />
+      <TourPricingSection data={config.tourPricing} />
 
       {/* Modern Homestay Section */}
       <HomestaySection />
 
-      <LatestPostsSection posts={posts} />
+      <LatestPostsSection posts={posts} config={config.latestPosts} />
 
       {/* Modern Restaurant Section */}
       <RestaurantSection />
@@ -227,20 +227,19 @@ const ExampleJsx = ({ posts, data }: { posts: LatestPost[], data: any }) => {
 </FadeIn>
 
       {/* Modern Map Section */}
-      <MapSection />
+      <MapSection data={config.map} />
 
       {/* Modern Gallery Section */}
-      <GallerySection />
+      <GallerySection data={config.gallery} />
 
       {/* Modern CTA Booking Section */}
-      <CTABookingSection />
+      <CTABookingSection data={config.ctaBooking} />
 
       {/* Modern Video Guide Section */}
-      <VideoGuideSection />
+      <VideoGuideSection data={config.videoGuide} />
 
       {/* Modern Features Section */}
-      {/* @ts-ignore */}
-      <FeaturesSection data={data.find(d => d.section === 'features')} />
+      <FeaturesSection data={config.features} />
 
 {/* chính sách bảo mật*/}
 <div
@@ -304,7 +303,7 @@ const ExampleJsx = ({ posts, data }: { posts: LatestPost[], data: any }) => {
   );
 };
 
-const LatestPostsSection = ({ posts }: { posts: LatestPost[] }) => {
+const LatestPostsSection = ({ posts, config }: { posts: LatestPost[], config: any }) => {
   if (posts.length === 0) {
     return null;
   }
@@ -312,9 +311,9 @@ const LatestPostsSection = ({ posts }: { posts: LatestPost[] }) => {
   return (
     <section className="mt-12 rounded-3xl bg-gradient-to-br from-emerald-700/10 via-primary/5 to-background px-6 py-10 shadow-lg">
       <div className="mb-8 text-center">
-        <h2 className="text-3xl font-bold tracking-tight text-foreground">Bài viết mới nhất</h2>
+        <h2 className="text-3xl font-bold tracking-tight text-foreground">{config?.heading || 'Bài viết mới nhất'}</h2>
         <p className="mt-2 text-muted-foreground">
-          Những câu chuyện và mẹo hữu ích dành cho hành trình khám phá Cồn Phụng.
+          {config?.description || 'Những câu chuyện và mẹo hữu ích dành cho hành trình khám phá Cồn Phụng.'}
         </p>
       </div>
 

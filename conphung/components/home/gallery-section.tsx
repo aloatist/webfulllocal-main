@@ -3,8 +3,15 @@
 import { FadeIn } from '@/components/ui/fade-in'
 import { Camera, Leaf, Trees } from 'lucide-react'
 import CarouselSlider from '@/components/CarouselSlider'
+import type { GallerySection as GalleryData } from '@/lib/homepage/schema'
 
-export function GallerySection() {
+interface GallerySectionProps {
+  data?: GalleryData;
+}
+
+export function GallerySection({ data }: GallerySectionProps) {
+  if (!data) return null;
+
   return (
     <FadeIn delay={0.2}>
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 p-8 md:p-12 shadow-xl mb-12">
@@ -21,11 +28,13 @@ export function GallerySection() {
             </div>
             
             <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-emerald-600 via-green-600 to-lime-600 bg-clip-text text-transparent">
-              MỘT SỐ HÌNH ẢNH
+              {data.heading}
             </h2>
-            <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-lg">
-              🌿 Khám phá vẻ đẹp thiên nhiên sinh thái tại Cồn Phụng
-            </p>
+            {data.description && (
+              <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-lg">
+                {data.description}
+              </p>
+            )}
           </div>
 
           {/* Eco Tourism Features */}

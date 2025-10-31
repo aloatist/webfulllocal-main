@@ -3,8 +3,15 @@
 import { FadeIn } from '@/components/ui/fade-in'
 import { Ship, Leaf, MapPin, Star } from 'lucide-react'
 import Tourconphungthoison from '@/components/Tourconphungthoison'
+import type { TourPricingSection as TourData } from '@/lib/homepage/schema'
 
-export function TourPricingSection() {
+interface TourPricingSectionProps {
+  data?: TourData;
+}
+
+export function TourPricingSection({ data }: TourPricingSectionProps) {
+  if (!data) return null;
+
   return (
     <FadeIn delay={0.2}>
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-50 via-cyan-50 to-sky-50 dark:from-gray-900 dark:to-gray-800 p-8 md:p-12 shadow-xl mb-12">
@@ -17,14 +24,14 @@ export function TourPricingSection() {
           <div className="text-center mb-10">
             <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-100 to-cyan-100 dark:from-blue-900/30 dark:to-cyan-900/30 px-5 py-2 rounded-full mb-4">
               <Ship className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-              <span className="text-sm font-semibold text-blue-700 dark:text-blue-300">Tour Du Lịch</span>
+              <span className="text-sm font-semibold text-blue-700 dark:text-blue-300">{data.eyebrow}</span>
             </div>
             
             <h2 className="text-3xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-600 via-cyan-600 to-sky-600 bg-clip-text text-transparent">
-              BẢNG GIÁ VÉ TOUR
+              {data.heading}
             </h2>
             <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-lg">
-              🌿 Tour khám phá sinh thái miền Tây - Trải nghiệm đích thực
+              {data.description}
             </p>
           </div>
 

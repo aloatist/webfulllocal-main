@@ -1,0 +1,255 @@
+import { unstable_noStore as noStore } from "next/cache";
+import { formatDistanceToNow } from "date-fns";
+import { vi } from "date-fns/locale";
+import clsx from "clsx";
+import Link from "next/link";
+import { requireEditor } from "@/lib/tours/permissions";
+import { getN8nDashboardData } from "@/lib/integrations/n8n-dashboard";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { TestWebhookCard } from "./test-webhook-card";
+import { RetryButton } from "./retry-button";
+
+const statusClasses: Record<string, string> = {
+  online: "bg-emerald-100 text-emerald-700 border border-emerald-200",
+  degraded: "bg-amber-100 text-amber-700 border border-amber-200",
+  offline: "bg-rose-100 text-rose-700 border border-rose-200",
+};
+
+function formatDate(value?: string | Date | null) {
+  if (!value) return "—";
+  const date = typeof value === "string" ? new Date(value) : value;
+  return formatDistanceToNow(date, { addSuffix: true, locale: vi });
+}
+
+export default async function AdminN8nDashboardPage() {
+  noStore();
+  const auth = await requireEditor();
+  if (auth.status !== 200) {
+    return (
+      <div className="p-6">
+        <h1 className="text-xl font-semibold text-red-600">{auth.error}</h1>
+      </div>
+    );
+  }
+
+  const data = await getN8nDashboardData();
+  const defaultWebhookUrl = process.env.N8N_WEBHOOK_URL;
+
+  return (
+    <div className="space-y-8 p-6">
+      <header className="flex flex-col gap-2">
+        <div className="flex items-center gap-3">
+          <h1 className="text-3xl font-semibold">n8n Automation</h1>
+          <Badge
+            className={clsx(
+              "text-sm font-medium",
+              statusClasses[data.status.status] ?? "bg-gray-200 text-gray-700",
+            )}
+          >
+            {data.status.status === "online"
+              ? "Đang hoạt động"
+              : data.status.status === "degraded"
+                ? "Cảnh báo"
+                : "Mất kết nối"}
+          </Badge>
+        </div>
+        <p className="text-sm text-muted-foreground">
+          Theo dõi kết nối webhooks, nhật ký đồng bộ và thử nghiệm workflow tự động hóa.
+        </p>
+      </header>
+
+      <section className="grid gap-4 md:grid-cols-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Tổng số log</CardTitle>
+            <CardDescription>Toàn bộ inbound/outbound ghi nhận</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-semibold">{data.metrics.totalLogs}</p>
+            <p className="text-xs text-muted-foreground">
+              Cập nhật: {formatDate(data.metrics.lastEventAt)}
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Thành công (7 ngày)</CardTitle>
+            <CardDescription>Webhook thực thi OK</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-semibold text-emerald-600">
+              {data.metrics.successCount}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Tỉ lệ thành công {data.metrics.successRate}%
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Thất bại (7 ngày)</CardTitle>
+            <CardDescription>Webhook trả lỗi</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-semibold text-rose-600">
+              {data.metrics.failureCount}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Chi tiết xem trong bảng log bên dưới
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Health check</CardTitle>
+            <CardDescription>Trạng thái n8n REST</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-1">
+            <p className="text-lg font-medium">
+              {data.status.ok ? "✓ Kết nối thành công" : "✕ Không thể kết nối"}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {data.status.error
+                ? data.status.error
+                : data.status.details?.status ?? "Phản hồi ổn định"}
+            </p>
+          </CardContent>
+        </Card>
+      </section>
+
+      <section className="grid gap-4 lg:grid-cols-[2fr,1fr]">
+        <Card className="border border-border/60">
+          <CardHeader>
+            <CardTitle>Channels</CardTitle>
+            <CardDescription>
+              Tổng quan kết nối provider&nbsp;
+              <code>n8n</code>. Nhấp vào từng channel để xem log chi tiết.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {data.channels.length === 0 ? (
+              <p className="text-sm text-muted-foreground">Chưa có channel nào.</p>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="min-w-full border border-border/60 bg-background text-sm">
+                  <thead className="bg-muted/40 text-xs uppercase text-muted-foreground">
+                    <tr>
+                      <th className="px-4 py-3 text-left">Tên channel</th>
+                      <th className="px-4 py-3 text-left">Endpoint</th>
+                      <th className="px-4 py-3 text-left">Log</th>
+                      <th className="px-4 py-3 text-left">Lần cuối</th>
+                      <th className="px-4 py-3 text-right">Trạng thái</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {data.channels.map((channel) => (
+                      <tr key={channel.id} className="border-t border-border/40">
+                        <td className="px-4 py-3 font-medium">
+                          <Link
+                            href={`/admin/integrations/channels/${channel.id}`}
+                            className="text-emerald-600 hover:underline"
+                          >
+                            {channel.provider} · {channel.name}
+                          </Link>
+                        </td>
+                        <td className="px-4 py-3 text-xs text-muted-foreground">
+                          {channel.endpoint ?? "—"}
+                        </td>
+                        <td className="px-4 py-3">{channel.logCount ?? 0}</td>
+                        <td className="px-4 py-3 text-sm text-muted-foreground">
+                          {formatDate(channel.lastLog)}
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          <Badge
+                            className={clsx(
+                              "text-xs",
+                              channel.status === "ACTIVE"
+                                ? "bg-emerald-100 text-emerald-700"
+                                : channel.status === "ERROR"
+                                  ? "bg-rose-100 text-rose-700"
+                                  : "bg-amber-100 text-amber-700",
+                            )}
+                          >
+                            {channel.status}
+                          </Badge>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <TestWebhookCard
+          defaultOperation="admin-test"
+          defaultWebhookUrl={defaultWebhookUrl}
+        />
+      </section>
+
+      <section className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-lg font-semibold">Nhật ký gần nhất</h2>
+            <p className="text-sm text-muted-foreground">
+              Hiển thị 25 log cuối. Bạn có thể gửi lại payload với log lỗi.
+            </p>
+          </div>
+        </div>
+        <Card className="border border-border/60">
+          <CardContent className="p-0">
+            <ScrollArea className="h-[460px]">
+              <div className="divide-y divide-border/60">
+                {data.logs.length === 0 && (
+                  <p className="p-6 text-sm text-muted-foreground">Chưa có log nào.</p>
+                )}
+                {data.logs.map((log) => (
+                  <div key={log.id} className="grid gap-3 p-4 md:grid-cols-[1fr,auto]">
+                    <div className="space-y-2">
+                      <div className="flex flex-wrap items-center gap-2 text-sm">
+                        <Badge variant="outline" className="uppercase">
+                          {log.direction}
+                        </Badge>
+                        <span
+                          className={clsx(
+                            "font-medium",
+                            log.status === "SUCCESS"
+                              ? "text-emerald-600"
+                              : log.status === "FAILED"
+                                ? "text-rose-600"
+                                : "text-amber-600",
+                          )}
+                        >
+                          {log.status}
+                        </span>
+                        <span className="text-muted-foreground">{log.operation}</span>
+                        <span className="text-xs text-muted-foreground">
+                          {formatDate(log.createdAt)}
+                        </span>
+                      </div>
+                      {log.message && (
+                        <p className="text-xs text-muted-foreground">{log.message}</p>
+                      )}
+                      {log.payload && (
+                        <pre className="max-h-64 overflow-y-auto rounded bg-slate-950/90 p-3 text-xs text-emerald-200">
+                          {JSON.stringify(log.payload, null, 2)}
+                        </pre>
+                      )}
+                    </div>
+                    <RetryButton logId={log.id} disabled={log.status === "SUCCESS"} />
+                  </div>
+                ))}
+              </div>
+            </ScrollArea>
+          </CardContent>
+        </Card>
+      </section>
+    </div>
+  );
+}

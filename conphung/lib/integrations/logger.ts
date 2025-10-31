@@ -5,6 +5,7 @@ import {
   SyncStatus,
 } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
+import { nanoid } from "nanoid";
 
 type EnsureChannelArgs = {
   name: string;
@@ -47,13 +48,16 @@ export async function ensureIntegrationChannel({
       status,
       endpoint,
       config: jsonConfig,
+      updatedAt: new Date(),
     },
     create: {
+      id: nanoid(),
       name,
       provider,
       status,
       endpoint,
       config: jsonConfig,
+      updatedAt: new Date(),
     },
   });
 
@@ -72,6 +76,7 @@ export async function logChannelSyncEvent({
   const operations: Prisma.PrismaPromise<unknown>[] = [
     prisma.channelSyncLog.create({
       data: {
+        id: nanoid(),
         channelId,
         direction,
         operation,

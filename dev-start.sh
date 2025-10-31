@@ -60,12 +60,13 @@ docker-compose up -d postgres redis
 echo -e "${YELLOW}⏳ Đợi database sẵn sàng...${NC}"
 sleep 5
 
-# Chạy Prisma migrations và seed
-echo -e "${BLUE}🗄️  Chạy database migrations...${NC}"
-cd conphung
-npx prisma migrate deploy 2>/dev/null || npx prisma db push
+# Initialize nextjs_app database
+echo -e "${BLUE}🗄️  Initializing nextjs_app database...${NC}"
+./init-nextjs-db.sh
+
 echo -e "${BLUE}🌱 Seeding database...${NC}"
-npm run db:seed
+cd conphung
+npm run db:seed 2>/dev/null || echo "Seed skipped (optional)"
 cd ..
 
 # Cài đặt dependencies cho backend nếu cần

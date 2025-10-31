@@ -2,8 +2,15 @@
 
 import { FadeIn } from '@/components/ui/fade-in'
 import { MapPin, Navigation, Leaf } from 'lucide-react'
+import type { MapSection as MapData } from '@/lib/homepage/schema'
 
-export function MapSection() {
+interface MapSectionProps {
+  data?: MapData;
+}
+
+export function MapSection({ data }: MapSectionProps) {
+  if (!data) return null;
+
   return (
     <FadeIn delay={0.2}>
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-50 to-green-50 dark:from-gray-900 dark:to-gray-800 p-8 md:p-12 shadow-xl mb-12">
@@ -20,23 +27,30 @@ export function MapSection() {
             </div>
             
             <h2 className="text-3xl md:text-4xl font-bold mb-3 bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent">
-              BẢN ĐỒ KHU DU LỊCH SINH THÁI CỒN PHỤNG
+              {data.heading}
             </h2>
-            <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-              🌿 Tọa lạc tại Tờ bản đồ số 3, thửa đất số 32, Ấp Tân Vinh, Xã Phú Túc, tỉnh Vĩnh Long - Trung tâm du lịch sinh thái miền Tây
-            </p>
+            {data.description && (
+              <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+                {data.description}
+              </p>
+            )}
+            {data.address && (
+              <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto mt-2">
+                📍 {data.address}
+              </p>
+            )}
           </div>
 
           {/* Map Container */}
           <div className="relative rounded-2xl overflow-hidden shadow-2xl border-4 border-white dark:border-gray-700 group">
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d15700.258118997554!2d106.3687357!3d10.3367211!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x310aaf9861803419%3A0xe04989a08949b954!2zQ-G7kk4gUEjhu6RORyBUT1VSSVNUIEtodSB2dWkgY2jGoWkgdsOgIGR1IGzhu4tjaCBC4bq_biBUcmU!5e0!3m2!1svi!2s!4v1728204449230!5m2!1svi!2s"
+              src={data.embedUrl}
               className="w-full h-[450px] md:h-[550px] transition-transform duration-500 group-hover:scale-105"
               style={{ border: 0 }}
               allowFullScreen={true}
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-              title="Bản đồ Khu Du Lịch Cồn Phụng"
+              title={data.heading}
             />
             
             {/* Overlay on hover */}

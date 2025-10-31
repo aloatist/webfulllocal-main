@@ -3,8 +3,15 @@
 import { FadeIn } from '@/components/ui/fade-in'
 import { Ticket, Leaf, Users, Clock } from 'lucide-react'
 import Vethamquanconphung from '@/components/Vethamquanconphung'
+import type { TicketSection as TicketData } from '@/lib/homepage/schema'
 
-export function TicketSection() {
+interface TicketSectionProps {
+  data?: TicketData;
+}
+
+export function TicketSection({ data }: TicketSectionProps) {
+  if (!data) return null;
+
   return (
     <FadeIn delay={0.2}>
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-50 via-green-50 to-lime-50 dark:from-gray-900 dark:to-gray-800 p-8 md:p-12 shadow-xl mb-12">
@@ -17,17 +24,17 @@ export function TicketSection() {
           <div className="text-center mb-10">
             <div className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-100 to-green-100 dark:from-emerald-900/30 dark:to-green-900/30 px-5 py-2 rounded-full mb-4">
               <Ticket className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-              <span className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">Vé Tham Quan</span>
+              <span className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">{data.eyebrow}</span>
             </div>
             
             <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-emerald-600 via-green-600 to-lime-600 bg-clip-text text-transparent">
-              VÉ THAM QUAN KHU DU LỊCH SINH THÁI
+              {data.heading}
             </h2>
             <h3 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-white mb-3">
-              CỒN PHỤNG BẾN TRE
+              {data.subheading}
             </h3>
             <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-lg">
-              🌿 Trải nghiệm thiên nhiên xanh mát - Giá vé ưu đãi cho mọi lứa tuổi
+              {data.description}
             </p>
           </div>
 

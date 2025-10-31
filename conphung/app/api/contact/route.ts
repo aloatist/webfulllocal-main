@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { sendN8nEvent } from '@/lib/integrations/n8n-client'
 
 export async function POST(request: NextRequest) {
   try {
@@ -34,8 +34,24 @@ export async function POST(request: NextRequest) {
       createdAt: new Date(),
     })
 
-    // TODO: Send email notification
-    // await sendContactEmail({ name, email, phone, subject, message })
+    // Trigger automation via n8n (fire-and-forget)
+    sendN8nEvent(
+      'contact-form',
+      {
+        name,
+        email,
+        phone: phone ?? null,
+        subject: subject ?? null,
+        message,
+      },
+      {
+        context: {
+          trigger: 'contact-form',
+        },
+      },
+    ).catch((error) => {
+      console.warn('n8n contact-form webhook failed:', error)
+    })
 
     return NextResponse.json(
       { 

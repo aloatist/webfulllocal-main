@@ -7,16 +7,23 @@ import {
 const CHANNEL_NAME = "n8n";
 const CHANNEL_PROVIDER = "n8n";
 
+type SendN8nOptions = {
+  webhookUrl?: string;
+  context?: Record<string, unknown>;
+};
+
 export async function sendN8nEvent(
   operation: string,
   payload: Record<string, unknown>,
+  options: SendN8nOptions = {},
 ) {
-  const webhookUrl = process.env.N8N_WEBHOOK_URL;
+  const webhookUrl = options.webhookUrl ?? process.env.N8N_WEBHOOK_URL;
 
   const channel = await ensureIntegrationChannel({
     name: CHANNEL_NAME,
     provider: CHANNEL_PROVIDER,
     endpoint: webhookUrl ?? "unset",
+    config: options.context,
   });
 
   if (!webhookUrl) {
@@ -42,6 +49,11 @@ export async function sendN8nEvent(
       },
       body: JSON.stringify({
         operation,
+        metadata: {
+          triggeredAt: new Date().toISOString(),
+          source: "admin-panel",
+          ...options.context,
+        },
         ...payload,
       }),
     });

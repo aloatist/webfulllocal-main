@@ -3,25 +3,15 @@
 import Image from 'next/image'
 import { FadeIn, StaggerContainer, StaggerItem } from '@/components/ui/fade-in'
 import { Video, Car, Bike, Navigation, Leaf } from 'lucide-react'
+import type { VideoGuideSection as VideoData } from '@/lib/homepage/schema'
 
-const videos = [
-  {
-    id: 'vY-V3gww26c',
-    title: 'ĐƯỜNG ĐI BẰNG XE MÁY',
-    thumbnail: 'https://i.ytimg.com/vi_webp/vY-V3gww26c/sddefault.webp',
-    icon: Bike,
-    color: 'from-blue-500 to-cyan-500',
-  },
-  {
-    id: 'dYaBm4ca5Y0',
-    title: 'ĐƯỜNG ĐI BẰNG Ô TÔ',
-    thumbnail: 'https://i.ytimg.com/vi_webp/dYaBm4ca5Y0/maxresdefault.webp',
-    icon: Car,
-    color: 'from-emerald-500 to-green-500',
-  },
-]
+interface VideoGuideSectionProps {
+  data?: VideoData;
+}
 
-export function VideoGuideSection() {
+export function VideoGuideSection({ data }: VideoGuideSectionProps) {
+  if (!data || !data.videos || data.videos.length === 0) return null;
+
   return (
     <FadeIn delay={0.2}>
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-8 md:p-12 shadow-xl mb-12">
@@ -38,11 +28,13 @@ export function VideoGuideSection() {
             </div>
             
             <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-blue-600 via-cyan-600 to-emerald-600 bg-clip-text text-transparent">
-              VIDEO HƯỚNG DẪN ĐƯỜNG ĐI
+              {data.heading}
             </h2>
-            <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-lg">
-              🌿 Khám phá lộ trình đến khu du lịch sinh thái Cồn Phụng
-            </p>
+            {data.description && (
+              <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-lg">
+                {data.description}
+              </p>
+            )}
           </div>
 
           {/* Info Cards */}
@@ -80,30 +72,29 @@ export function VideoGuideSection() {
 
           {/* Video Grid */}
           <StaggerContainer staggerDelay={0.15} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {videos.map((video, index) => (
+            {data.videos.map((video, index) => (
               <StaggerItem key={index}>
                 <div className="group relative overflow-hidden rounded-2xl bg-white dark:bg-gray-800 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
-                  {/* Icon Badge */}
-                  <div className="absolute top-4 left-4 z-20">
-                    <div className={`w-12 h-12 bg-gradient-to-br ${video.color} rounded-full flex items-center justify-center shadow-lg`}>
-                      <video.icon className="w-6 h-6 text-white" />
-                    </div>
-                  </div>
-
                   {/* Video Thumbnail */}
                   <a 
-                    href={`https://www.youtube.com/watch?v=${video.id}`} 
+                    href={video.url} 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="block relative aspect-video overflow-hidden"
                   >
-                    <Image 
-                      src={video.thumbnail}
-                      alt={video.title}
-                      fill
-                      className="object-cover transition-transform duration-700 group-hover:scale-110"
-                      sizes="(max-width: 768px) 100vw, 50vw"
-                    />
+                    {video.thumbnail ? (
+                      <Image 
+                        src={video.thumbnail}
+                        alt={video.title}
+                        fill
+                        className="object-cover transition-transform duration-700 group-hover:scale-110"
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
+                        <Video className="w-16 h-16 text-white" />
+                      </div>
+                    )}
                     
                     {/* Dark Overlay */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
@@ -128,14 +119,14 @@ export function VideoGuideSection() {
                   {/* Title */}
                   <div className="p-5 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900">
                     <div className="flex items-center gap-3">
-                      <div className={`w-1 h-12 bg-gradient-to-b ${video.color} rounded-full`} />
+                      <div className="w-1 h-12 bg-gradient-to-b from-blue-500 to-cyan-500 rounded-full" />
                       <div>
                         <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
                           {video.title}
                         </h3>
                         <p className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2">
                           <Video className="w-4 h-4" />
-                          Xem video hướng dẫn chi tiết
+                          {video.duration || 'Xem video hướng dẫn chi tiết'}
                         </p>
                       </div>
                     </div>
