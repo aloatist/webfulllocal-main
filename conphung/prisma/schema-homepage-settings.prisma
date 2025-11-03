@@ -1,0 +1,85 @@
+// Homepage Settings Schema - Add this to your main schema.prisma file
+
+model HomepageSettings {
+  id          String   @id @default(cuid())
+  
+  // Hero Section
+  heroTitle       String?
+  heroSubtitle    String?
+  heroBackgroundImage String?  // Cloudinary URL
+  heroBackgroundImageId String? // Cloudinary public_id for deletion
+  
+  // About Section
+  aboutTitle      String?
+  aboutContent    String?  @db.Text  // EditorJS JSON string
+  aboutImage      String?  // Cloudinary URL
+  aboutImageId    String?  // Cloudinary public_id
+  
+  // CTA Section
+  ctaTitle        String?
+  ctaButtonText   String?
+  ctaButtonLink   String?
+  
+  // Status & Draft
+  status          HomepageStatus @default(DRAFT) // DRAFT | PUBLISHED
+  publishedAt     DateTime?
+  
+  // Metadata
+  version         Int      @default(1)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  updatedBy       String?  // userId
+  
+  @@index([status])
+}
+
+model HomepageSEO {
+  id          String   @id @default(cuid())
+  
+  // Meta tags
+  metaTitle       String?
+  metaDescription String? @db.Text
+  metaKeywords    String[] @default([])
+  ogImage         String?  // Cloudinary URL
+  ogImageId       String?  // Cloudinary public_id
+  
+  // Additional SEO
+  canonicalUrl    String?
+  robotsMeta     String?  @default("index, follow")
+  
+  // Schema.org JSON-LD
+  structuredData  Json?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@unique([id]) // One-to-one with HomepageSettings
+}
+
+enum HomepageStatus {
+  DRAFT
+  PUBLISHED
+}
+
+// Service Model for Featured Services (reuse existing if available)
+model Service {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?  @db.Text
+  icon        String?  // Icon name or emoji
+  image       String?  // Cloudinary URL
+  imageId     String?  // Cloudinary public_id
+  
+  // Featured Services Settings
+  isFeatured  Boolean  @default(false)
+  featuredOrder Int?    // Order in featured services section
+  
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  @@index([isFeatured, featuredOrder])
+  @@index([isActive])
+}
+

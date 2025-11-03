@@ -164,9 +164,42 @@ export const tourPricingSectionSchema = z.object({
   tours: z.array(tourItemSchema),
 });
 
-// Main Homepage Config Schema
+// About Section Schema (NEW)
+export const aboutSectionSchema = z.object({
+  title: z.string(),
+  content: z.string(), // EditorJS JSON string
+  image: z.string().optional(),
+  imageId: z.string().optional(),
+  isActive: z.boolean().default(true),
+});
+
+// Restaurant Section Schema (NEW)
+export const restaurantSectionSchema = z.object({
+  title: z.string(),
+  description: z.string(),
+  capacity: z.string().optional(),
+  specialties: z.array(z.string()),
+  image: z.string().optional(),
+  imageId: z.string().optional(),
+  isActive: z.boolean().default(true),
+});
+
+// FAQ Section Schema (NEW)
+export const faqItemSchema = z.object({
+  question: z.string(),
+  answer: z.string(),
+});
+
+export const faqSectionSchema = z.object({
+  heading: z.string().optional(),
+  items: z.array(faqItemSchema),
+  isActive: z.boolean().default(true),
+});
+
+// Main Homepage Config Schema (Extended)
 export const homepageConfigSchema = z.object({
   hero: heroSectionSchema,
+  about: aboutSectionSchema.optional(), // NEW
   features: featuresSectionSchema,
   certificates: certificatesSectionSchema,
   policyLinks: policyLinksSectionSchema,
@@ -178,6 +211,8 @@ export const homepageConfigSchema = z.object({
   map: mapSectionSchema.optional(),
   videoGuide: videoGuideSectionSchema.optional(),
   ctaBooking: ctaBookingSectionSchema.optional(),
+  restaurant: restaurantSectionSchema.optional(), // NEW
+  faq: faqSectionSchema.optional(), // NEW
 });
 
 // Type exports
@@ -199,3 +234,7 @@ export type GallerySection = z.infer<typeof gallerySectionSchema>;
 export type MapSection = z.infer<typeof mapSectionSchema>;
 export type VideoGuideSection = z.infer<typeof videoGuideSectionSchema>;
 export type CTABookingSection = z.infer<typeof ctaBookingSectionSchema>;
+export type AboutSection = z.infer<typeof aboutSectionSchema>;
+export type RestaurantSection = z.infer<typeof restaurantSectionSchema>;
+export type FAQItem = z.infer<typeof faqItemSchema>;
+export type FAQSection = z.infer<typeof faqSectionSchema>;

@@ -106,8 +106,8 @@ const navigation: NavItem[] = [
     icon: Bed,
     children: [
       {
-        title: 'Cài đặt nội dung',
-        href: '/admin/cocoisland',
+        title: '🏝️ Coco Island CMS',
+        href: '/admin/cocoisland-cms',
         icon: Settings,
       },
       {
@@ -171,19 +171,14 @@ const navigation: NavItem[] = [
     icon: Settings,
     children: [
       {
-        title: '🏠 Trang chủ CMS',
-        href: '/admin/homepage',
-        icon: Home,
+        title: '⚙️ Home Settings',
+        href: '/admin/homepage-settings',
+        icon: Settings,
       },
       {
         title: 'Điều hướng',
         href: '/admin/navigation',
         icon: Link2,
-      },
-      {
-        title: '⚙️ Thiết lập',
-        href: '/admin/settings',
-        icon: Settings,
       },
       {
         title: '🔐 Environment Vars',
@@ -201,7 +196,7 @@ const navigation: NavItem[] = [
 
 function NavItemComponent({ item, level = 0 }: { item: NavItem; level?: number }) {
   const pathname = usePathname()
-  const [isOpen, setIsOpen] = useState(true)
+  const [isOpen, setIsOpen] = useState(level === 0) // Only auto-open top level
   const hasChildren = item.children && item.children.length > 0
 
   if (hasChildren) {

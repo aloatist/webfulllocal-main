@@ -16,6 +16,7 @@ import {
   MapPin, Users, Bed, Bath, Maximize, Star, Check, Wifi, Car, 
   Waves, Wind, Home, Coffee, Shield, Calendar, Clock, XCircle 
 } from 'lucide-react';
+import { Breadcrumb } from '@/components/schema/BreadcrumbSchema';
 
 interface PageProps {
   params: {
@@ -86,6 +87,12 @@ export default async function HomestayDetailPage({ params }: PageProps) {
 
   if (!homestay) notFound();
 
+  const breadcrumbs = [
+    { name: 'Trang chủ', url: 'https://conphungtourist.com' },
+    { name: 'Homestays', url: 'https://conphungtourist.com/homestays' },
+    { name: homestay.title, url: `https://conphungtourist.com/homestays/${params.slug}` }
+  ];
+
   // Prepare gallery images
   const galleryImages = [
     ...(homestay.heroImageUrl ? [{ url: homestay.heroImageUrl, alt: homestay.title }] : []),
@@ -153,6 +160,7 @@ export default async function HomestayDetailPage({ params }: PageProps) {
 
       <Section className="py-8">
         <Container>
+          <Breadcrumb items={breadcrumbs} />
           <div className="space-y-8">
             {/* Header */}
             <div className="space-y-4">

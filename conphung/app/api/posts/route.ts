@@ -164,7 +164,16 @@ export async function POST(request: NextRequest) {
           SEO: {
             create: {
               id: nanoid(),
-              ...seo,
+              title: seo.title,
+              description: seo.description,
+              keywords: seo.keywords,
+              ogTitle: seo.ogTitle,
+              ogDescription: seo.ogDescription,
+              ogImage: seo.ogImage,
+              twitterCard: seo.twitterCard,
+              twitterTitle: seo.twitterTitle,
+              twitterDescription: seo.twitterDescription,
+              twitterImage: seo.twitterImage,
               createdAt: new Date(),
               updatedAt: new Date(),
             },

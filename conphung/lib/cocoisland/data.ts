@@ -17,11 +17,11 @@ export const heroContent = {
     { label: "Giá chỉ từ", value: "800.000₫" },
   ],
   heroImage:
-    "https://cocoisland.vn/wp-content/uploads/2023/01/coco-island-con-phung-ben-tre3.jpg",
+    "/cocoisland/2023/01/coco-island-con-phung-ben-tre3.jpg",
   video: {
     url: "https://youtube.com/shorts/-NK90Tub16E?feature=share",
     poster:
-      "https://cocoisland.vn/wp-content/uploads/2023/01/coco-island-con-phung-ben-tre12.jpg",
+      "/cocoisland/2023/01/coco-island-con-phung-ben-tre12.jpg",
   },
 };
 
@@ -60,7 +60,7 @@ export const restaurantSection = {
   description:
     "Thưởng thức đặc sản miền Tây ngay tại homestay với thực đơn phong phú: cá tai tượng chiên xù, lẩu mắm, bánh xèo, chè dừa… Đội ngũ phục vụ tận tâm giúp bữa ăn gia đình hay đoàn khách thêm trọn vẹn.",
   image:
-    "https://cocoisland.vn/wp-content/uploads/2021/06/coco-island-con-phung-ben-tre20.jpg",
+    "/cocoisland/2023/01/coco-island-con-phung-ben-tre20.jpg",
 };
 
 export const discoverySection = {
@@ -75,7 +75,7 @@ export const discoverySection = {
     "Trải nghiệm làm kẹo dừa truyền thống",
   ],
   image:
-    "https://cocoisland.vn/wp-content/uploads/2021/06/coco-island-con-phung-ben-tre13.jpg",
+    "/cocoisland/2021/06/coco-island-con-phung-ben-tre13-510x510.jpg",
 };
 
 export const testimonials = [
@@ -138,10 +138,10 @@ export const defaultRooms = [
     summary:
       "Chúng tôi là khu nghỉ dưỡng Coco Island bao gồm 30 phòng/1 Homestay HONEY MOON (diện tích phòng 20 mét vuông). Căn phòng được thiết kế dành riêng cho các cặp đôi muốn tận hưởng không gian riêng tư bên bờ sông.",
     thumbnail:
-      "https://cocoisland.vn/wp-content/uploads/2021/06/coco-island-con-phung-ben-tre8-770x550.jpg",
+      "/cocoisland/2021/06/coco-island-con-phung-ben-tre8-770x550.jpg",
     amenities: ["1 giường lớn", "1 phòng tắm", "Ban công nhìn sông"],
     maxGuests: 2,
-    basePrice: "1.600.000₫ / đêm",
+    basePrice: "1.500.000₫ / đêm",
   },
   {
     id: "default-vip-room",
@@ -150,10 +150,10 @@ export const defaultRooms = [
     summary:
       "Chúng tôi là khu nghỉ dưỡng Coco Island bao gồm 30 phòng/5 Homestay VIP ROOM (mỗi phòng 20 mét vuông). Không gian rộng rãi, nội thất gỗ cao cấp phù hợp cặp đôi hoặc khách nghỉ dưỡng.",
     thumbnail:
-      "https://cocoisland.vn/wp-content/uploads/2021/06/coco-island-con-phung-ben-tre4-770x550.jpg",
+      "/cocoisland/2021/06/coco-island-con-phung-ben-tre4-770x550.jpg",
     amenities: ["1 giường lớn", "1 phòng tắm", "Ăn sáng miễn phí"],
     maxGuests: 2,
-    basePrice: "1.400.000₫ / đêm",
+    basePrice: "1.200.000₫ / đêm",
   },
   {
     id: "default-family-room",
@@ -162,10 +162,10 @@ export const defaultRooms = [
     summary:
       "Chúng tôi là khu nghỉ dưỡng Coco Island bao gồm 30 phòng/5 Homestay FAMILY ROOM (mỗi phòng 20 mét vuông). Lựa chọn lý tưởng cho gia đình nhỏ với không gian ấm cúng và tiện nghi đầy đủ.",
     thumbnail:
-      "https://cocoisland.vn/wp-content/uploads/2022/12/coco-island-con-phung-ben-tre-770x550.jpg",
+      "/cocoisland/2022/12/coco-island-con-phung-ben-tre-770x550.jpg",
     amenities: ["2 giường đôi", "1 phòng tắm", "Khu vực tiếp khách"],
     maxGuests: 4,
-    basePrice: "1.800.000₫ / đêm",
+    basePrice: "1.600.000₫ / đêm",
   },
   {
     id: "default-double-room",
@@ -174,10 +174,10 @@ export const defaultRooms = [
     summary:
       "Chúng tôi là khu nghỉ dưỡng Coco Island bao gồm 30 phòng/19 Homestay DOUBLE ROOM (mỗi phòng 12 mét vuông). Mức giá dễ chịu, phù hợp nhóm bạn, cặp đôi yêu thích trải nghiệm thiên nhiên.",
     thumbnail:
-      "https://cocoisland.vn/wp-content/uploads/2021/06/coco-island-con-phung-ben-tre11-770x550.jpg",
+      "/cocoisland/2021/06/coco-island-con-phung-ben-tre11-770x550.jpg",
     amenities: ["1 giường đôi", "1 phòng tắm", "Wi-Fi miễn phí"],
     maxGuests: 2,
-    basePrice: "1.100.000₫ / đêm",
+    basePrice: "800.000₫ / đêm",
   },
 ];
 
@@ -207,11 +207,11 @@ export const defaultRoomDetails: Record<string, RoomDetail> = {
       "Nhà gỗ ấm áp, ban công hướng sông và những dịch vụ chuẩn chính chủ giúp kỳ nghỉ của bạn thêm trọn vẹn.",
     ],
     heroImage:
-      "https://cocoisland.vn/wp-content/uploads/2021/06/coco-island-con-phung-ben-tre8-770x550.jpg",
+      "/cocoisland/2021/06/coco-island-con-phung-ben-tre8-770x550.jpg",
     gallery: [
-      "https://cocoisland.vn/wp-content/uploads/2021/06/coco-island-con-phung-ben-tre8-770x550.jpg",
-      "https://cocoisland.vn/wp-content/uploads/2022/12/coco-island-con-phung-ben-tre-770x550.jpg",
-      "https://cocoisland.vn/wp-content/uploads/2021/06/coco-island-con-phung-ben-tre11-770x550.jpg",
+      "/cocoisland/2021/06/coco-island-con-phung-ben-tre8-770x550.jpg",
+      "/cocoisland/2022/12/coco-island-con-phung-ben-tre-770x550.jpg",
+      "/cocoisland/2021/06/coco-island-con-phung-ben-tre11-770x550.jpg",
     ],
     amenities: [
       "Máy lạnh, TV màn hình phẳng",
@@ -225,7 +225,7 @@ export const defaultRoomDetails: Record<string, RoomDetail> = {
       "Trái cây miệt vườn chào mừng",
       "2 trái dừa tươi và trà, cà phê tại phòng",
     ],
-    basePrice: "1.600.000₫ / đêm",
+    basePrice: "1.500.000₫ / đêm",
     size: "20m²",
     maxGuests: 2,
     bedInfo: "1 giường đôi lớn",
@@ -244,11 +244,11 @@ export const defaultRoomDetails: Record<string, RoomDetail> = {
       "Tất cả phòng đều nằm cạnh bờ sông với tầm nhìn bao quát, thích hợp để tận hưởng hoàng hôn trên Cồn Phụng.",
     ],
     heroImage:
-      "https://cocoisland.vn/wp-content/uploads/2021/06/coco-island-con-phung-ben-tre4-770x550.jpg",
+      "/cocoisland/2021/06/coco-island-con-phung-ben-tre4-770x550.jpg",
     gallery: [
-      "https://cocoisland.vn/wp-content/uploads/2021/06/coco-island-con-phung-ben-tre4-770x550.jpg",
-      "https://cocoisland.vn/wp-content/uploads/2022/12/coco-island-con-phung-ben-tre-770x550.jpg",
-      "https://cocoisland.vn/wp-content/uploads/2021/06/vip-510x510.jpg",
+      "/cocoisland/2021/06/coco-island-con-phung-ben-tre4-770x550.jpg",
+      "/cocoisland/2022/12/coco-island-con-phung-ben-tre-770x550.jpg",
+      "/cocoisland/2021/06/vip-510x510.jpg",
     ],
     amenities: [
       "Máy lạnh, TV, minibar",
@@ -262,7 +262,7 @@ export const defaultRoomDetails: Record<string, RoomDetail> = {
       "Trái cây miệt vườn chào mừng",
       "2 trái dừa tươi & trà, cà phê",
     ],
-    basePrice: "1.400.000₫ / đêm",
+    basePrice: "1.200.000₫ / đêm",
     size: "20m²",
     maxGuests: 2,
     bedInfo: "1 giường lớn",
@@ -281,11 +281,11 @@ export const defaultRoomDetails: Record<string, RoomDetail> = {
       "Phòng có ban công rộng và khu vực tiếp khách, rất phù hợp cho trẻ em vui chơi và gia đình quây quần.",
     ],
     heroImage:
-      "https://cocoisland.vn/wp-content/uploads/2022/12/coco-island-con-phung-ben-tre-770x550.jpg",
+      "/cocoisland/2022/12/coco-island-con-phung-ben-tre-770x550.jpg",
     gallery: [
-      "https://cocoisland.vn/wp-content/uploads/2022/12/coco-island-con-phung-ben-tre-770x550.jpg",
-      "https://cocoisland.vn/wp-content/uploads/2021/06/homestay-FAMILY-ROOM-coco-island-con-phung-ben-tre--510x510.jpg",
-      "https://cocoisland.vn/wp-content/uploads/2021/06/coco-island-con-phung-ben-tre12-770x550.jpg",
+      "/cocoisland/2022/12/coco-island-con-phung-ben-tre-770x550.jpg",
+      "/cocoisland/2021/06/homestay-FAMILY-ROOM-coco-island-con-phung-ben-tre--510x510.jpg",
+      "/cocoisland/2021/06/coco-island-con-phung-ben-tre12-770x550.jpg",
     ],
     amenities: [
       "2 giường đôi, khu vực tiếp khách",
@@ -299,7 +299,7 @@ export const defaultRoomDetails: Record<string, RoomDetail> = {
       "Trái cây miệt vườn và 2 trái dừa",
       "Trà & cà phê miễn phí",
     ],
-    basePrice: "1.800.000₫ / đêm",
+    basePrice: "1.600.000₫ / đêm",
     size: "20m²",
     maxGuests: 4,
     bedInfo: "2 giường đôi",
@@ -318,11 +318,11 @@ export const defaultRoomDetails: Record<string, RoomDetail> = {
       "Không gian vừa đủ với đầy đủ tiện nghi cơ bản, mở cửa bước ra là cầu dừa và khung cảnh sông nước miền Tây.",
     ],
     heroImage:
-      "https://cocoisland.vn/wp-content/uploads/2021/06/coco-island-con-phung-ben-tre11-770x550.jpg",
+      "/cocoisland/2021/06/coco-island-con-phung-ben-tre11-770x550.jpg",
     gallery: [
-      "https://cocoisland.vn/wp-content/uploads/2021/06/coco-island-con-phung-ben-tre11-770x550.jpg",
-      "https://cocoisland.vn/wp-content/uploads/2021/06/coco-island-con-phung-ben-tre9-510x510.jpg",
-      "https://cocoisland.vn/wp-content/uploads/2021/06/coco-island-con-phung-ben-tre5-510x510.jpg",
+      "/cocoisland/2021/06/coco-island-con-phung-ben-tre11-770x550.jpg",
+      "/cocoisland/2021/06/coco-island-con-phung-ben-tre9-510x510.jpg",
+      "/cocoisland/2021/06/coco-island-con-phung-ben-tre5-510x510.jpg",
     ],
     amenities: [
       "Giường đôi, máy lạnh, TV",
@@ -335,7 +335,7 @@ export const defaultRoomDetails: Record<string, RoomDetail> = {
       "Trái cây chào mừng",
       "Nước uống trong phòng",
     ],
-    basePrice: "1.100.000₫ / đêm",
+    basePrice: "800.000₫ / đêm",
     size: "12m²",
     maxGuests: 2,
     bedInfo: "1 giường đôi",

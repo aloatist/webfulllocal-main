@@ -7,9 +7,13 @@ import { requireEditor } from "@/lib/tours/permissions";
 import { getN8nDashboardData } from "@/lib/integrations/n8n-dashboard";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TestWebhookCard } from "./test-webhook-card";
 import { RetryButton } from "./retry-button";
+import { Webhook, Workflow, Settings, Activity } from "lucide-react";
 
 const statusClasses: Record<string, string> = {
   online: "bg-emerald-100 text-emerald-700 border border-emerald-200",
@@ -38,7 +42,7 @@ export default async function AdminN8nDashboardPage() {
   const defaultWebhookUrl = process.env.N8N_WEBHOOK_URL;
 
   return (
-    <div className="space-y-8 p-6">
+    <div className="space-y-6 p-4 md:p-6">
       <header className="flex flex-col gap-2">
         <div className="flex items-center gap-3">
           <h1 className="text-3xl font-semibold">n8n Automation</h1>
@@ -56,9 +60,31 @@ export default async function AdminN8nDashboardPage() {
           </Badge>
         </div>
         <p className="text-sm text-muted-foreground">
-          Theo dõi kết nối webhooks, nhật ký đồng bộ và thử nghiệm workflow tự động hóa.
+          Quản lý webhooks, workflows, và tự động hóa các quy trình kinh doanh
         </p>
       </header>
+
+      <Tabs defaultValue="overview" className="w-full">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="overview" className="flex items-center gap-2">
+            <Activity className="h-4 w-4" />
+            Tổng quan
+          </TabsTrigger>
+          <TabsTrigger value="webhooks" className="flex items-center gap-2">
+            <Webhook className="h-4 w-4" />
+            Webhooks
+          </TabsTrigger>
+          <TabsTrigger value="workflows" className="flex items-center gap-2">
+            <Workflow className="h-4 w-4" />
+            Workflows
+          </TabsTrigger>
+          <TabsTrigger value="settings" className="flex items-center gap-2">
+            <Settings className="h-4 w-4" />
+            Cài đặt
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="overview" className="space-y-6 mt-6">
 
       <section className="grid gap-4 md:grid-cols-4">
         <Card>
@@ -250,6 +276,81 @@ export default async function AdminN8nDashboardPage() {
           </CardContent>
         </Card>
       </section>
+        </TabsContent>
+
+        <TabsContent value="webhooks" className="mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Webhook Management</CardTitle>
+              <CardDescription>
+                Quản lý các webhooks để kết nối với n8n và các dịch vụ bên ngoài
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link href="/admin/n8n/webhooks">
+                <Button className="w-full">
+                  <Webhook className="mr-2 h-4 w-4" />
+                  Quản lý Webhooks
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="workflows" className="mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Workflow Templates</CardTitle>
+              <CardDescription>
+                Quản lý các workflow templates và tự động hóa quy trình
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground mb-4">
+                Tính năng đang được phát triển...
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Sẽ bao gồm: Import/Export workflows, Template library, Workflow testing
+              </p>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="settings" className="mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Cài đặt n8n</CardTitle>
+              <CardDescription>
+                Cấu hình kết nối và thiết lập n8n automation
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label className="text-sm font-medium mb-2 block">
+                  N8N Webhook URL
+                </Label>
+                <code className="block p-2 bg-muted rounded text-sm">
+                  {process.env.N8N_WEBHOOK_URL || 'Chưa cấu hình'}
+                </code>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Thiết lập trong file .env với key N8N_WEBHOOK_URL
+                </p>
+              </div>
+              <div>
+                <Label className="text-sm font-medium mb-2 block">
+                  N8N Dashboard URL
+                </Label>
+                <code className="block p-2 bg-muted rounded text-sm">
+                  http://localhost:5678
+                </code>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Truy cập n8n dashboard để quản lý workflows
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

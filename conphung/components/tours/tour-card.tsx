@@ -55,46 +55,46 @@ export function TourCard({ tour }: TourCardProps) {
 
       <div className="flex flex-1 flex-col gap-4 p-5">
         <div className="space-y-2">
-          <h3 className="text-lg font-semibold">{tour.title}</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{tour.title}</h3>
           {tour.summary && (
-            <p className="text-sm text-muted-foreground line-clamp-3">
+            <p className="text-base text-gray-700 dark:text-gray-200 line-clamp-3 leading-relaxed">
               {tour.summary}
             </p>
           )}
         </div>
 
-        <div className="flex flex-wrap gap-2 text-xs">
-          <span className="rounded-full bg-primary/10 px-3 py-1 text-primary">
+        <div className="flex flex-wrap gap-2 text-sm">
+          <span className="rounded-full bg-emerald-100 dark:bg-emerald-900/30 px-3 py-1.5 text-emerald-700 dark:text-emerald-300 font-medium border border-emerald-200 dark:border-emerald-800">
             {tour.durationDays} ngày
             {tour.durationNights
               ? ` • ${tour.durationNights} đêm`
               : ''}
           </span>
           {tour.difficulty && (
-            <span className="rounded-full bg-muted px-3 py-1 text-muted-foreground">
+            <span className="rounded-full bg-gray-100 dark:bg-gray-800 px-3 py-1.5 text-gray-700 dark:text-gray-300 font-medium border border-gray-200 dark:border-gray-700">
               Độ khó: {tour.difficulty.toLowerCase()}
             </span>
           )}
           {tour.departureCity && (
-            <span className="rounded-full bg-muted px-3 py-1 text-muted-foreground">
-              Khởi hành: {tour.departureCity}
+            <span className="rounded-full bg-blue-50 dark:bg-blue-900/20 px-3 py-1.5 text-blue-700 dark:text-blue-300 font-medium border border-blue-200 dark:border-blue-800">
+              {tour.departureCity}
             </span>
           )}
         </div>
 
-        <div className="mt-auto flex items-center justify-between text-sm">
+        <div className="mt-auto flex items-center justify-between border-t-2 border-gray-200 dark:border-gray-700 pt-4">
           <div>
-            <p className="text-xs text-muted-foreground">Giá từ</p>
-            <p className="text-lg font-semibold">
+            <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">Giá từ</p>
+            <p className="text-xl font-bold text-emerald-600 dark:text-emerald-400">
               {tour.basePrice
                 ? Number(tour.basePrice).toLocaleString('vi-VN')
                 : 'Liên hệ'}{' '}
               {tour.currency ?? 'VND'}
             </p>
           </div>
-          <div className="text-right text-xs text-muted-foreground">
-            <p>{tour.TourDeparture.length} lịch trình</p>
-            <p>
+          <div className="text-right text-sm text-gray-600 dark:text-gray-300">
+            <p className="font-medium">{tour.TourDeparture.length} lịch trình</p>
+            <p className="text-xs">
               {upcomingDate
                 ? `Gần nhất: ${upcomingDate}`
                 : 'Đang cập nhật'}

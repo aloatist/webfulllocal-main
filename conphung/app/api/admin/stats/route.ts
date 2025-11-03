@@ -82,6 +82,15 @@ export async function GET() {
       });
     }
 
+    // Homepage Settings Status
+    const homepageSettings = await prisma.homepageSettings.findFirst({
+      orderBy: { updatedAt: 'desc' },
+      select: {
+        status: true,
+        updatedAt: true,
+      },
+    });
+
     return NextResponse.json({
       posts,
       categories,
@@ -97,6 +106,11 @@ export async function GET() {
       customersChange,
       revenueData,
       bookingData,
+      homepageSettings: {
+        exists: !!homepageSettings,
+        status: homepageSettings?.status || null,
+        lastUpdated: homepageSettings?.updatedAt.toISOString() || null,
+      },
     });
   } catch (error) {
     console.error('Failed to load dashboard stats:', error);

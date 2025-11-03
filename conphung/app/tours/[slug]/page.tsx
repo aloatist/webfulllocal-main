@@ -8,6 +8,7 @@ import type { PublicTourDetail } from '@/lib/tours/public';
 import { TourBookingForm } from '@/components/tours/tour-booking-form';
 import { SchemaTour } from '@/components/schema/SchemaTour';
 import { ReviewForm, ReviewList } from '@/components/reviews';
+import { Breadcrumb } from '@/components/schema/BreadcrumbSchema';
 
 type TourDetail = NonNullable<PublicTourDetail>;
 
@@ -290,10 +291,17 @@ export default async function TourDetailPage({ params }: TourDetailPageProps) {
 
   const heroImage = tour.heroImageUrl ?? tour.TourMedia?.[0]?.Media?.url ?? null;
 
+  const breadcrumbs = [
+    { name: 'Trang chủ', url: 'https://conphungtourist.com' },
+    { name: 'Tours', url: 'https://conphungtourist.com/tours' },
+    { name: tour.title, url: `https://conphungtourist.com/tours/${params.slug}` }
+  ];
+
   return (
   <>
       <SchemaTour tour={tour} />
       <article className="mx-auto flex w-full max-w-5xl flex-col gap-12 px-4 py-16 sm:px-6 lg:px-0">
+      <Breadcrumb items={breadcrumbs} />
       <header className="space-y-6 text-center">
         <div className="flex flex-wrap justify-center gap-2 text-xs text-muted-foreground">
           {tour.departureCity && (

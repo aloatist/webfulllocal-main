@@ -61,14 +61,15 @@
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 3.9%;
 
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
+    /* Emerald primary for brand consistency */
+    --primary: 160 84% 39%;  /* Emerald-600 */
+    --primary-foreground: 0 0% 100%;
 
     --secondary: 0 0% 96.1%;
     --secondary-foreground: 0 0% 9%;
 
     --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
+    --muted-foreground: 0 0% 30%;  /* IMPROVED: Darker for better contrast (was 45.1%) */
 
     --accent: 0 0% 96.1%;
     --accent-foreground: 0 0% 9%;
@@ -76,9 +77,13 @@
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
+    --border: 0 0% 85%;  /* IMPROVED: More visible (was 89.8%) */
+    --input: 0 0% 85%;
+    --ring: 160 84% 39%;  /* IMPROVED: Emerald for consistency */
+    
+    /* NEW: Link colors (distinct from buttons) */
+    --link: 160 84% 35%;  /* Emerald-700 */
+    --link-hover: 160 84% 30%;  /* Emerald-800 */
 
     --radius: 0.5rem;
   }
@@ -87,20 +92,21 @@
     --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;
 
-    --card: 0 0% 3.9%;
+    --card: 0 0% 9%;  /* IMPROVED: Slightly lighter than background */
     --card-foreground: 0 0% 98%;
 
     --popover: 0 0% 3.9%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
+    /* Emerald primary in dark mode */
+    --primary: 160 84% 45%;  /* Emerald-500 */
+    --primary-foreground: 0 0% 100%;
 
     --secondary: 0 0% 14.9%;
     --secondary-foreground: 0 0% 98%;
 
     --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
+    --muted-foreground: 0 0% 70%;  /* IMPROVED: Lighter for dark bg (was 63.9%) */
 
     --accent: 0 0% 14.9%;
     --accent-foreground: 0 0% 98%;
@@ -108,9 +114,13 @@
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
+    --border: 0 0% 25%;  /* IMPROVED: More visible in dark mode (was 14.9%) */
+    --input: 0 0% 20%;  /* IMPROVED: Distinct from background */
+    --ring: 160 84% 45%;  /* Emerald */
+    
+    /* NEW: Link colors for dark mode */
+    --link: 160 84% 50%;  /* Emerald-400 */
+    --link-hover: 160 84% 60%;  /* Lighter on hover */
   }
 }
 
@@ -123,24 +133,29 @@
     @apply bg-background text-foreground;
   }
 
-  /* Link styles - make links visible */
+  /* IMPROVED: Link styles - distinct and accessible */
   a {
-    @apply text-primary hover:text-primary/80 transition-colors;
+    @apply text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors;
   }
 
   /* Override for specific cases where links should inherit color */
   a.text-inherit {
-    @apply text-inherit;
+    @apply text-inherit hover:text-inherit;
   }
 
   /* Links in navigation */
   nav a {
-    @apply text-foreground hover:text-primary transition-colors;
+    @apply text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors;
   }
 
-  /* Links in prose content */
+  /* Links in prose content - with underline */
   .prose a {
-    @apply text-primary underline hover:text-primary/80;
+    @apply text-emerald-600 dark:text-emerald-400 underline decoration-2 underline-offset-2 hover:text-emerald-700 dark:hover:text-emerald-300 hover:decoration-emerald-600/60;
+  }
+  
+  /* Button links - no underline */
+  a.inline-flex, a[class*="btn-"], button a {
+    @apply no-underline;
   }
 }
 
@@ -151,6 +166,67 @@
 }
 
 @layer utilities {
+  /* ACCESSIBILITY: Better text contrast utilities */
+  .text-readable {
+    @apply text-gray-700 dark:text-gray-200;
+  }
+
+  .text-secondary {
+    @apply text-gray-600 dark:text-gray-300;
+  }
+
+  .text-tertiary {
+    @apply text-gray-500 dark:text-gray-400;
+  }
+
+  /* LINKS: Styled link utilities */
+  .link-primary {
+    @apply text-emerald-600 dark:text-emerald-400 
+           hover:text-emerald-700 dark:hover:text-emerald-300 
+           underline decoration-2 underline-offset-4 hover:decoration-emerald-600/60
+           transition-colors font-medium;
+  }
+
+  .link-subtle {
+    @apply text-gray-700 dark:text-gray-300
+           hover:text-emerald-600 dark:hover:text-emerald-400
+           hover:underline underline-offset-2
+           transition-colors;
+  }
+
+  /* BORDERS: Better visibility */
+  .border-visible {
+    @apply border-2 border-gray-200 dark:border-gray-700;
+  }
+
+  .border-strong {
+    @apply border-2 border-gray-300 dark:border-gray-600;
+  }
+
+  /* FOCUS: Stronger focus indicators */
+  .focus-visible-strong {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 
+           focus-visible:ring-offset-2 focus-visible:ring-offset-white
+           dark:focus-visible:ring-offset-gray-900 transition-shadow;
+  }
+
+  /* INPUT: Enhanced input styles */
+  .input-enhanced {
+    @apply border-2 border-gray-300 dark:border-gray-600 
+           bg-white dark:bg-gray-800 
+           text-gray-900 dark:text-white
+           placeholder:text-gray-500 dark:placeholder:text-gray-400
+           focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20
+           transition-all;
+  }
+
+  /* CARD: Enhanced card with better borders */
+  .card-enhanced {
+    @apply bg-white dark:bg-gray-800 
+           border-2 border-gray-200 dark:border-gray-700
+           rounded-xl shadow-md hover:shadow-xl
+           transition-all duration-300;
+  }
 
   /* Hide scrollbar for Chrome, Safari and Opera */
   .no-scrollbar::-webkit-scrollbar {

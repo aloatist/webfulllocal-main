@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { Pencil, Trash2, Check } from 'lucide-react';
+import { Pencil, Trash2, Check, Square } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import type { MediaItem } from './types';
 import {
   Dialog,
@@ -20,9 +21,19 @@ interface MediaGridProps {
   onDelete?: (id: string) => void;
   onUpdate?: (id: string, data: { alt?: string; caption?: string }) => void;
   selectedIds?: string[];
+  onToggleSelect?: (id: string) => void;
+  selectMode?: boolean;
 }
 
-export function MediaGrid({ items, onSelect, onDelete, onUpdate, selectedIds }: MediaGridProps) {
+export function MediaGrid({ 
+  items, 
+  onSelect, 
+  onDelete, 
+  onUpdate, 
+  selectedIds = [],
+  onToggleSelect,
+  selectMode = false,
+}: MediaGridProps) {
   const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
   const [editMode, setEditMode] = useState(false);
   const [editData, setEditData] = useState({ alt: '', caption: '' });
@@ -60,8 +71,24 @@ export function MediaGrid({ items, onSelect, onDelete, onUpdate, selectedIds }: 
           return (
           <div
             key={media.id}
-            className={`group relative aspect-square overflow-hidden rounded-lg border ${isSelected ? 'border-primary border-2 ring-2 ring-primary/20' : 'border-border'} bg-accent/5`}
+            className={`group relative aspect-square overflow-hidden rounded-lg border ${isSelected ? 'border-primary border-2 ring-2 ring-primary/20' : 'border-border'} bg-accent/5 ${selectMode || onToggleSelect ? 'cursor-pointer' : ''}`}
+            onClick={() => {
+              if (selectMode && onToggleSelect) {
+                onToggleSelect(media.id);
+              }
+            }}
           >
+            {/* Checkbox for bulk select mode */}
+            {selectMode && onToggleSelect && (
+              <div className="absolute left-2 top-2 z-10" onClick={(e) => e.stopPropagation()}>
+                <Checkbox
+                  checked={isSelected}
+                  onCheckedChange={() => onToggleSelect(media.id)}
+                  className="h-5 w-5 border-2 bg-white/90"
+                />
+              </div>
+            )}
+
             <Image
               src={media.url}
               alt={media.alt ?? media.filename}
@@ -70,40 +97,51 @@ export function MediaGrid({ items, onSelect, onDelete, onUpdate, selectedIds }: 
               className="object-cover transition-transform group-hover:scale-105"
             />
 
-            {isSelected && (
+            {isSelected && !selectMode && (
               <div className="absolute right-2 top-2 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-primary text-primary-foreground">
                 <Check className="h-4 w-4" />
               </div>
             )}
 
-            <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
-              {onSelect && (
-                <Button
-                  size="sm"
-                  onClick={() => onSelect(media)}
-                >
-                  Chọn
-                </Button>
-              )}
-              {onUpdate && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => handleEdit(media)}
-                >
-                  <Pencil className="h-4 w-4" />
-                </Button>
-              )}
-              {onDelete && (
-                <Button
-                  size="sm"
-                  variant="destructive"
-                  onClick={() => handleDelete(media.id)}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              )}
-            </div>
+            {!selectMode && (
+              <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
+                {onSelect && (
+                  <Button
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onSelect(media);
+                    }}
+                  >
+                    Chọn
+                  </Button>
+                )}
+                {onUpdate && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleEdit(media);
+                    }}
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                )}
+                {onDelete && (
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDelete(media.id);
+                    }}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
+            )}
           </div>
         )})}
       </div>

@@ -1,50 +1,53 @@
 import { z } from 'zod';
 
-// Hero Section Schema
+// Hero Section
 export const heroSectionSchema = z.object({
-  eyebrow: z.string().optional(),
+  eyebrow: z.string(),
   title: z.string(),
-  subtitle: z.string().optional(),
-  description: z.string().optional(),
-  backgroundImage: z.string().optional(),
-  heroImage: z.string().optional(),
-  video: z.object({
-    url: z.string(),
-    poster: z.string().optional(),
-    overlayTitle: z.string().optional(),
-    overlaySubtitle: z.string().optional(),
-  }).optional(),
+  description: z.string(),
   primaryCta: z.object({
     label: z.string(),
     href: z.string(),
-  }).optional(),
+  }),
   secondaryCta: z.object({
     label: z.string(),
     href: z.string(),
-  }).optional(),
+  }),
   stats: z.array(z.object({
     label: z.string(),
     value: z.string(),
-  })).optional(),
+  })),
+  heroImage: z.string(),
+  video: z.object({
+    url: z.string(),
+    poster: z.string(),
+  }),
 });
 
-// Stay Perks Schema
+// Stay Perks Section
 export const stayPerksSchema = z.object({
-  eyebrow: z.string().optional(),
   heading: z.string(),
+  items: z.array(z.string()),
+  ctaText: z.string().optional(),
+  ctaHref: z.string().optional(),
+});
+
+// Room Showcase Section
+export const roomShowcaseSchema = z.object({
+  eyebrow: z.string().optional(),
+  heading: z.string().optional(),
   description: z.string().optional(),
   ctaText: z.string().optional(),
   ctaHref: z.string().optional(),
-  items: z.array(z.string()),
 });
 
-// Experience Schema
+// Experience Item
 export const experienceSchema = z.object({
   title: z.string(),
   description: z.string(),
-  image: z.string().optional(),
 });
 
+// Experiences Section
 export const experiencesSectionSchema = z.object({
   eyebrow: z.string().optional(),
   heading: z.string().optional(),
@@ -52,102 +55,91 @@ export const experiencesSectionSchema = z.object({
   experiences: z.array(experienceSchema),
 });
 
-// Restaurant Section Schema
+// Restaurant Section
 export const restaurantSectionSchema = z.object({
-  eyebrow: z.string().optional(),
+  eyebrow: z.string(),
   title: z.string(),
   description: z.string(),
-  features: z.array(z.string()).optional(),
   image: z.string(),
 });
 
-// Discovery Section Schema
+// Discovery Section
 export const discoverySectionSchema = z.object({
-  eyebrow: z.string().optional(),
+  eyebrow: z.string(),
   title: z.string(),
   description: z.string(),
   highlights: z.array(z.string()),
   image: z.string(),
 });
 
-// Testimonial Schema
+// Testimonial
 export const testimonialSchema = z.object({
   author: z.string(),
-  role: z.string().optional(),
+  role: z.string(),
   quote: z.string(),
-  avatar: z.string().optional(),
 });
 
+// Testimonials Section
 export const testimonialsSectionSchema = z.object({
   eyebrow: z.string().optional(),
   heading: z.string().optional(),
   testimonials: z.array(testimonialSchema),
 });
 
-// Service Schema
+// Service
 export const serviceSchema = z.object({
   title: z.string(),
   description: z.string(),
-  icon: z.string().optional(),
-  image: z.string().optional(),
 });
 
+// Services Section
 export const servicesSectionSchema = z.object({
   eyebrow: z.string().optional(),
   heading: z.string().optional(),
   services: z.array(serviceSchema),
 });
 
-// Contact Section Schema
+// Contact Section
 export const contactSectionSchema = z.object({
-  eyebrow: z.string().optional(),
   phone: z.string(),
   email: z.string(),
   address: z.string(),
-  mapUrl: z.string().optional(),
-  hotlineLabel: z.string().optional(),
-  description: z.string().optional(),
-  formHeading: z.string().optional(),
-  formDescription: z.string().optional(),
+  mapUrl: z.string(),
+  hotlineLabel: z.string(),
 });
 
-// Newsletter Section Schema
+// Newsletter Section
 export const newsletterSectionSchema = z.object({
   title: z.string(),
   description: z.string(),
 });
 
-// Room Showcase Section Schema
-export const roomShowcaseSectionSchema = z.object({
-  eyebrow: z.string().optional(),
-  heading: z.string().optional(),
-  description: z.string().optional(),
-  ctaText: z.string().optional(),
-  ctaHref: z.string().optional(),
-});
-
-// Main Config Schema
+// Complete Coco Island Config
 export const cocoIslandConfigSchema = z.object({
   hero: heroSectionSchema,
   stayPerks: stayPerksSchema,
-  roomShowcase: roomShowcaseSectionSchema.optional(),
-  experiences: experiencesSectionSchema.optional(),
-  restaurant: restaurantSectionSchema.optional(),
-  discovery: discoverySectionSchema.optional(),
-  testimonials: testimonialsSectionSchema.optional(),
-  services: servicesSectionSchema.optional(),
+  roomShowcase: roomShowcaseSchema.optional(),
+  experiences: experiencesSectionSchema,
+  restaurant: restaurantSectionSchema,
+  discovery: discoverySectionSchema,
+  testimonials: testimonialsSectionSchema,
+  services: servicesSectionSchema,
   contact: contactSectionSchema,
-  newsletter: newsletterSectionSchema.optional(),
+  newsletter: newsletterSectionSchema,
 });
 
-export type CocoIslandConfig = z.infer<typeof cocoIslandConfigSchema>;
+// Type exports
 export type HeroSection = z.infer<typeof heroSectionSchema>;
-export type StayPerks = z.infer<typeof stayPerksSchema>;
-export type Experience = z.infer<typeof experienceSchema>;
+export type StayPerksSection = z.infer<typeof stayPerksSchema>;
+export type RoomShowcaseSection = z.infer<typeof roomShowcaseSchema>;
+export type ExperienceItem = z.infer<typeof experienceSchema>;
+export type ExperiencesSection = z.infer<typeof experiencesSectionSchema>;
 export type RestaurantSection = z.infer<typeof restaurantSectionSchema>;
 export type DiscoverySection = z.infer<typeof discoverySectionSchema>;
 export type Testimonial = z.infer<typeof testimonialSchema>;
+export type TestimonialsSection = z.infer<typeof testimonialsSectionSchema>;
 export type Service = z.infer<typeof serviceSchema>;
+export type ServicesSection = z.infer<typeof servicesSectionSchema>;
 export type ContactSection = z.infer<typeof contactSectionSchema>;
 export type NewsletterSection = z.infer<typeof newsletterSectionSchema>;
-export type RoomShowcaseSection = z.infer<typeof roomShowcaseSectionSchema>;
+export type CocoIslandConfig = z.infer<typeof cocoIslandConfigSchema>;

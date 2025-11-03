@@ -187,6 +187,25 @@ model HomepageRestaurant {
   updatedAt   DateTime
 }
 
+model CocoIslandSettings {
+  id          String   @id @default(cuid())
+  
+  // Unified Content (JSON) - Stores all cocoisland sections
+  sections    Json?   // Complete cocoisland config
+  
+  // Status & Publishing
+  status      HomepageStatus @default(DRAFT)
+  publishedAt DateTime?
+  
+  // Metadata
+  version     Int      @default(1)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  updatedBy   String?
+  
+  @@index([status])
+}
+
 model HomepageSection {
   id          String   @id
   sectionKey  String   @unique
@@ -204,6 +223,87 @@ model HomepageSection {
   @@index([isActive])
   @@index([order])
   @@index([sectionKey])
+}
+
+model HomepageSettings {
+  id          String   @id @default(cuid())
+  
+  // Unified Sections Data (JSON) - Stores all homepage sections
+  sections    Json?   // Complete homepage config with all sections
+  
+  // Legacy fields (kept for backward compatibility)
+  heroTitle       String?
+  heroSubtitle    String?
+  heroBackgroundImage String?
+  heroBackgroundImageId String?
+  aboutTitle      String?
+  aboutContent    String?  @db.Text
+  aboutImage      String?
+  aboutImageId    String?
+  ctaTitle        String?
+  ctaButtonText   String?
+  ctaButtonLink   String?
+  
+  // Status & Draft
+  status          HomepageStatus @default(DRAFT)
+  publishedAt     DateTime?
+  
+  // Metadata
+  version         Int      @default(1)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  updatedBy       String?
+  
+  @@index([status])
+}
+
+model HomepageSEO {
+  id          String   @id @default(cuid())
+  
+  // Meta tags
+  metaTitle       String?
+  metaDescription String? @db.Text
+  metaKeywords    String[] @default([])
+  ogImage         String?
+  ogImageId       String?
+  
+  // Additional SEO
+  canonicalUrl    String?
+  robotsMeta      String?  @default("index, follow")
+  
+  // Schema.org JSON-LD
+  structuredData  Json?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@unique([id])
+}
+
+model Service {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?  @db.Text
+  icon        String?
+  image       String?
+  imageId     String?
+  
+  // Featured Services Settings
+  isFeatured  Boolean  @default(false)
+  featuredOrder Int?
+  
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  @@index([isFeatured, featuredOrder])
+  @@index([isActive])
+}
+
+enum HomepageStatus {
+  DRAFT
+  PUBLISHED
 }
 
 model HomepageTicket {

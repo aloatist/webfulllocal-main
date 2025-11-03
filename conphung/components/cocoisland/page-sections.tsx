@@ -402,10 +402,10 @@ export function RestaurantSection({
             {eyebrow}
           </span>
           <h2 className="text-3xl font-semibold sm:text-4xl">{title}</h2>
-          <p className="text-lg leading-relaxed text-slate-100/80">
+          <p className="text-lg leading-relaxed text-white">
             {description}
           </p>
-          <ul className="grid gap-3 text-sm text-slate-100/70 sm:grid-cols-2">
+          <ul className="grid gap-3 text-sm text-white/90 sm:grid-cols-2">
             {[
               "Thực đơn đặc sản miền Tây",
               "Không gian ven sông thoáng mát",
@@ -577,11 +577,11 @@ export function ContactSection({
           <h2 className="text-3xl font-semibold sm:text-4xl">
             {hotlineLabel}
           </h2>
-          <p className="text-lg text-slate-100/80">
+          <p className="text-lg text-white">
             Đội ngũ tư vấn của Coco Island sẵn sàng hỗ trợ 24/7 để giúp bạn chọn
             phòng, lên lịch trình và đặt combo trải nghiệm phù hợp.
           </p>
-          <div className="grid gap-4 text-sm text-slate-100/80">
+          <div className="grid gap-4 text-sm text-white">
             <Link
               href={`tel:${phone.replace(/[^0-9+]/g, "")}`}
               className="inline-flex items-center gap-3 text-base font-semibold text-emerald-300 hover:text-emerald-200"
@@ -593,7 +593,7 @@ export function ContactSection({
             </Link>
             <Link
               href={`mailto:${email}`}
-              className="inline-flex items-center gap-3 text-base font-medium text-slate-100 hover:text-emerald-200"
+              className="inline-flex items-center gap-3 text-base font-medium text-white hover:text-emerald-300"
             >
               <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-emerald-300/20 text-emerald-200">
                 ✉
@@ -604,7 +604,7 @@ export function ContactSection({
               href={mapUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-3 text-base font-medium text-slate-100 hover:text-emerald-200"
+              className="inline-flex items-center gap-3 text-base font-medium text-white hover:text-emerald-300"
             >
               <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-emerald-300/20 text-emerald-200">
                 📍
@@ -617,7 +617,7 @@ export function ContactSection({
           <h3 className="text-xl font-semibold text-white">
             Gửi yêu cầu tư vấn
           </h3>
-          <p className="mt-2 text-sm text-slate-100/70">
+          <p className="mt-2 text-sm text-white/90">
             Điền thông tin để nhận báo giá chi tiết cho chuyến đi của bạn. Chúng
             tôi sẽ liên hệ trong vòng 30 phút.
           </p>

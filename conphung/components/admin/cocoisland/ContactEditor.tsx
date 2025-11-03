@@ -61,7 +61,7 @@ export function ContactEditor({ data, onChange }: ContactEditorProps) {
           <Input
             value={data.email}
             onChange={(e) => updateField('email', e.target.value)}
-            placeholder="info@cocoisland.vn"
+            placeholder="conphungtourist87@gmail.com"
             type="email"
           />
         </div>

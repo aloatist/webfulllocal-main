@@ -12,6 +12,8 @@ import {
   TrendingUp,
   Home,
   MapPin,
+  Settings,
+  FileText,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSession, signOut } from 'next-auth/react';
@@ -34,6 +36,11 @@ export default function AdminDashboardPage() {
     revenueChange: 0,
     bookingsChange: 0,
     customersChange: 0,
+    homepageSettings: {
+      exists: false,
+      status: null as 'DRAFT' | 'PUBLISHED' | null,
+      lastUpdated: null as string | null,
+    },
   });
   const [revenueData, setRevenueData] = useState<any[]>([]);
   const [bookingData, setBookingData] = useState<any[]>([]);
@@ -67,6 +74,11 @@ export default function AdminDashboardPage() {
         revenueChange: data.revenueChange ?? 0,
         bookingsChange: data.bookingsChange ?? 0,
         customersChange: data.customersChange ?? 0,
+        homepageSettings: {
+          exists: data.homepageSettings?.exists ?? false,
+          status: data.homepageSettings?.status ?? null,
+          lastUpdated: data.homepageSettings?.lastUpdated ?? null,
+        },
       });
       
       // Set chart data
@@ -171,7 +183,7 @@ export default function AdminDashboardPage() {
           </div>
 
           {/* Content Stats */}
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
             <div className="rounded-xl border border-border/80 bg-background/70 p-6 shadow-sm">
               <h3 className="font-semibold">Bài viết</h3>
               <p className="mt-2 text-2xl font-bold">{stats.posts}</p>
@@ -211,6 +223,39 @@ export default function AdminDashboardPage() {
                 </a>
               </div>
             </div>
+
+            {/* Home Settings Card */}
+            <div className="rounded-xl border border-border/80 bg-background/70 p-6 shadow-sm">
+              <div className="flex items-center gap-2">
+                <Settings className="h-5 w-5 text-primary" />
+                <h3 className="font-semibold">Home Settings</h3>
+              </div>
+              <div className="mt-2">
+                {stats.homepageSettings.exists ? (
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium">
+                      {stats.homepageSettings.status === 'PUBLISHED' ? (
+                        <span className="text-green-600">Đã xuất bản</span>
+                      ) : (
+                        <span className="text-amber-600">Bản nháp</span>
+                      )}
+                    </p>
+                    {stats.homepageSettings.lastUpdated && (
+                      <p className="text-xs text-muted-foreground">
+                        {new Date(stats.homepageSettings.lastUpdated).toLocaleDateString('vi-VN')}
+                      </p>
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground">Chưa cấu hình</p>
+                )}
+              </div>
+              <div className="mt-4">
+                <a href="/admin/homepage-settings" className="text-sm text-primary hover:underline">
+                  Cấu hình →
+                </a>
+              </div>
+            </div>
           </div>
 
           <div className="grid gap-6 lg:grid-cols-2">
@@ -223,15 +268,18 @@ export default function AdminDashboardPage() {
               </div>
               <div className="mt-6 grid gap-4 sm:grid-cols-2">
                 <Button variant="outline" onClick={() => router.push('/admin/posts/new')}>
+                  <FileText className="mr-2 h-4 w-4" />
                   Tạo bài viết mới
                 </Button>
-                <Button variant="outline" onClick={() => router.push('/admin/media/upload')}>
+                <Button variant="outline" onClick={() => router.push('/admin/media')}>
                   Tải lên thư viện
                 </Button>
-                <Button variant="outline" onClick={() => router.push('/admin/categories')}>
-                  Quản lý danh mục
+                <Button variant="outline" onClick={() => router.push('/admin/homepage-settings')}>
+                  <Home className="mr-2 h-4 w-4" />
+                  Cấu hình trang chủ
                 </Button>
                 <Button variant="outline" onClick={() => router.push('/admin/settings')}>
+                  <Settings className="mr-2 h-4 w-4" />
                   Cài đặt website
                 </Button>
               </div>

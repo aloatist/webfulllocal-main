@@ -75,25 +75,25 @@ export default async function PostsPage() {
 
               <div className="flex flex-1 flex-col space-y-4 p-6">
                 <div className="flex flex-wrap gap-2 text-sm">
-                  <span className="text-muted-foreground">
+                  <span className="text-gray-600 dark:text-gray-400 font-medium">
                     {format(new Date(post.createdAt), 'dd/MM/yyyy')}
                   </span>
                   {post.categories.map((category) => (
                     <span
                       key={category.id}
-                      className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
+                      className="rounded-full bg-emerald-100 dark:bg-emerald-900/30 px-3 py-1 text-sm font-semibold text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800"
                     >
                       {category.name}
                     </span>
                   ))}
                 </div>
 
-                <div className="space-y-2">
-                  <h2 className="text-2xl font-semibold leading-tight text-foreground">
+                <div className="space-y-3">
+                  <h2 className="text-2xl font-bold leading-tight text-gray-900 dark:text-white">
                     {post.title}
                   </h2>
                   {post.excerpt && (
-                    <p className="line-clamp-3 text-sm text-muted-foreground">
+                    <p className="line-clamp-3 text-base text-gray-700 dark:text-gray-200 leading-relaxed">
                       {post.excerpt}
                     </p>
                   )}
@@ -102,9 +102,10 @@ export default async function PostsPage() {
                 <div className="pt-2">
                   <Link
                     href={`/posts/${post.slug}`}
-                    className="inline-flex items-center text-sm font-medium text-primary hover:underline"
+                    className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 font-semibold underline decoration-2 underline-offset-4 hover:decoration-emerald-600/60 transition-all no-underline"
                   >
                     Đọc bài viết
+                    <span aria-hidden="true">→</span>
                   </Link>
                 </div>
               </div>

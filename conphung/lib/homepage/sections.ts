@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { homepageConfigSchema, type HomepageConfig } from './schema';
 
-const DEFAULT_CONFIG: HomepageConfig = {
+export const DEFAULT_CONFIG: HomepageConfig = {
   hero: {
     mainTitle: 'KHU DU LỊCH SINH THÁI CỒN PHỤNG',
     subtitle: 'Công Trình Kiến Trúc Đạo Dừa',

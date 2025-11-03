@@ -62,14 +62,14 @@ interface PostResponse {
   content: string;
   excerpt: string | null;
   status: PostStatus;
-  categories: Category[];
-  tags: Tag[];
-  featuredImage?: {
+  Category: Category[];
+  Tag: Tag[];
+  Media?: {
     id: string;
     url: string;
     alt: string | null;
   } | null;
-  seo?: PostFormData['seo'];
+  SEO?: PostFormData['seo'];
 }
 
 interface PostFormData {
@@ -156,11 +156,11 @@ export function PostEditor({ postId }: PostEditorProps) {
           content: post.content ?? '',
           excerpt: post.excerpt ?? '',
           status: post.status ?? 'DRAFT',
-          categoryIds: post.categories?.map((category) => category.id) ?? [],
-          tagIds: post.tags?.map((tag) => tag.id) ?? [],
-          featuredImageId: post.featuredImage?.id ?? undefined,
-          featuredImageUrl: post.featuredImage?.url ?? undefined,
-          seo: post.seo,
+          categoryIds: post.Category?.map((category) => category.id) ?? [],
+          tagIds: post.Tag?.map((tag) => tag.id) ?? [],
+          featuredImageId: post.Media?.id ?? undefined,
+          featuredImageUrl: post.Media?.url ?? undefined,
+          seo: post.SEO,
         });
       } else {
         setFormData((prev) => ({

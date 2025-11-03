@@ -47,6 +47,7 @@ export const NAV_GROUPS: NavGroup[] = [
     title: "Hệ thống",
     items: [
       { href: "/admin/homepage", label: "🏠 Trang chủ CMS" },
+      { href: "/admin/homepage-settings", label: "⚙️ Home Settings" },
       { href: "/admin/navigation", label: "Điều hướng" },
       { href: "/admin/settings", label: "⚙️ Thiết lập" },
       { href: "/admin/settings/env", label: "🔐 Environment Vars" },

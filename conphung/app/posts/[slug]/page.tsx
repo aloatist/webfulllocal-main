@@ -6,6 +6,10 @@ import type { Metadata } from 'next';
 import { getServerSession } from 'next-auth';
 import { prisma } from '@/lib/prisma';
 import { authOptions } from '@/lib/auth/auth-options';
+import { Breadcrumb } from '@/components/schema/BreadcrumbSchema';
+import { RelatedPosts } from '@/components/posts/related-posts';
+import { SocialShare } from '@/components/posts/social-share';
+import { calculateReadingTime, formatReadingTime } from '@/lib/posts/reading-time';
 
 interface PostPageProps {
   params: { slug: string };
@@ -247,6 +251,8 @@ function renderBlock(block: EditorBlock) {
               fill
               className="object-cover"
               sizes="(max-width: 768px) 100vw, 70vw"
+              loading="lazy"
+              quality={85}
             />
           </div>
           {caption && (
@@ -291,7 +297,15 @@ export default async function PostPage({ params, searchParams }: PostPageProps) 
 
   const post = await prisma.post.findUnique({
     where: { slug: params.slug },
-    include: {
+    select: {
+      id: true,
+      title: true,
+      slug: true,
+      content: true,
+      excerpt: true,
+      status: true,
+      createdAt: true,
+      updatedAt: true,
       Category: {
         select: {
           id: true,
@@ -325,9 +339,47 @@ export default async function PostPage({ params, searchParams }: PostPageProps) 
 
   const blocks = parseEditorContent(post.content);
   const showPreviewBanner = previewAllowed && post.status !== 'PUBLISHED';
+  const readingTime = calculateReadingTime(post.content);
+
+  // Fetch related posts based on categories and tags
+  const categoryIds = post.Category.map((c) => c.id);
+  const tagIds = post.Tag.map((t) => t.id);
+
+  const relatedPosts = await prisma.post.findMany({
+    where: {
+      status: 'PUBLISHED',
+      id: { not: post.id },
+      OR: [
+        { Category: { some: { id: { in: categoryIds } } } },
+        { Tag: { some: { id: { in: tagIds } } } },
+      ],
+    },
+    select: {
+      id: true,
+      title: true,
+      slug: true,
+      excerpt: true,
+      createdAt: true,
+      Media: {
+        select: {
+          url: true,
+          alt: true,
+        },
+      },
+    },
+    take: 4,
+    orderBy: { createdAt: 'desc' },
+  });
+
+  const breadcrumbs = [
+    { name: 'Trang chủ', url: 'https://conphungtourist.com' },
+    { name: 'Bài viết', url: 'https://conphungtourist.com/posts' },
+    { name: post.title, url: `https://conphungtourist.com/posts/${params.slug}` }
+  ];
 
   return (
     <article className="mx-auto w-full max-w-4xl px-6 py-12">
+      <Breadcrumb items={breadcrumbs} />
       <div className="mb-6 text-sm text-muted-foreground">
         <Link href="/posts" className="hover:underline">
           ← Quay lại danh sách bài viết
@@ -341,11 +393,16 @@ export default async function PostPage({ params, searchParams }: PostPageProps) 
       )}
 
       <header className="space-y-4">
-        <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
+        <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
           <span>{format(new Date(post.createdAt), 'dd/MM/yyyy')}</span>
           {post.User?.name && (
-            <span>• {post.User.name}</span>
+            <>
+              <span>•</span>
+              <span>{post.User.name}</span>
+            </>
           )}
+          <span>•</span>
+          <span>{formatReadingTime(readingTime)}</span>
         </div>
         <h1 className="text-4xl font-bold leading-tight text-foreground">
           {post.title}
@@ -353,15 +410,22 @@ export default async function PostPage({ params, searchParams }: PostPageProps) 
         {post.excerpt && (
           <p className="text-lg text-muted-foreground">{post.excerpt}</p>
         )}
-        <div className="flex flex-wrap gap-2">
-          {post.Category.map((category: { id: string; name: string; slug: string }) => (
-            <span
-              key={category.id}
-              className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
-            >
-              {category.name}
-            </span>
-          ))}
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="flex flex-wrap gap-2">
+            {post.Category.map((category: { id: string; name: string; slug: string }) => (
+              <span
+                key={category.id}
+                className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
+              >
+                {category.name}
+              </span>
+            ))}
+          </div>
+          <SocialShare
+            title={post.title}
+            url={`/posts/${post.slug}`}
+            description={post.excerpt || undefined}
+          />
         </div>
       </header>
 
@@ -387,18 +451,28 @@ export default async function PostPage({ params, searchParams }: PostPageProps) 
         )}
       </section>
 
-      {post.Tag.length > 0 && (
-        <footer className="mt-10 flex flex-wrap gap-2 border-t border-border pt-6">
-          {post.Tag.map((tag: { id: string; name: string }) => (
-            <span
-              key={tag.id}
-              className="rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground"
-            >
-              #{tag.name}
-            </span>
-          ))}
-        </footer>
-      )}
+      <div className="mt-10 space-y-6 border-t border-border pt-6">
+        {post.Tag.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {post.Tag.map((tag: { id: string; name: string }) => (
+              <span
+                key={tag.id}
+                className="rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground"
+              >
+                #{tag.name}
+              </span>
+            ))}
+          </div>
+        )}
+        
+        <SocialShare
+          title={post.title}
+          url={`/posts/${post.slug}`}
+          description={post.excerpt || undefined}
+        />
+      </div>
+
+      <RelatedPosts posts={relatedPosts} currentPostId={post.id} />
     </article>
   );
 }
