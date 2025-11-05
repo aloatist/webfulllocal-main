@@ -6,7 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Plus, Trash2, GripVertical, Sparkles, Zap, Shield, Star, Heart, Award } from 'lucide-react';
+import { Plus, Trash2, GripVertical, Sparkles, Zap, Shield, Star, Heart, Award, Palette } from 'lucide-react';
+import { Collapsible } from '@/components/ui/collapsible';
+import { StyleEditor } from '../homepage-settings/StyleEditor';
 import type { FeatureItem, FeaturesSection } from '@/lib/homepage/schema';
 
 interface FeaturesEditorProps {
@@ -248,6 +250,24 @@ export default function FeaturesEditor({ data, onChange }: FeaturesEditorProps) 
                         rows={3}
                       />
                     </div>
+
+                    {/* Feature Item Styling */}
+                    <Collapsible
+                      title={`${feature.title} Styling`}
+                      description="Tùy chỉnh cỡ chữ, màu sắc, và hiệu ứng cho feature này"
+                      icon={<Palette className="w-4 h-4" />}
+                      defaultOpen={false}
+                    >
+                      <div className="pt-2">
+                        <StyleEditor
+                          style={feature.style}
+                          onChange={(style) => {
+                            updateFeature(index, { style });
+                          }}
+                          title={`${feature.title} Styling`}
+                        />
+                      </div>
+                    </Collapsible>
 
                     {/* Preview */}
                     <div className="space-y-2">

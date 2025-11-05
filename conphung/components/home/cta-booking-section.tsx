@@ -16,9 +16,6 @@ const defaultData: CTAData = {
   ctaLink: "tel:+84918267715",
   phone: "+84918 267 715",
   features: [
-    "✅ Giá tốt nhất - Chính chủ",
-    "✅ Hỗ trợ 24/7",
-    "✅ Đảm bảo chất lượng"
   ]
 };
 

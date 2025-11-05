@@ -6,7 +6,9 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { ImageUpload } from './ImageUpload';
 import { Button } from '@/components/ui/button';
-import { UtensilsCrossed, Plus, X } from 'lucide-react';
+import { Collapsible } from '@/components/ui/collapsible';
+import { StyleEditor } from './StyleEditor';
+import { UtensilsCrossed, Plus, X, Palette } from 'lucide-react';
 import type { RestaurantSection } from '@/lib/homepage/schema';
 
 interface RestaurantSectionEditorProps {
@@ -51,6 +53,20 @@ export function RestaurantSectionEditor({ data, onChange }: RestaurantSectionEdi
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
+        {/* Eyebrow */}
+        <div className="space-y-2">
+          <Label htmlFor="restaurantEyebrow">Eyebrow Text</Label>
+          <Input
+            id="restaurantEyebrow"
+            value={data?.eyebrow || ''}
+            onChange={(e) => updateField('eyebrow', e.target.value)}
+            placeholder="Nhà Hàng"
+          />
+          <p className="text-xs text-muted-foreground">
+            Badge text hiển thị phía trên title (ví dụ: "Nhà Hàng")
+          </p>
+        </div>
+
         {/* Title */}
         <div className="space-y-2">
           <Label htmlFor="restaurantTitle">Title</Label>
@@ -61,6 +77,24 @@ export function RestaurantSectionEditor({ data, onChange }: RestaurantSectionEdi
             placeholder="NHÀ HÀNG KHU DU LỊCH CỒN PHỤNG"
           />
         </div>
+
+        {/* Title Styling */}
+        <Collapsible
+          title="Title Styling"
+          description="Tùy chỉnh cỡ chữ, màu sắc, và hiệu ứng cho Title"
+          icon={<Palette className="w-4 h-4" />}
+          defaultOpen={false}
+        >
+          <div className="pt-2">
+            <StyleEditor
+              style={data?.styles?.title}
+              onChange={(style) => {
+                onChange({ ...data, styles: { ...data?.styles, title: style } } as RestaurantSection);
+              }}
+              title="Title Styling"
+            />
+          </div>
+        </Collapsible>
 
         {/* Description */}
         <div className="space-y-2">
@@ -73,6 +107,24 @@ export function RestaurantSectionEditor({ data, onChange }: RestaurantSectionEdi
             rows={4}
           />
         </div>
+
+        {/* Description Styling */}
+        <Collapsible
+          title="Description Styling"
+          description="Tùy chỉnh cỡ chữ, màu sắc, và hiệu ứng cho Description"
+          icon={<Palette className="w-4 h-4" />}
+          defaultOpen={false}
+        >
+          <div className="pt-2">
+            <StyleEditor
+              style={data?.styles?.description}
+              onChange={(style) => {
+                onChange({ ...data, styles: { ...data?.styles, description: style } } as RestaurantSection);
+              }}
+              title="Description Styling"
+            />
+          </div>
+        </Collapsible>
 
         {/* Capacity */}
         <div className="space-y-2">
@@ -154,6 +206,25 @@ export function RestaurantSectionEditor({ data, onChange }: RestaurantSectionEdi
           />
           <Label htmlFor="restaurantIsActive">Hiển thị section này trên trang chủ</Label>
         </div>
+
+        {/* Container Styling */}
+        <Collapsible
+          title="Container Styling"
+          description="Tùy chỉnh styling cho toàn bộ section container"
+          icon={<Palette className="w-4 h-4" />}
+          defaultOpen={false}
+          className="border-t pt-4"
+        >
+          <div className="pt-2">
+            <StyleEditor
+              style={data?.styles?.container}
+              onChange={(style) => {
+                onChange({ ...data, styles: { ...data?.styles, container: style } } as RestaurantSection);
+              }}
+              title="Container Styling"
+            />
+          </div>
+        </Collapsible>
       </CardContent>
     </Card>
   );

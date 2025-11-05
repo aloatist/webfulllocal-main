@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth/auth-options';
 import { prisma } from '@/lib/prisma';
 import { homepageConfigSchema } from '@/lib/homepage/schema';
-import { getHomepageConfig } from '@/lib/homepage/sections';
+import { getHomepageConfig, DEFAULT_CONFIG } from '@/lib/homepage/sections';
 
 // GET - Load unified homepage settings (merged from old CMS + new settings)
 export async function GET(request: NextRequest) {
@@ -26,7 +26,12 @@ export async function GET(request: NextRequest) {
 
     const preview = request.nextUrl.searchParams.get('preview') === 'true';
 
-    // Get new HomepageSettings (unified JSON)
+    // IMPORTANT: Use getHomepageConfig() which now prioritizes HomepageSettings.sections (PUBLISHED)
+    // This ensures Admin page shows the SAME data as homepage
+    // getHomepageConfig() now checks: HomepageSettings.sections (PUBLISHED) > HomepageSection > DEFAULT_CONFIG
+    const configFromSections = await getHomepageConfig();
+
+    // Get HomepageSettings for status/version metadata
     const settings = await prisma.homepageSettings.findFirst({
       where: preview 
         ? {}
@@ -34,19 +39,9 @@ export async function GET(request: NextRequest) {
       orderBy: { updatedAt: 'desc' },
     });
 
-    // Get old HomepageConfig from HomepageSection
-    const oldConfig = await getHomepageConfig();
-
-    // Merge: Use new unified settings if exists, else fallback to old config
-    let mergedConfig = oldConfig;
-    if (settings?.sections) {
-      try {
-        mergedConfig = settings.sections as any;
-      } catch (error) {
-        console.error('Error parsing unified sections:', error);
-        // Fallback to old config
-      }
-    }
+    // Use configFromSections directly (already includes DEFAULT_CONFIG fallback and priority handling)
+    // This is the EXACT same data that homepage uses
+    const mergedConfig = configFromSections;
 
     // Get SEO
     const seo = await prisma.homepageSEO.findFirst({
@@ -65,8 +60,14 @@ export async function GET(request: NextRequest) {
       ],
     });
 
+    // Ensure mergedConfig always has full structure (merge with DEFAULT_CONFIG)
+    const finalConfig = {
+      ...DEFAULT_CONFIG,
+      ...mergedConfig,
+    };
+
     return NextResponse.json({
-      config: mergedConfig,
+      config: finalConfig,
       settings: settings || null, // For status, version, etc.
       seo: seo || null,
       featuredServices,
@@ -102,6 +103,8 @@ export async function PUT(request: NextRequest) {
     const body = await request.json();
     const { config, seo: seoData, status: statusValue } = body;
 
+    let savedStatus: 'PUBLISHED' | 'DRAFT' = 'DRAFT';
+
     // Validate config with schema
     if (config) {
       const validatedConfig = homepageConfigSchema.parse(config);
@@ -117,11 +120,21 @@ export async function PUT(request: NextRequest) {
         version: existing ? existing.version + 1 : 1,
       };
 
+      // Set status explicitly
       if (statusValue === 'PUBLISHED') {
         updateData.status = 'PUBLISHED';
         updateData.publishedAt = new Date();
+        savedStatus = 'PUBLISHED';
       } else if (statusValue === 'DRAFT') {
         updateData.status = 'DRAFT';
+        savedStatus = 'DRAFT';
+      } else if (existing) {
+        // Preserve existing status if not specified
+        updateData.status = existing.status;
+        savedStatus = existing.status as 'PUBLISHED' | 'DRAFT';
+      } else {
+        updateData.status = 'DRAFT';
+        savedStatus = 'DRAFT';
       }
 
       if (existing) {
@@ -135,6 +148,15 @@ export async function PUT(request: NextRequest) {
             ...updateData,
             status: statusValue || 'DRAFT',
           },
+        });
+      }
+
+      // Debug log in development
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[Homepage Settings Save]', {
+          status: savedStatus,
+          statusValue,
+          sectionsCount: Object.keys(validatedConfig).length,
         });
       }
 
@@ -164,9 +186,23 @@ export async function PUT(request: NextRequest) {
       }
     }
 
+    // Revalidate homepage cache to show latest changes (only for PUBLISHED)
+    if (savedStatus === 'PUBLISHED') {
+      try {
+        // Note: revalidatePath is not available in API routes in Next.js 13+
+        // Cache will be invalidated on next request
+        console.log('[Homepage Settings] Published - cache will be invalidated on next request');
+      } catch (error) {
+        console.warn('Failed to revalidate homepage cache:', error);
+      }
+    }
+
     return NextResponse.json({
       success: true,
-      message: 'Homepage settings saved successfully',
+      message: savedStatus === 'PUBLISHED' 
+        ? 'Homepage settings saved and published successfully' 
+        : 'Homepage settings saved as draft. Click "Xuất bản" to publish.',
+      status: savedStatus,
     });
   } catch (error: any) {
     console.error('Error saving unified homepage settings:', error);

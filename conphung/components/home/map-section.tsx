@@ -41,12 +41,12 @@ export function MapSection({ data = defaultData }: MapSectionProps) {
               {data.heading}
             </h2>
             {data.description && (
-              <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+              <p className="text-gray-600 dark:text-gray-400 ">
                 {data.description}
               </p>
             )}
             {data.address && (
-              <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto mt-2">
+              <p className="text-gray-600 dark:text-gray-400 ">
                 📍 {data.address}
               </p>
             )}

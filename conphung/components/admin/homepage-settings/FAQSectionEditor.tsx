@@ -5,7 +5,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { HelpCircle, Plus, X } from 'lucide-react';
+import { Collapsible } from '@/components/ui/collapsible';
+import { StyleEditor } from './StyleEditor';
+import { HelpCircle, Plus, X, Palette } from 'lucide-react';
 import type { FAQSection } from '@/lib/homepage/schema';
 
 interface FAQSectionEditorProps {
@@ -65,6 +67,24 @@ export function FAQSectionEditor({ data, onChange }: FAQSectionEditorProps) {
             placeholder="Câu hỏi thường gặp"
           />
         </div>
+
+        {/* Heading Styling */}
+        <Collapsible
+          title="Heading Styling"
+          description="Tùy chỉnh cỡ chữ, màu sắc, và hiệu ứng cho Heading"
+          icon={<Palette className="w-4 h-4" />}
+          defaultOpen={false}
+        >
+          <div className="pt-2">
+            <StyleEditor
+              style={data?.styles?.heading}
+              onChange={(style) => {
+                onChange({ ...data, styles: { ...data?.styles, heading: style } } as FAQSection);
+              }}
+              title="Heading Styling"
+            />
+          </div>
+        </Collapsible>
 
         {/* FAQ Items */}
         <div className="space-y-4">
@@ -137,6 +157,25 @@ export function FAQSectionEditor({ data, onChange }: FAQSectionEditorProps) {
           />
           <Label htmlFor="faqIsActive">Hiển thị FAQ section trên trang chủ</Label>
         </div>
+
+        {/* Container Styling */}
+        <Collapsible
+          title="Container Styling"
+          description="Tùy chỉnh styling cho toàn bộ section container"
+          icon={<Palette className="w-4 h-4" />}
+          defaultOpen={false}
+          className="border-t pt-4"
+        >
+          <div className="pt-2">
+            <StyleEditor
+              style={data?.styles?.container}
+              onChange={(style) => {
+                onChange({ ...data, styles: { ...data?.styles, container: style } } as FAQSection);
+              }}
+              title="Container Styling"
+            />
+          </div>
+        </Collapsible>
       </CardContent>
     </Card>
   );

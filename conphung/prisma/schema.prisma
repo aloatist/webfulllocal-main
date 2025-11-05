@@ -306,6 +306,42 @@ enum HomepageStatus {
   PUBLISHED
 }
 
+// Homepage Blocks - Block-based content management system
+model HomepageBlock {
+  id          String   @id @default(cuid())
+  
+  // Block Identity
+  type        String   // hero | about | feature | tourList | testimonial | cta | footerCta | ...
+  title       String?  // Optional human-readable title for admin UI
+  
+  // Block Data (JSONB)
+  fields      Json     // Dynamic fields based on block type schema
+  
+  // Ordering & Visibility
+  sortOrder   Int      @default(0) // For drag & drop sorting
+  status      BlockStatus @default(ACTIVE) // ACTIVE | DISABLED
+  
+  // Theme Support (optional - for multi-theme)
+  themeId     String?  // If null, applies to all themes
+  
+  // Metadata
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdBy   String?
+  updatedBy   String?
+  
+  @@index([sortOrder])
+  @@index([status])
+  @@index([type])
+  @@index([themeId])
+  @@map("homepage_blocks")
+}
+
+enum BlockStatus {
+  ACTIVE
+  DISABLED
+}
+
 model HomepageTicket {
   id          String   @id
   title       String
@@ -1076,6 +1112,125 @@ model N8nWebhookLog {
   @@index([webhookId])
   @@index([status])
   @@index([timestamp])
+}
+
+model N8nWorkflowTemplate {
+  id               String   @id @default(cuid())
+  name             String
+  description      String?
+  category         String   // booking, notification, marketing, etc.
+  workflowJson     Json     // Complete n8n workflow JSON
+  thumbnail        String?
+  tags             String[] @default([])
+  isPublic         Boolean  @default(false)
+  usageCount       Int      @default(0)
+  version          String   @default("1.0.0")
+  authorId         String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([category])
+  @@index([isPublic])
+}
+
+model AutomationRule {
+  id               String   @id @default(cuid())
+  name             String
+  description      String?
+  eventType        String   // homestay_booking, tour_booking, etc.
+  conditions       Json     // Array of condition rules
+  actions          Json     // Array of actions to execute
+  isActive         Boolean  @default(true)
+  priority         Int      @default(0)  // Higher = executes first
+  executionCount   Int      @default(0)
+  lastExecuted     DateTime?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  logs             AutomationRuleLog[]
+
+  @@index([eventType])
+  @@index([isActive])
+  @@index([priority])
+}
+
+model AutomationRuleLog {
+  id               String        @id @default(cuid())
+  ruleId           String
+  ruleName         String
+  eventType        String
+  status           String        // success, failed, skipped
+  conditionsMet    Boolean
+  actionsExecuted  Json?
+  errorMessage     String?
+  duration         Int           // milliseconds
+  timestamp        DateTime      @default(now())
+  rule             AutomationRule @relation(fields: [ruleId], references: [id], onDelete: Cascade)
+
+  @@index([ruleId])
+  @@index([status])
+  @@index([timestamp])
+}
+
+model IntegrationConnection {
+  id               String   @id @default(cuid())
+  name             String
+  provider         String   // n8n, zapier, make, webhook, etc.
+  type             String   // webhook, api, oauth, etc.
+  endpoint         String?
+  credentials      Json?    // Encrypted credentials
+  config           Json?    // Additional configuration
+  status           IntegrationStatus @default(ACTIVE)
+  lastConnected    DateTime?
+  lastSynced       DateTime?
+  errorCount       Int      @default(0)
+  successCount     Int      @default(0)
+  description      String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  syncLogs         IntegrationSyncLog[]
+
+  @@index([provider])
+  @@index([type])
+  @@index([status])
+}
+
+model IntegrationSyncLog {
+  id               String              @id @default(cuid())
+  connectionId     String
+  operation        String
+  direction        SyncDirection
+  status           SyncStatus
+  payload          Json?
+  response         Json?
+  errorMessage     String?
+  duration         Int?
+  timestamp        DateTime            @default(now())
+  connection       IntegrationConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+
+  @@index([connectionId])
+  @@index([status])
+  @@index([timestamp])
+}
+
+enum WebsiteTemplate {
+  ECOLOGICAL      // Sinh Thái
+  MODERN          // Hiện Đại
+  TRADITIONAL     // Truyền Thống
+  GEOMETRIC       // Góc Cạnh
+}
+
+model WebsiteTemplateSettings {
+  id               String          @id @default(cuid())
+  activeTemplate   WebsiteTemplate @default(ECOLOGICAL)
+  customColors     Json?           // Custom color overrides per template
+  customSettings   Json?           // Template-specific settings
+  isPreview        Boolean         @default(false)
+  previewTemplate  WebsiteTemplate?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  updatedBy        String?
+
+  @@unique([id])
 }
 
 enum AvailabilityStatus {

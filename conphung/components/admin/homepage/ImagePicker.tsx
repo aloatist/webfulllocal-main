@@ -113,13 +113,21 @@ export function ImagePicker({ value, onChange, label, aspectRatio = '16/9', clas
       
       <div className="border-2 border-dashed border-gray-300 rounded-lg overflow-hidden hover:border-gray-400 transition-colors">
         {value ? (
-          <div className="relative group">
-            <div className="relative" style={{ aspectRatio }}>
+          <div className="relative group w-full">
+            <div 
+              className="relative w-full overflow-hidden" 
+              style={{ 
+                aspectRatio,
+                maxHeight: '180px',
+                width: '100%'
+              }}
+            >
               <Image
                 src={value}
                 alt="Preview"
                 fill
                 className="object-cover"
+                sizes="(max-width: 768px) 200px, (max-width: 1200px) 250px, 300px"
                 onError={(e) => {
                   (e.target as HTMLImageElement).src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect fill="%23ddd" width="400" height="300"/%3E%3Ctext x="50%25" y="50%25" text-anchor="middle" dy=".3em" fill="%23999"%3EImage Error%3C/text%3E%3C/svg%3E';
                 }}

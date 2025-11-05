@@ -15,13 +15,95 @@ interface GalleryEditorProps {
   onChange: (data: GallerySection) => void;
 }
 
+const DEFAULT_GALLERY_IMAGES = [
+  { url: "/uploads/2024/10/22196236_901710536664938_7027468764014750282_n.webp", alt: "Cồn Phụng - Du lịch sinh thái" },
+  { url: "/uploads/2024/10/22405754_905859629583362_7823146011914182650_n-1.webp", alt: "Cồn Phụng - Khung cảnh thiên nhiên" },
+  { url: "/uploads/2024/10/bang-tieu-bieu-song-cuu-long-600-x-600-.webp", alt: "Bảng tiêu biểu sông Cửu Long" },
+  { url: "/uploads/2024/10/banh-xeo-con-phung.webp", alt: "Bánh xèo Cồn Phụng - Đặc sản miền Tây" },
+  { url: "/uploads/2024/10/cabubinhconphungbentre.conphungtourist.com_.webp", alt: "Cà búp bình Cồn Phụng" },
+  { url: "/uploads/2024/10/catituongchienxu.conphungtourist.com_-1024x767-1.webp", alt: "Cá tứ tượng chiên xù" },
+  { url: "/uploads/2024/10/cocoislandconphugbentre-1024x767-1.webp", alt: "Coco Island Cồn Phụng" },
+  { url: "/uploads/2024/10/coco-island-con-phung-ben-tre41-1024x576-1.webp", alt: "Homestay Coco Island Cồn Phụng" },
+  { url: "/uploads/2024/11/dulichconphungbentre_conphungtourist.com8.webp", alt: "Du lịch Cồn Phụng Bến Tre" },
+  { url: "/uploads/2024/11/dulichconphungbentre_conphungtourist.com9.webp", alt: "Tham quan Cồn Phụng" },
+  { url: "/uploads/2024/11/dulichconphungbentre_conphungtourist.com10.webp", alt: "Cồn Phụng - Điểm du lịch sinh thái" },
+  { url: "/uploads/2024/11/dulichconphungbentre_conphungtourist.com11.webp", alt: "Vẻ đẹp Cồn Phụng" },
+  { url: "/uploads/2024/11/dulichconphungbentre_conphungtourist.com12.webp", alt: "Trải nghiệm du lịch Cồn Phụng" },
+  { url: "/uploads/2024/11/dulichconphungbentre_conphungtourist.com13.webp", alt: "Cồn Phụng - Vườn dừa xanh mát" },
+  { url: "/uploads/2024/11/dulichconphungbentre_conphungtourist.com14.webp", alt: "Cảnh quan Cồn Phụng" },
+  { url: "/uploads/2024/11/dulichconphungbentre_conphungtourist.com15.webp", alt: "Du lịch miền Tây - Cồn Phụng" },
+  { url: "/uploads/2024/11/dulichconphungbentre_conphungtourist.com16.webp", alt: "Khu du lịch Cồn Phụng" },
+  { url: "/uploads/2024/11/dulichconphungbentre_conphungtourist.com17.webp", alt: "Thiên nhiên Cồn Phụng" },
+  { url: "/uploads/2024/11/dulichconphungbentre_conphungtourist.com18.webp", alt: "Cồn Phụng - Điểm đến lý tưởng" },
+  { url: "/uploads/2024/11/dulichconphungbentre_conphungtourist.com19.webp", alt: "Du lịch sinh thái Cồn Phụng" },
+  { url: "/uploads/2024/11/dulichconphungbentre_conphungtourist.com20.webp", alt: "Cồn Phụng Bến Tre" },
+  { url: "/uploads/2024/11/dulichconphungbentre_conphungtourist.com21.webp", alt: "Văn hóa miền Tây tại Cồn Phụng" },
+  { url: "/uploads/2024/11/dulichconphungbentre_conphungtourist.com22.webp", alt: "Cồn Phụng - Trải nghiệm độc đáo" },
+  { url: "/uploads/2024/11/dulichconphungbentre_conphungtourist.com23.webp", alt: "Cảnh đẹp Cồn Phụng" },
+  { url: "/uploads/2024/11/dulichconphungbentre_conphungtourist.com26.webp", alt: "Du lịch Cồn Phụng - Hoạt động" },
+  { url: "/uploads/2024/11/dulichconphungbentre_conphungtourist.com27.webp", alt: "Cồn Phụng - Điểm đến hấp dẫn" },
+  { url: "/uploads/2024/11/dulichconphungbentre_conphungtourist.com28.webp", alt: "Thiên nhiên hoang sơ Cồn Phụng" },
+  { url: "/uploads/2024/11/dulichconphungbentre_conphungtourist.com29.webp", alt: "Cồn Phụng - Khám phá miền Tây" },
+  { url: "/uploads/2024/11/dulichconphungbentre_conphungtourist.com30.webp", alt: "Du lịch Cồn Phụng - Trải nghiệm" },
+  { url: "/uploads/2024/11/dulichconphungbentre_conphungtourist.com33.webp", alt: "Cồn Phụng - Vẻ đẹp tự nhiên" },
+  { url: "/uploads/2024/11/dulichconphungbentre_conphungtourist.com34.webp", alt: "Khu du lịch sinh thái Cồn Phụng" },
+  { url: "/uploads/2024/11/dulichconphungbentre_conphungtourist.com35.webp", alt: "Cồn Phụng - Điểm đến du lịch" },
+  { url: "/uploads/2024/11/dulichconphungbentre_conphungtourist.com36.webp", alt: "Tham quan Cồn Phụng Bến Tre" },
+  { url: "/uploads/2024/11/dulichconphungbentre_conphungtourist.com37.webp", alt: "Cồn Phụng - Cảnh quan đẹp" },
+  { url: "/uploads/2024/11/dulichconphungbentre_conphungtourist.com38.webp", alt: "Du lịch Cồn Phụng - Thiên nhiên" },
+  { url: "/uploads/2024/11/dulichconphungbentre_conphungtourist.com40.webp", alt: "Cồn Phụng - Vườn dừa" },
+  { url: "/uploads/2024/11/dulichconphungbentre_conphungtourist.com41.webp", alt: "Cồn Phụng - Trải nghiệm văn hóa" },
+  { url: "/uploads/2024/11/dulichconphungbentre_conphungtourist.com42.webp", alt: "Du lịch Cồn Phụng - Hoạt động" },
+  { url: "/uploads/2024/11/dulichconphungbentre_conphungtourist.com44.webp", alt: "Cồn Phụng - Điểm đến lý tưởng" },
+  { url: "/uploads/2024/11/dulichconphungbentre_conphungtourist.com45.webp", alt: "Cồn Phụng - Vẻ đẹp miền Tây" },
+  { url: "/uploads/2024/11/dulichconphungbentre_conphungtourist.com46.webp", alt: "Du lịch Cồn Phụng - Khám phá" }
+];
+
+const DEFAULT_ECO_FEATURES = [
+  { title: 'Du lịch sinh thái', subtitle: 'Không gian sinh thái', icon: 'trees' },
+  { title: 'Kiến Trúc Dừa', subtitle: 'Độc đáo miền Tây', icon: 'building' },
+  { title: 'Văn Hóa Địa Phương', subtitle: 'Trải nghiệm đích thực', icon: 'leaf' },
+];
+
+const DEFAULT_BOTTOM_TEXT = '✨ Hơn 1000+ hình ảnh đẹp về thiên nhiên, văn hóa và con người Cồn Phụng';
+
 export default function GalleryEditor({ data, onChange }: GalleryEditorProps) {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
 
-  const gallery = data || {
-    heading: 'MỘT SỐ HÌNH ẢNH',
-    description: 'Khám phá vẻ đẹp thiên nhiên Cồn Phụng',
-    images: [],
+  // Merge with defaults to ensure ecoFeatures and bottomText are always present
+  const gallery: GallerySection = {
+    heading: data?.heading || 'MỘT SỐ HÌNH ẢNH',
+    description: data?.description || 'Khám phá vẻ đẹp thiên nhiên và văn hóa độc đáo của Cồn Phụng',
+    ecoFeatures: data?.ecoFeatures && data.ecoFeatures.length === 3 
+      ? data.ecoFeatures 
+      : DEFAULT_ECO_FEATURES,
+    bottomText: data?.bottomText || DEFAULT_BOTTOM_TEXT,
+    images: data?.images || [],
+  };
+
+  const loadDefaultImages = () => {
+    if (confirm(`Bạn có chắc muốn thay thế ${gallery.images.length} ảnh hiện tại bằng ${DEFAULT_GALLERY_IMAGES.length} ảnh mặc định?`)) {
+      onChange({
+        ...gallery,
+        images: DEFAULT_GALLERY_IMAGES,
+      });
+    }
+  };
+
+  const addDefaultImages = () => {
+    // Add default images to existing ones (avoid duplicates)
+    const existingUrls = new Set(gallery.images.map(img => img.url));
+    const newImages = DEFAULT_GALLERY_IMAGES.filter(img => !existingUrls.has(img.url));
+    
+    if (newImages.length === 0) {
+      alert('Tất cả ảnh mặc định đã có trong danh sách!');
+      return;
+    }
+    
+    onChange({
+      ...gallery,
+      images: [...gallery.images, ...newImages],
+    });
   };
 
   const updateField = (field: keyof GallerySection, value: any) => {
@@ -104,24 +186,117 @@ export default function GalleryEditor({ data, onChange }: GalleryEditorProps) {
           </div>
         </div>
 
+        {/* Eco Tourism Features */}
+        <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
+          <div className="flex items-center justify-between">
+            <Label className="text-base font-semibold">Eco Tourism Features (3 Cards)</Label>
+          </div>
+          <div className="grid md:grid-cols-3 gap-4">
+            {(gallery.ecoFeatures || []).map((feature, index) => (
+              <Card key={index} className="border-2">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm">Card {index + 1}</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="space-y-2">
+                    <Label className="text-xs">Title</Label>
+                    <Input
+                      value={feature.title}
+                      onChange={(e) => {
+                        const newFeatures = [...(gallery.ecoFeatures || [])];
+                        newFeatures[index] = { ...newFeatures[index], title: e.target.value };
+                        updateField('ecoFeatures', newFeatures);
+                      }}
+                      placeholder="Du lịch sinh thái"
+                      className="h-8 text-sm"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs">Subtitle</Label>
+                    <Input
+                      value={feature.subtitle}
+                      onChange={(e) => {
+                        const newFeatures = [...(gallery.ecoFeatures || [])];
+                        newFeatures[index] = { ...newFeatures[index], subtitle: e.target.value };
+                        updateField('ecoFeatures', newFeatures);
+                      }}
+                      placeholder="Không gian sinh thái"
+                      className="h-8 text-sm"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs">Icon</Label>
+                    <select
+                      value={feature.icon || 'trees'}
+                      onChange={(e) => {
+                        const newFeatures = [...(gallery.ecoFeatures || [])];
+                        newFeatures[index] = { ...newFeatures[index], icon: e.target.value };
+                        updateField('ecoFeatures', newFeatures);
+                      }}
+                      className="w-full h-8 text-sm rounded-md border border-input bg-background px-3 py-1"
+                    >
+                      <option value="trees">Trees</option>
+                      <option value="building">Building</option>
+                      <option value="leaf">Leaf</option>
+                    </select>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+
+        {/* Bottom Text */}
+        <div className="space-y-2 p-4 bg-muted/50 rounded-lg">
+          <Label>Bottom Text</Label>
+          <Input
+            value={gallery.bottomText || ''}
+            onChange={(e) => updateField('bottomText', e.target.value)}
+            placeholder="✨ Hơn 1000+ hình ảnh đẹp..."
+          />
+          <p className="text-xs text-muted-foreground">
+            Text hiển thị dưới phần Eco Tourism Features
+          </p>
+        </div>
+
         {/* Images */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold">Hình ảnh ({gallery.images.length})</h3>
-            <Button onClick={addImage} size="sm">
-              <Plus className="w-4 h-4 mr-2" />
-              Thêm hình
-            </Button>
+            <div className="flex gap-2">
+              {gallery.images.length > 0 && (
+                <>
+                  <Button onClick={loadDefaultImages} variant="outline" size="sm">
+                    <Images className="w-4 h-4 mr-2" />
+                    Thay Thế Bằng Ảnh Mặc Định
+                  </Button>
+                  <Button onClick={addDefaultImages} variant="outline" size="sm">
+                    <Plus className="w-4 h-4 mr-2" />
+                    Thêm Ảnh Mặc Định
+                  </Button>
+                </>
+              )}
+              <Button onClick={addImage} size="sm">
+                <Plus className="w-4 h-4 mr-2" />
+                Thêm hình
+              </Button>
+            </div>
           </div>
 
           {gallery.images.length === 0 ? (
             <div className="text-center py-12 border-2 border-dashed rounded-lg">
               <Images className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
               <p className="text-muted-foreground mb-4">Chưa có hình ảnh nào</p>
-              <Button onClick={addImage} variant="outline">
-                <Plus className="w-4 h-4 mr-2" />
-                Thêm hình đầu tiên
-              </Button>
+              <div className="flex gap-2 justify-center">
+                <Button onClick={loadDefaultImages} variant="default">
+                  <Images className="w-4 h-4 mr-2" />
+                  Load Ảnh Mặc Định ({DEFAULT_GALLERY_IMAGES.length} ảnh)
+                </Button>
+                <Button onClick={addImage} variant="outline">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Thêm hình đầu tiên
+                </Button>
+              </div>
             </div>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">

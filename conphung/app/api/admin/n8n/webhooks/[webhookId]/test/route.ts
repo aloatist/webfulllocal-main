@@ -66,7 +66,13 @@ export async function POST(
     });
 
     const duration = Date.now() - startTime;
-    const responseData = await response.json().catch(() => ({ text: await response.text() }));
+    let responseData;
+    try {
+      responseData = await response.json();
+    } catch {
+      const text = await response.text();
+      responseData = { text };
+    }
 
     // Log test result
     await prisma.n8nWebhookLog.create({

@@ -6,7 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Plus, Trash2, Ticket, AlertTriangle } from 'lucide-react';
+import { Plus, Trash2, Ticket, AlertTriangle, Palette } from 'lucide-react';
+import { Collapsible } from '@/components/ui/collapsible';
+import { StyleEditor } from '../homepage-settings/StyleEditor';
 import type { TicketSection } from '@/lib/homepage/schema';
 import { ImagePicker } from './ImagePicker';
 
@@ -96,6 +98,24 @@ export default function TicketSectionEditor({ data, onChange }: TicketSectionEdi
             />
           </div>
 
+          {/* Eyebrow Styling */}
+          <Collapsible
+            title="Eyebrow Styling"
+            description="Tùy chỉnh cỡ chữ, màu sắc, và hiệu ứng cho Eyebrow"
+            icon={<Palette className="w-4 h-4" />}
+            defaultOpen={false}
+          >
+            <div className="pt-2">
+              <StyleEditor
+                style={ticket.styles?.eyebrow}
+                onChange={(style) => {
+                  onChange({ ...ticket, styles: { ...ticket.styles, eyebrow: style } });
+                }}
+                title="Eyebrow Styling"
+              />
+            </div>
+          </Collapsible>
+
           <div className="grid gap-2">
             <Label>Heading</Label>
             <Input
@@ -104,6 +124,24 @@ export default function TicketSectionEditor({ data, onChange }: TicketSectionEdi
               placeholder="VÉ THAM QUAN KHU DU LỊCH SINH THÁI"
             />
           </div>
+
+          {/* Heading Styling */}
+          <Collapsible
+            title="Heading Styling"
+            description="Tùy chỉnh cỡ chữ, màu sắc, và hiệu ứng cho Heading"
+            icon={<Palette className="w-4 h-4" />}
+            defaultOpen={false}
+          >
+            <div className="pt-2">
+              <StyleEditor
+                style={ticket.styles?.heading}
+                onChange={(style) => {
+                  onChange({ ...ticket, styles: { ...ticket.styles, heading: style } });
+                }}
+                title="Heading Styling"
+              />
+            </div>
+          </Collapsible>
 
           <div className="grid gap-2">
             <Label>Subheading</Label>
@@ -114,6 +152,24 @@ export default function TicketSectionEditor({ data, onChange }: TicketSectionEdi
             />
           </div>
 
+          {/* Subheading Styling */}
+          <Collapsible
+            title="Subheading Styling"
+            description="Tùy chỉnh cỡ chữ, màu sắc, và hiệu ứng cho Subheading"
+            icon={<Palette className="w-4 h-4" />}
+            defaultOpen={false}
+          >
+            <div className="pt-2">
+              <StyleEditor
+                style={ticket.styles?.subheading}
+                onChange={(style) => {
+                  onChange({ ...ticket, styles: { ...ticket.styles, subheading: style } });
+                }}
+                title="Subheading Styling"
+              />
+            </div>
+          </Collapsible>
+
           <div className="grid gap-2">
             <Label>Description</Label>
             <Textarea
@@ -123,6 +179,24 @@ export default function TicketSectionEditor({ data, onChange }: TicketSectionEdi
               rows={2}
             />
           </div>
+
+          {/* Description Styling */}
+          <Collapsible
+            title="Description Styling"
+            description="Tùy chỉnh cỡ chữ, màu sắc, và hiệu ứng cho Description"
+            icon={<Palette className="w-4 h-4" />}
+            defaultOpen={false}
+          >
+            <div className="pt-2">
+              <StyleEditor
+                style={ticket.styles?.description}
+                onChange={(style) => {
+                  onChange({ ...ticket, styles: { ...ticket.styles, description: style } });
+                }}
+                title="Description Styling"
+              />
+            </div>
+          </Collapsible>
         </div>
 
         {/* Pricing */}
@@ -216,6 +290,24 @@ export default function TicketSectionEditor({ data, onChange }: TicketSectionEdi
               </div>
             ))}
           </div>
+
+          {/* Included Items Styling */}
+          <Collapsible
+            title="Bao gồm (Included Items) Styling"
+            description="Tùy chỉnh cỡ chữ, màu sắc, và hiệu ứng cho danh sách 'Bao gồm' trong vé"
+            icon={<Palette className="w-4 h-4" />}
+            defaultOpen={false}
+          >
+            <div className="pt-2">
+              <StyleEditor
+                style={ticket.styles?.includedItems}
+                onChange={(style) => {
+                  onChange({ ...ticket, styles: { ...ticket.styles, includedItems: style } });
+                }}
+                title="Bao gồm Styling"
+              />
+            </div>
+          </Collapsible>
         </div>
 
         {/* Location & Warning */}
@@ -251,6 +343,25 @@ export default function TicketSectionEditor({ data, onChange }: TicketSectionEdi
           label="Hình ảnh (Optional)"
           aspectRatio="16/9"
         />
+
+        {/* Container Styling */}
+        <Collapsible
+          title="Container Styling"
+          description="Tùy chỉnh styling cho toàn bộ section container"
+          icon={<Palette className="w-4 h-4" />}
+          defaultOpen={false}
+          className="border-t pt-4"
+        >
+          <div className="pt-2">
+            <StyleEditor
+              style={ticket.styles?.container}
+              onChange={(style) => {
+                onChange({ ...ticket, styles: { ...ticket.styles, container: style } });
+              }}
+              title="Container Styling"
+            />
+          </div>
+        </Collapsible>
 
         {/* Preview */}
         <div className="space-y-2">

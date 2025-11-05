@@ -16,13 +16,13 @@ const defaultData: VideoData = {
     {
       title: "Hướng dẫn đi Cồn Phụng từ TP.HCM",
       url: "https://www.youtube.com/watch?v=example1",
-      thumbnail: "/uploads/video-thumb-1.jpg",
+      thumbnail: "placeholder", // Will use gradient placeholder
       duration: "5:30"
     },
     {
       title: "Trải nghiệm 1 ngày tại Cồn Phụng",
       url: "https://www.youtube.com/watch?v=example2",
-      thumbnail: "/uploads/video-thumb-2.jpg",
+      thumbnail: "placeholder", // Will use gradient placeholder
       duration: "8:45"
     }
   ]
@@ -101,28 +101,11 @@ export function VideoGuideSection({ data = defaultData }: VideoGuideSectionProps
                     rel="noopener noreferrer"
                     className="block relative aspect-video overflow-hidden"
                   >
-                    {video.thumbnail ? (
-                      <Image 
-                        src={video.thumbnail}
-                        alt={video.title}
-                        fill
-                        className="object-cover transition-transform duration-700 group-hover:scale-110"
-                        sizes="(max-width: 768px) 100vw, 50vw"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
-                        <Video className="w-16 h-16 text-white" />
-                      </div>
-                    )}
-                    
-                    {/* Dark Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-                    
-                    {/* Play Button */}
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center shadow-2xl transition-transform duration-300 group-hover:scale-110">
+                    {/* Placeholder Background (always shown) */}
+                    <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-gray-300 via-gray-400 to-gray-500 flex items-center justify-center">
+                      <div className="w-24 h-24 bg-red-600 rounded-full flex items-center justify-center shadow-2xl">
                         <svg 
-                          className="w-10 h-10 text-white ml-1" 
+                          className="w-12 h-12 text-white ml-1" 
                           fill="currentColor" 
                           viewBox="0 0 24 24"
                         >
@@ -130,24 +113,41 @@ export function VideoGuideSection({ data = defaultData }: VideoGuideSectionProps
                         </svg>
                       </div>
                     </div>
-
-                    {/* Hover Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    
+                    {/* Thumbnail Image (if exists) */}
+                    {video.thumbnail && !video.thumbnail.includes('placeholder') && (
+                      <Image 
+                        src={video.thumbnail}
+                        alt={video.title}
+                        fill
+                        className="object-cover transition-transform duration-700 group-hover:scale-110"
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                        onError={(e) => {
+                          // Hide image on error, show placeholder
+                          const target = e.target as HTMLElement;
+                          target.style.display = 'none';
+                        }}
+                      />
+                    )}
+                    
+                    {/* Title Overlay on Thumbnail */}
+                    <div className="absolute top-0 left-0 right-0 p-4 bg-gradient-to-b from-black/40 to-transparent">
+                      <h3 className="text-lg font-bold text-emerald-400 drop-shadow-lg">
+                        {video.title}
+                      </h3>
+                    </div>
                   </a>
 
-                  {/* Title */}
-                  <div className="p-5 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900">
-                    <div className="flex items-center gap-3">
-                      <div className="w-1 h-12 bg-gradient-to-b from-blue-500 to-cyan-500 rounded-full" />
-                      <div>
-                        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
-                          {video.title}
-                        </h3>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2">
-                          <Video className="w-4 h-4" />
-                          {video.duration || 'Xem video hướng dẫn chi tiết'}
-                        </p>
-                      </div>
+                  {/* Title Below Thumbnail */}
+                  <div className="p-5 bg-white dark:bg-gray-800">
+                    <div>
+                      <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
+                        {video.title}
+                      </h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2">
+                        <Video className="w-4 h-4 text-gray-500" />
+                        <span>{video.duration || 'Xem video hướng dẫn chi tiết'}</span>
+                      </p>
                     </div>
                   </div>
                 </div>

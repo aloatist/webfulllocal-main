@@ -13,7 +13,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TestWebhookCard } from "./test-webhook-card";
 import { RetryButton } from "./retry-button";
-import { Webhook, Workflow, Settings, Activity } from "lucide-react";
+import { Webhook, Workflow, Settings, Activity, Zap, Link as LinkIcon } from "lucide-react";
 
 const statusClasses: Record<string, string> = {
   online: "bg-emerald-100 text-emerald-700 border border-emerald-200",
@@ -305,13 +305,27 @@ export default async function AdminN8nDashboardPage() {
                 Quản lý các workflow templates và tự động hóa quy trình
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground mb-4">
-                Tính năng đang được phát triển...
-              </p>
-              <p className="text-xs text-muted-foreground">
-                Sẽ bao gồm: Import/Export workflows, Template library, Workflow testing
-              </p>
+            <CardContent className="space-y-4">
+              <Link href="/admin/n8n/workflows">
+                <Button className="w-full">
+                  <Workflow className="mr-2 h-4 w-4" />
+                  Quản lý Workflow Templates
+                </Button>
+              </Link>
+              <div className="grid grid-cols-2 gap-4">
+                <Link href="/admin/n8n/rules">
+                  <Button variant="outline" className="w-full">
+                    <Zap className="mr-2 h-4 w-4" />
+                    Automation Rules
+                  </Button>
+                </Link>
+                <Link href="/admin/n8n/connections">
+                  <Button variant="outline" className="w-full">
+                    <LinkIcon className="mr-2 h-4 w-4" />
+                    Connections
+                  </Button>
+                </Link>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>

@@ -6,7 +6,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { Sparkles } from 'lucide-react';
+import { Collapsible } from '@/components/ui/collapsible';
+import { StyleEditor } from '../homepage-settings/StyleEditor';
+import { Sparkles, Palette } from 'lucide-react';
 import type { PromotionSection } from '@/lib/homepage/schema';
 import { ImagePicker } from './ImagePicker';
 
@@ -70,6 +72,24 @@ export default function PromotionSectionEditor({ data, onChange }: PromotionSect
             </p>
           </div>
 
+          {/* Eyebrow Styling */}
+          <Collapsible
+            title="Eyebrow Styling"
+            description="Tùy chỉnh cỡ chữ, màu sắc, và hiệu ứng cho Eyebrow"
+            icon={<Palette className="w-4 h-4" />}
+            defaultOpen={false}
+          >
+            <div className="pt-2">
+              <StyleEditor
+                style={promotion.styles?.eyebrow}
+                onChange={(style) => {
+                  onChange({ ...promotion, styles: { ...promotion.styles, eyebrow: style } });
+                }}
+                title="Eyebrow Styling"
+              />
+            </div>
+          </Collapsible>
+
           {/* Heading */}
           <div className="space-y-2">
             <Label>Heading</Label>
@@ -79,6 +99,24 @@ export default function PromotionSectionEditor({ data, onChange }: PromotionSect
               placeholder="COMBO TOUR THÁNG NÀY"
             />
           </div>
+
+          {/* Heading Styling */}
+          <Collapsible
+            title="Heading Styling"
+            description="Tùy chỉnh cỡ chữ, màu sắc, và hiệu ứng cho Heading"
+            icon={<Palette className="w-4 h-4" />}
+            defaultOpen={false}
+          >
+            <div className="pt-2">
+              <StyleEditor
+                style={promotion.styles?.heading}
+                onChange={(style) => {
+                  onChange({ ...promotion, styles: { ...promotion.styles, heading: style } });
+                }}
+                title="Heading Styling"
+              />
+            </div>
+          </Collapsible>
 
           {/* Description */}
           <div className="space-y-2">
@@ -90,6 +128,24 @@ export default function PromotionSectionEditor({ data, onChange }: PromotionSect
               rows={2}
             />
           </div>
+
+          {/* Description Styling */}
+          <Collapsible
+            title="Description Styling"
+            description="Tùy chỉnh cỡ chữ, màu sắc, và hiệu ứng cho Description"
+            icon={<Palette className="w-4 h-4" />}
+            defaultOpen={false}
+          >
+            <div className="pt-2">
+              <StyleEditor
+                style={promotion.styles?.description}
+                onChange={(style) => {
+                  onChange({ ...promotion, styles: { ...promotion.styles, description: style } });
+                }}
+                title="Description Styling"
+              />
+            </div>
+          </Collapsible>
 
           {/* Discount */}
           <div className="space-y-2">
@@ -106,6 +162,24 @@ export default function PromotionSectionEditor({ data, onChange }: PromotionSect
               </div>
             </div>
           </div>
+
+          {/* Discount Styling */}
+          <Collapsible
+            title="Discount Styling"
+            description="Tùy chỉnh cỡ chữ, màu sắc, và hiệu ứng cho Discount"
+            icon={<Palette className="w-4 h-4" />}
+            defaultOpen={false}
+          >
+            <div className="pt-2">
+              <StyleEditor
+                style={promotion.styles?.discount}
+                onChange={(style) => {
+                  onChange({ ...promotion, styles: { ...promotion.styles, discount: style } });
+                }}
+                title="Discount Styling"
+              />
+            </div>
+          </Collapsible>
 
           {/* Image Picker */}
           <ImagePicker
@@ -174,6 +248,25 @@ export default function PromotionSectionEditor({ data, onChange }: PromotionSect
             </div>
           </div>
         </div>
+
+        {/* Container Styling */}
+        <Collapsible
+          title="Container Styling"
+          description="Tùy chỉnh styling cho toàn bộ section container"
+          icon={<Palette className="w-4 h-4" />}
+          defaultOpen={false}
+          className="border-t pt-4 mt-4"
+        >
+          <div className="pt-2">
+            <StyleEditor
+              style={promotion.styles?.container}
+              onChange={(style) => {
+                onChange({ ...promotion, styles: { ...promotion.styles, container: style } });
+              }}
+              title="Container Styling"
+            />
+          </div>
+        </Collapsible>
       </CardContent>
     </Card>
   );

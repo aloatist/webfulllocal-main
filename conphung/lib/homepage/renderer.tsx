@@ -85,7 +85,7 @@ export function AboutSection({ data }: { data: HomepageData['settings'] }) {
   return (
     <section className="py-16 px-4">
       <div className="container mx-auto max-w-6xl">
-        <div className="grid md:grid-cols-2 gap-8 items-center">
+        <div className={`grid gap-8 items-center ${data.aboutImage ? 'md:grid-cols-2' : 'md:grid-cols-1'}`}>
           {/* Image */}
           {data.aboutImage && (
             <div className="relative aspect-[4/3] rounded-lg overflow-hidden">
@@ -99,7 +99,7 @@ export function AboutSection({ data }: { data: HomepageData['settings'] }) {
           )}
 
           {/* Content */}
-          <div className="space-y-4">
+          <div className={`space-y-4 ${!data.aboutImage ? 'max-w-4xl mx-auto' : ''}`}>
             {data.aboutTitle && (
               <h2 className="text-3xl font-bold">
                 {data.aboutTitle}

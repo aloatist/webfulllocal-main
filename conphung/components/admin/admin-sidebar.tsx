@@ -29,6 +29,8 @@ import {
   Zap,
   Shield,
   Webhook,
+  Palette,
+  Workflow,
 } from 'lucide-react'
 import { useState } from 'react'
 
@@ -118,6 +120,37 @@ const navigation: NavItem[] = [
     ],
   },
   {
+    title: 'n8n Automation',
+    icon: Zap,
+    children: [
+      {
+        title: '📊 Dashboard',
+        href: '/admin/n8n',
+        icon: BarChart3,
+      },
+      {
+        title: '🔗 Webhooks',
+        href: '/admin/n8n/webhooks',
+        icon: Webhook,
+      },
+      {
+        title: '⚙️ Workflows',
+        href: '/admin/n8n/workflows',
+        icon: Workflow,
+      },
+      {
+        title: '⚡ Rules',
+        href: '/admin/n8n/rules',
+        icon: Zap,
+      },
+      {
+        title: '🔌 Connections',
+        href: '/admin/n8n/connections',
+        icon: Link2,
+      },
+    ],
+  },
+  {
     title: 'Marketing',
     icon: Megaphone,
     children: [
@@ -138,6 +171,23 @@ const navigation: NavItem[] = [
     title: 'Thư viện',
     href: '/admin/media',
     icon: Image,
+  },
+  {
+    title: 'Giao diện',
+    icon: Palette,
+    children: [
+      {
+        title: 'Templates',
+        href: '/admin/templates',
+        icon: Palette,
+        badge: 'NEW',
+      },
+      {
+        title: 'Themes',
+        href: '/admin/themes',
+        icon: Palette,
+      },
+    ],
   },
   {
     title: 'Tích hợp',
@@ -170,6 +220,12 @@ const navigation: NavItem[] = [
     title: 'Hệ thống',
     icon: Settings,
     children: [
+      {
+        title: '📦 Homepage Blocks',
+        href: '/admin/homepage-blocks',
+        icon: Package,
+        badge: 'NEW',
+      },
       {
         title: '⚙️ Home Settings',
         href: '/admin/homepage-settings',

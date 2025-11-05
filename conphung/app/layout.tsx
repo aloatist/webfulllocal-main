@@ -25,7 +25,7 @@ import type { NavigationMenuItem } from "@/lib/navigation/types";
 import { PWARegister } from "@/components/pwa/pwa-register";
 import { MobileBottomNav } from "@/components/mobile/bottom-nav";
 import { DefaultChatProvider } from "@/components/chat/chat-provider";
-import { ModernFooter } from "@/components/footer/modern-footer";
+import { FooterWrapper } from "@/components/footer/footer-wrapper";
 
 
 
@@ -147,7 +147,7 @@ export default async function RootLayout({
             </HideOnAdmin>
             <Main className="pb-20 md:pb-0">{children}</Main>
             <HideOnAdmin>
-              <ModernFooter />
+              <FooterWrapper />
               <StickyNotification/>
               <StickyNotificationbutom/>
               <Chatbot/>

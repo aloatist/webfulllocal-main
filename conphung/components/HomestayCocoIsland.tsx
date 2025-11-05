@@ -1,9 +1,46 @@
 "use client";
 import React, { useState } from 'react';
 import Image from 'next/image';
-import FadeInOnScroll from './FadeInOnScroll'; // Import hiệu ứng nếu dùng component này
+import FadeInOnScroll from './FadeInOnScroll';
+import { IncludedItemsList } from '@/components/ui/included-items-list';
 
-const HomestayCocoIsland = () => {
+const defaultIncludedItems = [
+  "🚢 Vé tàu khứ hồi và vé cổng tham quan KDL Cồn Phụng",
+  "☕ Phục vụ ăn sáng (Tô + ly)",
+  "🎁 Check in phòng tặng kèm: trái cây + dừa tươi/khách, cafe gói + trà gói + nước suối miễn phí",
+];
+
+const defaultRoomAmenities = [
+  "⚡ Ấm điện siêu tốc",
+  "💨 Máy sấy tóc",
+  "📞 Điện thoại bàn",
+  "🛁 Khăn tắm",
+  "👡 Dép",
+  "❄️ Máy lạnh",
+  "🧊 Tủ lạnh",
+  "📺 Smart TV",
+  "📶 Wifi miễn phí",
+];
+
+interface HomestayCocoIslandProps {
+  imageUrl?: string;
+  originalPrice?: number;
+  discount?: number;
+  finalPrice?: number;
+  currency?: string;
+  includedItems?: string[];
+  roomAmenities?: string[];
+}
+
+const HomestayCocoIsland = ({
+  imageUrl = "/uploads/2024/10/coco-island-con-phung-ben-tre40-1024x768-2-768x576.webp",
+  originalPrice = 800000,
+  discount = 30,
+  finalPrice = 560000,
+  currency = "₫",
+  includedItems = defaultIncludedItems,
+  roomAmenities = defaultRoomAmenities,
+}: HomestayCocoIslandProps = {}) => {
   const [detailsVisible, setDetailsVisible] = useState(false);
 
   return (
@@ -11,7 +48,7 @@ const HomestayCocoIsland = () => {
       {/* Hình nền */}
       <div className="w-full lg:w-1/2 h-80 lg:h-auto relative overflow-hidden group">
         <Image
-          src="/uploads/2024/10/coco-island-con-phung-ben-tre40-1024x768-2-768x576.webp"
+          src={imageUrl}
           alt="Homestay sinh thái Coco Island Cồn Phụng"
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
           loading="lazy"
@@ -29,29 +66,15 @@ const HomestayCocoIsland = () => {
         </div>
         
         {/* Discount Badge */}
-        <div className="absolute top-4 right-4 bg-gradient-to-r from-red-500 to-orange-500 text-white px-4 py-2 rounded-full font-bold text-sm shadow-lg animate-pulse">
-          -30%
-        </div>
+        {discount > 0 && (
+          <div className="absolute top-4 right-4 bg-gradient-to-r from-red-500 to-orange-500 text-white px-4 py-2 rounded-full font-bold text-sm shadow-lg animate-pulse">
+            -{discount}%
+          </div>
+        )}
       </div>
 
       {/* Nội dung */}
-      <div className="w-full lg:w-1/2 p-6 md:p-10 text-gray-900 dark:text-white flex flex-col justify-center space-y-6">
-        <FadeInOnScroll>
-          <div className="mb-6">
-            <div className="inline-flex items-center gap-2 bg-orange-100 dark:bg-orange-900/30 px-3 py-1 rounded-full mb-3">
-              <svg className="w-4 h-4 text-orange-600 dark:text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-              </svg>
-              <span className="text-xs font-semibold text-orange-700 dark:text-orange-300">Homestay Sinh Thái</span>
-            </div>
-            <h2 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent mb-2">
-              LƯU TRÚ HOMESTAY SINH THÁI
-            </h2>
-            <h3 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-white">
-              COCO ISLAND CỒN PHỤNG
-            </h3>
-          </div>
-        </FadeInOnScroll>
+      <div className="w-full lg:w-1/2 p-6 md:p-10 text-gray-900 dark:text-white flex flex-col justify-center space-y-6">                                        
         <FadeInOnScroll>
           {/* Pricing Card */}
           <div className="bg-gradient-to-br from-orange-50 to-yellow-50 dark:from-orange-900/20 dark:to-yellow-900/20 rounded-2xl p-6 border-2 border-orange-200 dark:border-orange-800 mb-6">
@@ -59,12 +82,14 @@ const HomestayCocoIsland = () => {
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Giá gốc</p>
                 <p className="text-2xl font-bold text-gray-400 dark:text-gray-500 line-through">
-                  800,000₫
+                  {originalPrice.toLocaleString('vi-VN')}{currency}
                 </p>
               </div>
-              <div className="bg-red-500 text-white px-4 py-2 rounded-full font-bold text-sm">
-                -30%
-              </div>
+              {discount > 0 && (
+                <div className="bg-red-500 text-white px-4 py-2 rounded-full font-bold text-sm">
+                  -{discount}%
+                </div>
+              )}
             </div>
             <div className="border-t-2 border-dashed border-orange-300 dark:border-orange-700 pt-4">
               <p className="text-sm font-semibold text-orange-700 dark:text-orange-300 mb-2 flex items-center gap-2">
@@ -75,7 +100,7 @@ const HomestayCocoIsland = () => {
                 Ưu đãi tháng này:
               </p>
               <p className="text-4xl font-bold text-green-600 dark:text-green-400">
-                560,000₫
+                {finalPrice.toLocaleString('vi-VN')}{currency}
               </p>
               <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">/ phòng / 2 khách</p>
             </div>
@@ -95,47 +120,11 @@ const HomestayCocoIsland = () => {
 
         {/* Nội dung chi tiết */}
         <div className={`text-gray-800 dark:text-gray-200 ${detailsVisible ? 'block' : 'hidden'} lg:block`}>
-          <div className="bg-orange-50 dark:bg-orange-900/20 rounded-xl p-5 border-l-4 border-orange-500 mb-6">
-            <p className="font-bold text-orange-800 dark:text-orange-300 text-lg mb-4 flex items-center gap-2">
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
-              Bao gồm:
-            </p>
-            <ul className="space-y-3 text-gray-700 dark:text-gray-300">
-              <li className="flex items-start gap-3 hover:translate-x-1 transition-transform">
-                <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <span className="font-medium">🚢 Vé tàu khứ hồi và vé cổng tham quan KDL Cồn Phụng</span>
-              </li>
-                <li className="flex items-center">
-                <svg
-                  className="w-3.5 h-3.5 me-2 text-green-800 dark:text-green-800 flex-shrink-0"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
-                </svg>
-                <span className="font-medium">☕ Phục vụ ăn sáng (Tô + ly)</span>
-              </li>
-                <li className="flex items-center">
-                <svg
-                  className="w-3.5 h-3.5 me-2 text-green-800 dark:text-green-800 flex-shrink-0"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
-                </svg>
-                <span className="font-medium">🎁 Check in phòng tặng kèm: trái cây + dừa tươi/khách, cafe gói + trà gói + nước suối miễn phí</span>
-              </li>
-            </ul>
+                    <div className="mb-6">
+            <IncludedItemsList 
+              items={includedItems} 
+              variant="orange" 
+            />
           </div>
         
           <FadeInOnScroll>
@@ -147,42 +136,18 @@ const HomestayCocoIsland = () => {
                 TIỆN NGHI & VẬT DỤNG TRONG PHÒNG:
               </p>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                  <span className="text-blue-600 dark:text-blue-400">⚡</span>
-                  <span className="text-sm">Ấm điện siêu tốc</span>
-                </div>
-                <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                  <span className="text-blue-600 dark:text-blue-400">💨</span>
-                  <span className="text-sm">Máy sấy tóc</span>
-                </div>
-                <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                  <span className="text-blue-600 dark:text-blue-400">📞</span>
-                  <span className="text-sm">Điện thoại bàn</span>
-                </div>
-                <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                  <span className="text-blue-600 dark:text-blue-400">🛁</span>
-                  <span className="text-sm">Khăn tắm</span>
-                </div>
-                <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                  <span className="text-blue-600 dark:text-blue-400">👡</span>
-                  <span className="text-sm">Dép</span>
-                </div>
-                <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                  <span className="text-blue-600 dark:text-blue-400">❄️</span>
-                  <span className="text-sm">Máy lạnh</span>
-                </div>
-                <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                  <span className="text-blue-600 dark:text-blue-400">🧊</span>
-                  <span className="text-sm">Tủ lạnh</span>
-                </div>
-                <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                  <span className="text-blue-600 dark:text-blue-400">📺</span>
-                  <span className="text-sm">Smart TV</span>
-                </div>
-                <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                  <span className="text-blue-600 dark:text-blue-400">📶</span>
-                  <span className="text-sm">Wifi miễn phí</span>
-                </div>
+                {roomAmenities.map((amenity, index) => {
+                  // Extract emoji and text
+                  const emojiMatch = amenity.match(/^([^\s]+)\s+(.+)$/);
+                  const emoji = emojiMatch ? emojiMatch[1] : '⚡';
+                  const text = emojiMatch ? emojiMatch[2] : amenity;
+                  return (
+                    <div key={index} className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+                      <span className="text-blue-600 dark:text-blue-400">{emoji}</span>
+                      <span className="text-sm">{text}</span>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </FadeInOnScroll>

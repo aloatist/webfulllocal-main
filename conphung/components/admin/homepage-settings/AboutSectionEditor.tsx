@@ -6,7 +6,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ImageUpload } from './ImageUpload';
-import { FileText, Loader2 } from 'lucide-react';
+import { Collapsible } from '@/components/ui/collapsible';
+import { StyleEditor } from './StyleEditor';
+import { FileText, Loader2, Palette } from 'lucide-react';
 
 const Editor = dynamic(() => import('@/components/editor'), { 
   ssr: false,
@@ -58,6 +60,24 @@ export function AboutSectionEditor({ data, onChange }: AboutSectionEditorProps) 
           />
         </div>
 
+        {/* Title Styling */}
+        <Collapsible
+          title="Title Styling"
+          description="Tùy chỉnh cỡ chữ, màu sắc, và hiệu ứng cho Title"
+          icon={<Palette className="w-4 h-4" />}
+          defaultOpen={false}
+        >
+          <div className="pt-2">
+            <StyleEditor
+              style={(data as any).styles?.title}
+              onChange={(style) => {
+                onChange({ styles: { ...(data as any).styles, title: style } } as any);
+              }}
+              title="Title Styling"
+            />
+          </div>
+        </Collapsible>
+
         {/* Rich Text Content */}
         <div className="space-y-2">
           <Label>Content (Rich Text)</Label>
@@ -71,6 +91,24 @@ export function AboutSectionEditor({ data, onChange }: AboutSectionEditorProps) 
             Sử dụng editor để tạo nội dung phong phú với headings, lists, images, embeds...
           </p>
         </div>
+
+        {/* Content Styling */}
+        <Collapsible
+          title="Content Styling"
+          description="Tùy chỉnh cỡ chữ, màu sắc, và hiệu ứng cho Content"
+          icon={<Palette className="w-4 h-4" />}
+          defaultOpen={false}
+        >
+          <div className="pt-2">
+            <StyleEditor
+              style={(data as any).styles?.content}
+              onChange={(style) => {
+                onChange({ styles: { ...(data as any).styles, content: style } } as any);
+              }}
+              title="Content Styling"
+            />
+          </div>
+        </Collapsible>
 
         {/* Image */}
         <div className="space-y-2">

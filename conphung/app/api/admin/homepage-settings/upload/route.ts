@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
 
     const formData = await request.formData();
     const file = formData.get('file') as File;
-    const field = formData.get('field') as string; // 'heroBackgroundImage' | 'aboutImage' | 'ogImage'
+    const field = formData.get('field') as string; // 'heroBackgroundImage' | 'aboutImage' | 'ogImage' | 'teamMember'
     const oldPublicId = formData.get('oldPublicId') as string | null;
 
     if (!file) {
@@ -38,9 +38,12 @@ export async function POST(request: NextRequest) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
+    // Determine folder based on field
+    const folderName = field === 'teamMember' ? 'team-members' : `homepage-settings/${field}`;
+
     // Upload to Cloudinary
     const uploadResult = await uploadToCloudinary(buffer, {
-      folder: `homepage-settings/${field}`,
+      folder: folderName,
       filename: file.name,
     });
 

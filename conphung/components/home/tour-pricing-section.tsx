@@ -4,6 +4,8 @@ import { FadeIn } from '@/components/ui/fade-in'
 import { Ship, Leaf, MapPin, Star } from 'lucide-react'
 import Tourconphungthoison from '@/components/Tourconphungthoison'
 import type { TourPricingSection as TourData } from '@/lib/homepage/schema'
+import { applyStyle } from '@/lib/homepage/apply-style'
+import { cn } from '@/lib/utils'
 
 interface TourPricingSectionProps {
   data?: TourData;
@@ -38,6 +40,69 @@ const defaultData: TourData = {
 export function TourPricingSection({ data = defaultData }: TourPricingSectionProps) {
   if (!data) return null;
 
+  // Merge data with defaultData to ensure all fields are present
+  const mergedData = {
+    ...defaultData,
+    ...data,
+    bottomNote: data.bottomNote || defaultData.bottomNote || '💡 Bao gồm: Xe đưa đón + Du thuyền + Ăn trưa + Hướng dẫn viên',
+  };
+
+  // Debug: Log styles in development
+  if (process.env.NODE_ENV === 'development') {
+    console.log('[TourPricingSection] Styles:', {
+      heading: data.styles?.heading,
+      hasHeadingStyles: !!data.styles?.heading,
+      fontSize: data.styles?.heading?.typography?.fontSize,
+    });
+  }
+
+  // Apply styles
+  const headingStyle = applyStyle(data.styles?.heading);
+  const eyebrowStyle = applyStyle(data.styles?.eyebrow);
+  const descriptionStyle = applyStyle(data.styles?.description);
+  
+  // Default heading classes - only apply if no custom styles are set
+  const hasCustomGradient = data.styles?.heading?.colors?.gradient;
+  const hasCustomFontSize = data.styles?.heading?.typography?.fontSize;
+  const hasCustomFontWeight = data.styles?.heading?.typography?.fontWeight;
+  
+  // Default fontSize classes - only apply if no custom fontSize is set
+  // Note: We use responsive classes for default, but when custom fontSize is set,
+  // we should NOT apply default responsive classes to avoid conflicts
+  const defaultFontSizeClasses = !hasCustomFontSize 
+    ? "text-3xl md:text-5xl"
+    : "";
+  
+  // If custom fontSize exists, ensure default responsive classes are completely removed
+  // This prevents md:text-5xl from overriding text-lg on desktop
+  
+  // Default fontWeight classes - only apply if no custom fontWeight is set
+  const defaultFontWeightClasses = !hasCustomFontWeight
+    ? "font-bold"
+    : "";
+  
+  // Default gradient classes - only apply if no custom gradient is set
+  const defaultGradientClasses = !hasCustomGradient 
+    ? "bg-gradient-to-r from-blue-600 via-cyan-600 to-sky-600 bg-clip-text text-transparent"
+    : "";
+  
+  // Debug: Log applied styles
+  if (process.env.NODE_ENV === 'development') {
+    console.log('[TourPricingSection] Applied styles:', {
+      headingClassName: headingStyle.className,
+      headingInlineStyle: headingStyle.style,
+      hasCustomFontSize,
+      defaultFontSizeClasses,
+      finalHeadingClasses: cn(
+        "mb-4",
+        defaultFontSizeClasses,
+        defaultFontWeightClasses,
+        defaultGradientClasses,
+        headingStyle.className
+      ),
+    });
+  }
+
   return (
     <FadeIn delay={0.2}>
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-50 via-cyan-50 to-sky-50 dark:from-gray-900 dark:to-gray-800 p-8 md:p-12 shadow-xl mb-12">
@@ -48,15 +113,32 @@ export function TourPricingSection({ data = defaultData }: TourPricingSectionPro
         <div className="relative z-10">
           {/* Header */}
           <div className="text-center mb-10">
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-100 to-cyan-100 dark:from-blue-900/30 dark:to-cyan-900/30 px-5 py-2 rounded-full mb-4">
+            <div className={cn(
+              "inline-flex items-center gap-2 bg-gradient-to-r from-blue-100 to-cyan-100 dark:from-blue-900/30 dark:to-cyan-900/30 px-5 py-2 rounded-full mb-4",
+              eyebrowStyle.className
+            )} style={eyebrowStyle.style}>
               <Ship className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               <span className="text-sm font-semibold text-blue-700 dark:text-blue-300">{data.eyebrow}</span>
             </div>
             
-            <h2 className="text-3xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-600 via-cyan-600 to-sky-600 bg-clip-text text-transparent">
+            <h2 
+              className={cn(
+                "mb-4",
+                // Apply custom styles first (higher priority)
+                headingStyle.className,
+                // Then apply defaults only if no custom styles
+                !hasCustomFontSize && defaultFontSizeClasses,
+                !hasCustomFontWeight && defaultFontWeightClasses,
+                !hasCustomGradient && defaultGradientClasses,
+              )} 
+              style={headingStyle.style}
+            >
               {data.heading}
             </h2>
-            <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-lg">
+            <p className={cn(
+              "text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-lg",
+              descriptionStyle.className
+            )} style={descriptionStyle.style}>
               {data.description}
             </p>
           </div>
@@ -94,36 +176,36 @@ export function TourPricingSection({ data = defaultData }: TourPricingSectionPro
               <p className="font-bold text-gray-900 dark:text-white text-center">Đặc Sản</p>
               <p className="text-xs text-gray-600 dark:text-gray-400 text-center">Ẩm thực miền Tây</p>
             </div>
-          </div>
-
-          {/* Tour Title */}
-          <div className="mb-6">
-            <div className="bg-gradient-to-r from-blue-600 via-cyan-600 to-blue-600 rounded-2xl p-6 shadow-2xl">
-              <h3 className="text-2xl md:text-3xl font-bold text-white text-center flex items-center justify-center gap-3">
-                <Ship className="w-8 h-8" />
-                TOUR KHÁM PHÁ TRONG NGÀY
-                <Leaf className="w-8 h-8" />
-              </h3>
-              <p className="text-white/90 text-center mt-2 text-lg">
-                Cồn Thới Sơn - Cồn Phụng
-              </p>
-            </div>
-          </div>
+                    </div>
 
           {/* Tour Pricing Table */}
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden border-4 border-blue-100 dark:border-blue-900/30">
-            <Tourconphungthoison />
+            {data.tours && data.tours.length > 0 ? (
+              <Tourconphungthoison
+                includedItems={data.tours[0].includedItems}
+                originalPrice={data.tours[0].originalPrice}
+                discount={data.tours[0].discount}
+                finalPrice={data.tours[0].finalPrice}
+                currency={data.tours[0].currency}
+                imageUrl={data.tours[0].imageUrl}
+                includedItemsStyle={data.styles?.includedItems}
+              />
+            ) : (
+              <Tourconphungthoison />
+            )}
           </div>
 
           {/* Bottom Note */}
-          <div className="mt-8 text-center">
-            <div className="inline-flex items-center gap-2 bg-white dark:bg-gray-800 px-6 py-3 rounded-full shadow-md">
-              <Ship className="w-5 h-5 text-blue-600" />
-              <p className="text-gray-700 dark:text-gray-300 font-medium">
-                💡 Bao gồm: Xe đưa đón + Du thuyền + Ăn trưa + Hướng dẫn viên
-              </p>
+          {mergedData.bottomNote && (
+            <div className="mt-8 text-center">
+              <div className="inline-flex items-center gap-2 bg-white dark:bg-gray-800 px-6 py-3 rounded-full shadow-md">
+                <Ship className="w-5 h-5 text-blue-600" />
+                <p className="text-gray-700 dark:text-gray-300 font-medium">
+                  {mergedData.bottomNote}
+                </p>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </FadeIn>

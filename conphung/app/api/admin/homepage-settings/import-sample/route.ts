@@ -7,6 +7,7 @@ import { homepageConfigSchema } from '@/lib/homepage/schema';
 // Import sample data from homepage components
 const SAMPLE_CONFIG = {
   hero: {
+    eyebrow: '🌿 Du lịch Sinh Thái Chính Chủ',
     mainTitle: 'KHU DU LỊCH SINH THÁI CỒN PHỤNG BẾN TRE',
     subtitle: 'Công Trình Kiến Trúc Đạo Dừa',
     description: '🌿 Du lịch sinh thái - Trải nghiệm thiên nhiên và văn hóa miền Tây. Đặt tour chính chủ để nhận ưu đãi tốt nhất!',
@@ -22,6 +23,11 @@ const SAMPLE_CONFIG = {
       text: 'Xem Tour',
       link: '/tours',
     },
+    usps: [
+      '🌿 Thân Thiện Môi Trường',
+      '🍃 Trải Nghiệm Xanh',
+      '🌱 Chính Chủ',
+    ],
   },
   promotion: {
     eyebrow: 'Ưu đãi đặc biệt',
@@ -79,6 +85,7 @@ const SAMPLE_CONFIG = {
         ],
       },
     ],
+    bottomNote: '💡 Bao gồm: Xe đưa đón + Du thuyền + Ăn trưa + Hướng dẫn viên',
   },
   features: {
     features: [

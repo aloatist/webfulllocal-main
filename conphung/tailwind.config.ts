@@ -8,6 +8,24 @@ const config = {
     "./components/**/*.{ts,tsx}",
     "./app/**/*.{ts,tsx}",
     "./src/**/*.{ts,tsx}",
+    // Multi-theme support: scan all theme directories
+    "./templates/**/*.{ts,tsx}",
+    "./config/**/*.{ts,tsx}",
+    "./lib/theme/**/*.{ts,tsx}",
+  ],
+  safelist: [
+    // Font sizes for dynamic styling
+    'text-sm', 'text-base', 'text-lg', 'text-xl', 'text-2xl', 'text-3xl', 'text-4xl', 'text-5xl', 'text-6xl', 'text-7xl',
+    // Font weights
+    'font-normal', 'font-medium', 'font-semibold', 'font-bold', 'font-extrabold',
+    // Line heights
+    'leading-tight', 'leading-snug', 'leading-normal', 'leading-relaxed', 'leading-loose',
+    // Letter spacing
+    'tracking-tighter', 'tracking-tight', 'tracking-normal', 'tracking-wide', 'tracking-wider',
+    // Text align
+    'text-left', 'text-center', 'text-right', 'text-justify',
+    // Text transform
+    'uppercase', 'lowercase', 'capitalize',
   ],
   prefix: "",
   theme: {

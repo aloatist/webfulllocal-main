@@ -7,7 +7,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { Plus, Trash2, Ship, Eye, EyeOff } from 'lucide-react';
+import { Plus, Trash2, Ship, Eye, EyeOff, Palette, Leaf, MapPin, Star } from 'lucide-react';
+import { Collapsible } from '@/components/ui/collapsible';
+import { StyleEditor } from '../homepage-settings/StyleEditor';
 import type { TourItem, TourPricingSection } from '@/lib/homepage/schema';
 import { ImagePicker } from './ImagePicker';
 
@@ -25,6 +27,7 @@ export default function TourPricingEditor({ data, onChange }: TourPricingEditorP
     heading: 'BẢNG GIÁ VÉ TOUR',
     description: '🌿 Tour khám phá sinh thái miền Tây - Trải nghiệm đích thực',
     tours: [],
+    bottomNote: '💡 Bao gồm: Xe đưa đón + Du thuyền + Ăn trưa + Hướng dẫn viên',
   };
 
   const updateField = (field: keyof TourPricingSection, value: any) => {
@@ -132,6 +135,24 @@ export default function TourPricingEditor({ data, onChange }: TourPricingEditorP
             />
           </div>
 
+          {/* Eyebrow Styling */}
+          <Collapsible
+            title="Eyebrow Styling"
+            description="Tùy chỉnh cỡ chữ, màu sắc, và hiệu ứng cho Eyebrow"
+            icon={<Palette className="w-4 h-4" />}
+            defaultOpen={false}
+          >
+            <div className="pt-2">
+              <StyleEditor
+                style={tourPricing.styles?.eyebrow}
+                onChange={(style) => {
+                  onChange({ ...tourPricing, styles: { ...tourPricing.styles, eyebrow: style } });
+                }}
+                title="Eyebrow Styling"
+              />
+            </div>
+          </Collapsible>
+
           <div className="grid gap-2">
             <Label>Heading</Label>
             <Input
@@ -140,6 +161,24 @@ export default function TourPricingEditor({ data, onChange }: TourPricingEditorP
               placeholder="BẢNG GIÁ VÉ TOUR"
             />
           </div>
+
+          {/* Heading Styling */}
+          <Collapsible
+            title="Heading Styling"
+            description="Tùy chỉnh cỡ chữ, màu sắc, và hiệu ứng cho Heading"
+            icon={<Palette className="w-4 h-4" />}
+            defaultOpen={false}
+          >
+            <div className="pt-2">
+              <StyleEditor
+                style={tourPricing.styles?.heading}
+                onChange={(style) => {
+                  onChange({ ...tourPricing, styles: { ...tourPricing.styles, heading: style } });
+                }}
+                title="Heading Styling"
+              />
+            </div>
+          </Collapsible>
 
           <div className="grid gap-2">
             <Label>Description</Label>
@@ -150,6 +189,166 @@ export default function TourPricingEditor({ data, onChange }: TourPricingEditorP
               rows={2}
             />
           </div>
+
+                    {/* Description Styling */}
+          <Collapsible
+            title="Description Styling"
+            description="Tùy chỉnh cỡ chữ, màu sắc, và hiệu ứng cho Description"
+            icon={<Palette className="w-4 h-4" />}
+            defaultOpen={false}
+          >
+            <div className="pt-2">
+              <StyleEditor
+                style={tourPricing.styles?.description}
+                onChange={(style) => {
+                  onChange({ ...tourPricing, styles: { ...tourPricing.styles, description: style } });                                                          
+                }}
+                title="Description Styling"
+              />
+            </div>
+          </Collapsible>
+
+          {/* Tour Highlights */}
+          <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
+            <div className="flex items-center justify-between">
+              <div>
+                <Label>Tour Highlights (4 highlights)</Label>
+                <p className="text-xs text-muted-foreground">
+                  Các điểm nổi bật hiển thị dưới description
+                </p>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  const currentHighlights = tourPricing.highlights || [];
+                  if (currentHighlights.length < 4) {
+                    onChange({
+                      ...tourPricing,
+                      highlights: [
+                        ...currentHighlights,
+                        { title: '', description: '', icon: 'Ship' as const },
+                      ],
+                    });
+                  }
+                }}
+                disabled={(tourPricing.highlights || []).length >= 4}
+              >
+                <Plus className="w-4 h-4 mr-1" />
+                Thêm Highlight
+              </Button>
+            </div>
+
+            {(tourPricing.highlights || []).map((highlight, index) => (
+              <div key={index} className="grid gap-3 p-3 bg-white dark:bg-gray-900 rounded-lg border">
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm">Highlight #{index + 1}</Label>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      const newHighlights = (tourPricing.highlights || []).filter((_, i) => i !== index);
+                      onChange({ ...tourPricing, highlights: newHighlights });
+                    }}
+                  >
+                    <Trash2 className="w-4 h-4 text-destructive" />
+                  </Button>
+                </div>
+                
+                <div className="grid gap-2">
+                  <Label className="text-xs">Title</Label>
+                  <Input
+                    value={highlight.title}
+                    onChange={(e) => {
+                      const newHighlights = [...(tourPricing.highlights || [])];
+                      newHighlights[index] = { ...highlight, title: e.target.value };
+                      onChange({ ...tourPricing, highlights: newHighlights });
+                    }}
+                    placeholder="Du Thuyền"
+                  />
+                </div>
+                
+                <div className="grid gap-2">
+                  <Label className="text-xs">Description</Label>
+                  <Input
+                    value={highlight.description}
+                    onChange={(e) => {
+                      const newHighlights = [...(tourPricing.highlights || [])];
+                      newHighlights[index] = { ...highlight, description: e.target.value };
+                      onChange({ ...tourPricing, highlights: newHighlights });
+                    }}
+                    placeholder="Tham quan sông nước"
+                  />
+                </div>
+                
+                <div className="grid gap-2">
+                  <Label className="text-xs">Icon</Label>
+                  <div className="flex gap-2">
+                    {[
+                      { value: 'Ship', icon: Ship, label: 'Du Thuyền' },
+                      { value: 'Leaf', icon: Leaf, label: 'Sinh Thái' },
+                      { value: 'MapPin', icon: MapPin, label: 'Địa Điểm' },
+                      { value: 'Star', icon: Star, label: 'Đặc Sản' },
+                    ].map(({ value, icon: Icon, label }) => (
+                      <Button
+                        key={value}
+                        type="button"
+                        variant={highlight.icon === value ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => {
+                          const newHighlights = [...(tourPricing.highlights || [])];
+                          newHighlights[index] = { ...highlight, icon: value as 'Ship' | 'Leaf' | 'MapPin' | 'Star' };
+                          onChange({ ...tourPricing, highlights: newHighlights });
+                        }}
+                        className="flex-1"
+                      >
+                        <Icon className="w-4 h-4 mr-1" />
+                        {label}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            {(!tourPricing.highlights || tourPricing.highlights.length === 0) && (
+              <div className="text-center py-4 text-sm text-muted-foreground">
+                Chưa có highlights. Nhấn "Thêm Highlight" để thêm.
+              </div>
+            )}
+          </div>
+
+                    <div className="grid gap-2">
+            <Label>Ghi chú dưới cùng (Bottom Note)</Label>
+            <Input
+              value={tourPricing.bottomNote || ''}
+              onChange={(e) => updateField('bottomNote', e.target.value)}
+              placeholder="💡 Bao gồm: Xe đưa đón + Du thuyền + Ăn trưa + Hướng dẫn viên"                                                                       
+            />
+            <p className="text-sm text-muted-foreground">
+              Ghi chú hiển thị dưới cùng của section tour pricing
+            </p>
+          </div>
+
+          {/* Included Items Styling */}
+          <Collapsible
+            title="Bao gồm (Included Items) Styling"
+            description="Tùy chỉnh cỡ chữ, màu sắc, và hiệu ứng cho danh sách 'Bao gồm' trong tour"
+            icon={<Palette className="w-4 h-4" />}
+            defaultOpen={false}
+          >
+            <div className="pt-2">
+              <StyleEditor
+                style={tourPricing.styles?.includedItems}
+                onChange={(style) => {
+                  onChange({ ...tourPricing, styles: { ...tourPricing.styles, includedItems: style } });
+                }}
+                title="Bao gồm Styling"
+              />
+            </div>
+          </Collapsible>
         </div>
 
         {/* Tours List */}
@@ -389,6 +588,25 @@ export default function TourPricingEditor({ data, onChange }: TourPricingEditorP
             </div>
           )}
         </div>
+
+        {/* Container Styling */}
+        <Collapsible
+          title="Container Styling"
+          description="Tùy chỉnh styling cho toàn bộ section container"
+          icon={<Palette className="w-4 h-4" />}
+          defaultOpen={false}
+          className="border-t pt-4"
+        >
+          <div className="pt-2">
+            <StyleEditor
+              style={tourPricing.styles?.container}
+              onChange={(style) => {
+                onChange({ ...tourPricing, styles: { ...tourPricing.styles, container: style } });
+              }}
+              title="Container Styling"
+            />
+          </div>
+        </Collapsible>
 
         {/* Summary */}
         <div className="flex items-center justify-between p-4 bg-muted rounded-lg">

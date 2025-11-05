@@ -1,0 +1,16 @@
+{
+  "name": "Miệt Vườn Trái Cây",
+  "slug": "vuontraicay",
+  "version": "1.0.0",
+  "author": "AI Generated",
+  "description": "Giao diện du lịch miệt vườn trái cây, vườn cây ăn trái, nông sản. Tông màu xanh lá - vàng cam, cảm giác tươi mát, vui tươi, trái cây chín.",
+  "preview": "/themes/vuontraicay/preview.jpg",
+  "colors": {
+    "primary": "#22c55e",
+    "secondary": "#16a34a",
+    "accent": "#f59e0b",
+    "background": "#f0fdf4",
+    "text": "#166534"
+  }
+}
+

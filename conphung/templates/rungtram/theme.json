@@ -1,0 +1,16 @@
+{
+  "name": "Rừng Tràm Sân Chim",
+  "slug": "rungtram",
+  "version": "1.0.0",
+  "author": "AI Generated",
+  "description": "Giao diện du lịch rừng tràm - sân chim, đầm lầy, bèo nước. Tông màu xanh rêu - nâu, cảm giác thiên nhiên hoang sơ, đầm lầy.",
+  "preview": "/themes/rungtram/preview.jpg",
+  "colors": {
+    "primary": "#65a30d",
+    "secondary": "#525252",
+    "accent": "#78716c",
+    "background": "#f7f7f5",
+    "text": "#365314"
+  }
+}
+
