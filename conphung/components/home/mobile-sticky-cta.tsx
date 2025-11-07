@@ -33,7 +33,7 @@ export function MobileStickyCTA() {
             {/* Primary CTA - Call */}
             <Button 
               size="lg"
-              className="flex-1 bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 text-white font-bold shadow-lg shadow-emerald-500/30"
+              className="flex-1 bg-green-700 hover:bg-green-800 text-white font-bold shadow-lg shadow-green-700/30 transition-all duration-300"
               asChild
             >
               <Link href="tel:+84918267715">
@@ -46,7 +46,7 @@ export function MobileStickyCTA() {
             <Button 
               size="lg"
               variant="outline"
-              className="flex-1 border-2 border-emerald-500 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 font-semibold"
+              className="flex-1 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white font-semibold transition-all duration-300"
               asChild
             >
               <Link href="https://zalo.me/0918267715" target="_blank">

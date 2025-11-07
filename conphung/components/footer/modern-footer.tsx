@@ -156,7 +156,7 @@ export function ModernFooter({ data }: ModernFooterProps) {
                       <div className="flex gap-2 justify-center">
                         <Button
                           size="sm"
-                          className="btn-gradient"
+                          className="bg-green-900 hover:bg-green-800 text-white font-semibold shadow-md hover:shadow-lg transition-all duration-300"
                           asChild
                         >
                           <Link href={phoneLink}>
@@ -167,6 +167,7 @@ export function ModernFooter({ data }: ModernFooterProps) {
                         <Button
                           size="sm"
                           variant="outline"
+                          className="border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-all duration-300"
                           asChild
                         >
                           <Link href={`https://zalo.me/${phoneNumber}`} target="_blank">
