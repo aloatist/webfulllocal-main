@@ -63,7 +63,8 @@ const defaultFooterData: FooterSection = {
   foodSafetyCert: 'GIẤY CHỨNG NHẬN CƠ SỞ ĐỦ ĐIỀU KIỆN AN TOÀN THỰC PHẨM SỐ: 71/2021./ATTP-CNĐK',
   bankAccount: 'Số tài khoản: 7210783403 - BIDV chi nhánh Bến Tre',
   address: 'Tờ bản đồ số 3, thửa đất số 32, Ấp Tân Vinh, Xã Phú Túc, tỉnh Vĩnh Long',
-  copyrightText: `© ${new Date().getFullYear()} Khu Du Lịch Cồn Phụng. All rights reserved.`,
+  // Dòng bản quyền hiển thị cuối footer
+  copyrightText: `© ${new Date().getFullYear()} Khu Du Lịch Cồn Phụng. Bảo lưu mọi quyền.`,
   isActive: true,
 };
 
@@ -404,7 +405,7 @@ export function ModernFooter({ data }: ModernFooterProps) {
                   <Link href="/" className="hover:text-primary transition-colors font-medium">
                     Khu Du Lịch Cồn Phụng
                   </Link>
-                  . All rights reserved.
+                  . Bảo lưu mọi quyền.
                 </>
               )}
             </p>

@@ -30,7 +30,7 @@ export default function Footer() {
             <ul className="space-y-2 text-sm">
               <li><Link href="/" className="text-blue-200 hover:text-white transition-colors">Trang Chủ</Link></li>
               <li><Link href="/about" className="text-blue-200 hover:text-white transition-colors">Giới Thiệu</Link></li>
-              <li><Link href="/tours" className="text-blue-200 hover:text-white transition-colors">Tours</Link></li>
+              <li><Link href="/tours" className="text-blue-200 hover:text-white transition-colors">Tour du lịch</Link></li>
               <li><Link href="/contact" className="text-blue-200 hover:text-white transition-colors">Liên Hệ</Link></li>
             </ul>
           </div>
@@ -70,10 +70,9 @@ export default function Footer() {
 
         {/* Bottom */}
         <div className="border-t border-blue-700 pt-6 text-center text-sm text-blue-200">
-          <p>&copy; {new Date().getFullYear()} Sông Nước Miền Tây. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Sông Nước Miền Tây. Bảo lưu mọi quyền.</p>
         </div>
       </div>
     </footer>
   );
 }
-

@@ -20,7 +20,11 @@ const defaultData: MapData = {
 };
 
 export function MapSection({ data = defaultData }: MapSectionProps) {
-  if (!data) return null;
+  if (!data || !data.isVisible) return null;
+
+  // Get visibility settings (default to true if not set)
+  const visibility = data.visibility || {};
+  const isVisible = (field: keyof typeof visibility) => visibility[field] !== false;
 
   return (
     <FadeIn delay={0.2}>
@@ -37,15 +41,17 @@ export function MapSection({ data = defaultData }: MapSectionProps) {
               <span className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">Vị Trí</span>
             </div>
             
-            <h2 className="text-3xl md:text-4xl font-bold mb-3 bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent">
-              {data.heading}
-            </h2>
-            {data.description && (
+            {isVisible('heading') && (
+              <h2 className="text-3xl md:text-4xl font-bold mb-3 bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent">
+                {data.heading}
+              </h2>
+            )}
+            {isVisible('description') && data.description && (
               <p className="text-gray-600 dark:text-gray-400 ">
                 {data.description}
               </p>
             )}
-            {data.address && (
+            {isVisible('address') && data.address && (
               <p className="text-gray-600 dark:text-gray-400 ">
                 📍 {data.address}
               </p>
@@ -53,20 +59,22 @@ export function MapSection({ data = defaultData }: MapSectionProps) {
           </div>
 
           {/* Map Container */}
-          <div className="relative rounded-2xl overflow-hidden shadow-2xl border-4 border-white dark:border-gray-700 group">
-            <iframe
-              src={data.embedUrl}
-              className="w-full h-[450px] md:h-[550px] transition-transform duration-500 group-hover:scale-105"
-              style={{ border: 0 }}
-              allowFullScreen={true}
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              title={data.heading}
-            />
-            
-            {/* Overlay on hover */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-          </div>
+          {isVisible('map') && (
+            <div className="relative rounded-2xl overflow-hidden shadow-2xl border-4 border-white dark:border-gray-700 group">
+              <iframe
+                src={data.embedUrl}
+                className="w-full h-[450px] md:h-[550px] transition-transform duration-500 group-hover:scale-105"
+                style={{ border: 0 }}
+                allowFullScreen={true}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title={data.heading}
+              />
+              
+              {/* Overlay on hover */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+            </div>
+          )}
 
           {/* Quick Info */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">

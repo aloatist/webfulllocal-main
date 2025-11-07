@@ -5,7 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Home, Palette } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { Home, Palette, Eye, EyeOff } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Collapsible } from '@/components/ui/collapsible';
 import type { HeroSection } from '@/lib/homepage/schema';
@@ -23,6 +24,45 @@ export default function HeroEditor({ data, onChange }: HeroEditorProps) {
     onChange({ ...data, [field]: value });
   };
 
+  // Helper to toggle field visibility
+  const toggleFieldVisibility = (fieldName: keyof NonNullable<HeroSection['visibility']>) => {
+    const currentVisibility = data.visibility || {};
+    const newVisibility = {
+      ...currentVisibility,
+      [fieldName]: !(currentVisibility[fieldName] !== false), // Default to true if undefined
+    };
+    onChange({
+      ...data,
+      visibility: newVisibility,
+    });
+  };
+
+  // Helper to check if field is visible
+  const isFieldVisible = (fieldName: keyof NonNullable<HeroSection['visibility']>) => {
+    return data.visibility?.[fieldName] !== false;
+  };
+
+  // Helper to render visibility toggle
+  const renderVisibilityToggle = (fieldName: keyof NonNullable<HeroSection['visibility']>, label: string) => (
+    <div className="flex items-center justify-between gap-2 p-2 bg-muted/50 rounded-md">
+      <Label htmlFor={`${fieldName}-visibility`} className="text-sm font-medium cursor-pointer">
+        {label}
+      </Label>
+      <div className="flex items-center gap-2">
+        {isFieldVisible(fieldName) ? (
+          <Eye className="w-4 h-4 text-muted-foreground" />
+        ) : (
+          <EyeOff className="w-4 h-4 text-muted-foreground" />
+        )}
+        <Switch
+          id={`${fieldName}-visibility`}
+          checked={isFieldVisible(fieldName)}
+          onCheckedChange={() => toggleFieldVisibility(fieldName)}
+        />
+      </div>
+    </div>
+  );
+
   return (
     <Card>
       <CardHeader>
@@ -37,15 +77,19 @@ export default function HeroEditor({ data, onChange }: HeroEditorProps) {
       <CardContent className="space-y-4">
         {/* Eyebrow / Badge Text */}
         <div className="space-y-2">
-          <Label>Eyebrow / Badge Text</Label>
-          <Input
-            value={data.eyebrow || ''}
-            onChange={(e) => updateField('eyebrow', e.target.value)}
-            placeholder="🌿 Du lịch Sinh Thái Chính Chủ"
-          />
-          <p className="text-xs text-muted-foreground">
-            Text hiển thị trong badge phía trên tiêu đề chính
-          </p>
+          {renderVisibilityToggle('eyebrow', 'Hiển thị Eyebrow')}
+          <div className="space-y-2">
+            <Label>Eyebrow / Badge Text</Label>
+            <Input
+              value={data.eyebrow || ''}
+              onChange={(e) => updateField('eyebrow', e.target.value)}
+              placeholder="🌿 Du lịch Sinh Thái Chính Chủ"
+              disabled={!isFieldVisible('eyebrow')}
+            />
+            <p className="text-xs text-muted-foreground">
+              Text hiển thị trong badge phía trên tiêu đề chính
+            </p>
+          </div>
         </div>
 
         {/* Eyebrow Styling */}
@@ -71,15 +115,19 @@ export default function HeroEditor({ data, onChange }: HeroEditorProps) {
 
         {/* Main Title */}
         <div className="space-y-2">
-          <Label>Main Title</Label>
-          <Input
-            value={data.mainTitle}
-            onChange={(e) => updateField('mainTitle', e.target.value)}
-            placeholder="Thiên Nhiên Miền Tây"
-          />
-          <p className="text-xs text-muted-foreground">
-            Tiêu đề chính hiển thị lớn nhất trong hero section
-          </p>
+          {renderVisibilityToggle('mainTitle', 'Hiển thị Main Title')}
+          <div className="space-y-2">
+            <Label>Main Title</Label>
+            <Input
+              value={data.mainTitle}
+              onChange={(e) => updateField('mainTitle', e.target.value)}
+              placeholder="Thiên Nhiên Miền Tây"
+              disabled={!isFieldVisible('mainTitle')}
+            />
+            <p className="text-xs text-muted-foreground">
+              Tiêu đề chính hiển thị lớn nhất trong hero section
+            </p>
+          </div>
         </div>
 
         {/* Main Title Styling */}
@@ -105,15 +153,19 @@ export default function HeroEditor({ data, onChange }: HeroEditorProps) {
 
         {/* Subtitle */}
         <div className="space-y-2">
-          <Label>Subtitle</Label>
-          <Input
-            value={data.subtitle}
-            onChange={(e) => updateField('subtitle', e.target.value)}
-            placeholder="Công Trình Kiến Trúc Đạo Dừa"
-          />
-          <p className="text-xs text-muted-foreground">
-            Phụ đề hiển thị dưới tiêu đề chính
-          </p>
+          {renderVisibilityToggle('subtitle', 'Hiển thị Subtitle')}
+          <div className="space-y-2">
+            <Label>Subtitle</Label>
+            <Input
+              value={data.subtitle}
+              onChange={(e) => updateField('subtitle', e.target.value)}
+              placeholder="Công Trình Kiến Trúc Đạo Dừa"
+              disabled={!isFieldVisible('subtitle')}
+            />
+            <p className="text-xs text-muted-foreground">
+              Phụ đề hiển thị dưới tiêu đề chính
+            </p>
+          </div>
         </div>
 
         {/* Subtitle Styling */}
@@ -139,13 +191,17 @@ export default function HeroEditor({ data, onChange }: HeroEditorProps) {
 
         {/* Description */}
         <div className="space-y-2">
-          <Label>Description</Label>
-          <Textarea
-            value={data.description}
-            onChange={(e) => updateField('description', e.target.value)}
-            placeholder="Trải nghiệm thiên nhiên xanh mát..."
-            rows={3}
-          />
+          {renderVisibilityToggle('description', 'Hiển thị Description')}
+          <div className="space-y-2">
+            <Label>Description</Label>
+            <Textarea
+              value={data.description}
+              onChange={(e) => updateField('description', e.target.value)}
+              placeholder="Trải nghiệm thiên nhiên xanh mát..."
+              rows={3}
+              disabled={!isFieldVisible('description')}
+            />
+          </div>
         </div>
 
         {/* Description Styling */}
@@ -170,48 +226,74 @@ export default function HeroEditor({ data, onChange }: HeroEditorProps) {
         </Collapsible>
 
         {/* Contact Info */}
-        <div className="grid md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label>📞 Phone</Label>
-            <Input
-              value={data.phone}
-              onChange={(e) => updateField('phone', e.target.value)}
-              placeholder="0123 456 789"
-            />
+        <div className="space-y-4">
+          {renderVisibilityToggle('phone', 'Hiển thị Phone')}
+          {renderVisibilityToggle('openingHours', 'Hiển thị Opening Hours')}
+          {renderVisibilityToggle('address', 'Hiển thị Address')}
+          <div className="grid md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>📞 Phone</Label>
+              <Input
+                value={data.phone}
+                onChange={(e) => updateField('phone', e.target.value)}
+                placeholder="0123 456 789"
+                disabled={!isFieldVisible('phone')}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>🕐 Opening Hours</Label>
+              <Input
+                value={data.openingHours}
+                onChange={(e) => updateField('openingHours', e.target.value)}
+                placeholder="7:00 - 18:00"
+                disabled={!isFieldVisible('openingHours')}
+              />
+            </div>
           </div>
 
+          {/* Address */}
           <div className="space-y-2">
-            <Label>🕐 Opening Hours</Label>
+            <Label>📍 Address</Label>
             <Input
-              value={data.openingHours}
-              onChange={(e) => updateField('openingHours', e.target.value)}
-              placeholder="7:00 - 18:00"
+              value={data.address}
+              onChange={(e) => updateField('address', e.target.value)}
+              placeholder="Cồn Phụng, Bến Tre"
+              disabled={!isFieldVisible('address')}
             />
           </div>
-        </div>
-
-        {/* Address */}
-        <div className="space-y-2">
-          <Label>📍 Address</Label>
-          <Input
-            value={data.address}
-            onChange={(e) => updateField('address', e.target.value)}
-            placeholder="Cồn Phụng, Bến Tre"
-          />
         </div>
 
         {/* Background Image */}
-        <ImagePicker
-          value={data.backgroundImage}
-          onChange={(url) => updateField('backgroundImage', url)}
-          label="🖼️ Background Image"
-          aspectRatio="16/9"
-        />
+        <div className="space-y-2">
+          {renderVisibilityToggle('backgroundImage', 'Hiển thị Background Image')}
+          <ImagePicker
+            value={data.backgroundImage}
+            onChange={(url) => updateField('backgroundImage', url)}
+            label="🖼️ Background Image"
+            aspectRatio="16/9"
+            disabled={!isFieldVisible('backgroundImage')}
+          />
+        </div>
 
         {/* CTA Buttons */}
         <div className="space-y-4 p-4 bg-muted rounded-lg">
           <h3 className="font-semibold">Call-to-Action Buttons</h3>
           
+          <div className="flex items-center gap-2 p-2 bg-background/50 rounded-md">
+            <Label htmlFor="primaryCta-visibility" className="text-sm font-medium cursor-pointer">
+              {data.primaryCta?.isVisible !== false ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+            </Label>
+            <Label htmlFor="primaryCta-visibility" className="text-sm font-medium cursor-pointer flex-1">
+              Hiển thị Primary CTA
+            </Label>
+            <Switch
+              id="primaryCta-visibility"
+              checked={data.primaryCta?.isVisible !== false}
+              onCheckedChange={(checked) => updateField('primaryCta', { ...data.primaryCta, isVisible: checked })}
+            />
+          </div>
+
           <div className="grid md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Primary CTA Text</Label>
@@ -219,6 +301,7 @@ export default function HeroEditor({ data, onChange }: HeroEditorProps) {
                 value={data.primaryCta.text}
                 onChange={(e) => updateField('primaryCta', { ...data.primaryCta, text: e.target.value })}
                 placeholder="ĐẶT TOUR NGAY"
+                disabled={data.primaryCta?.isVisible === false}
               />
             </div>
 
@@ -228,8 +311,23 @@ export default function HeroEditor({ data, onChange }: HeroEditorProps) {
                 value={data.primaryCta.link}
                 onChange={(e) => updateField('primaryCta', { ...data.primaryCta, link: e.target.value })}
                 placeholder="/dat-tour"
+                disabled={data.primaryCta?.isVisible === false}
               />
             </div>
+          </div>
+
+          <div className="flex items-center gap-2 p-2 bg-background/50 rounded-md">
+            <Label htmlFor="secondaryCta-visibility" className="text-sm font-medium cursor-pointer">
+              {data.secondaryCta?.isVisible !== false ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+            </Label>
+            <Label htmlFor="secondaryCta-visibility" className="text-sm font-medium cursor-pointer flex-1">
+              Hiển thị Secondary CTA
+            </Label>
+            <Switch
+              id="secondaryCta-visibility"
+              checked={data.secondaryCta?.isVisible !== false}
+              onCheckedChange={(checked) => updateField('secondaryCta', { ...data.secondaryCta, isVisible: checked })}
+            />
           </div>
 
           <div className="grid md:grid-cols-2 gap-4">
@@ -239,6 +337,7 @@ export default function HeroEditor({ data, onChange }: HeroEditorProps) {
                 value={data.secondaryCta.text}
                 onChange={(e) => updateField('secondaryCta', { ...data.secondaryCta, text: e.target.value })}
                 placeholder="XEM CHI TIẾT"
+                disabled={data.secondaryCta?.isVisible === false}
               />
             </div>
 
@@ -248,6 +347,7 @@ export default function HeroEditor({ data, onChange }: HeroEditorProps) {
                 value={data.secondaryCta.link}
                 onChange={(e) => updateField('secondaryCta', { ...data.secondaryCta, link: e.target.value })}
                 placeholder="/gioi-thieu"
+                disabled={data.secondaryCta?.isVisible === false}
               />
             </div>
           </div>
@@ -297,6 +397,7 @@ export default function HeroEditor({ data, onChange }: HeroEditorProps) {
 
         {/* USPs (Unique Selling Points) */}
         <div className="space-y-4 p-4 bg-muted rounded-lg">
+          {renderVisibilityToggle('usps', 'Hiển thị USPs')}
           <div className="space-y-2">
             <Label>USPs - Điểm Nổi Bật (Thân Thiện Môi Trường • Trải Nghiệm Xanh • Chính Chủ)</Label>
             <p className="text-xs text-muted-foreground">

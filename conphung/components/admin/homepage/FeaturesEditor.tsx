@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Plus, Trash2, GripVertical, Sparkles, Zap, Shield, Star, Heart, Award, Palette } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { Plus, Trash2, GripVertical, Sparkles, Zap, Shield, Star, Heart, Award, Palette, Eye, EyeOff } from 'lucide-react';
 import { Collapsible } from '@/components/ui/collapsible';
 import { StyleEditor } from '../homepage-settings/StyleEditor';
 import type { FeatureItem, FeaturesSection } from '@/lib/homepage/schema';
@@ -84,6 +85,42 @@ export default function FeaturesEditor({ data, onChange }: FeaturesEditorProps) 
     setExpandedIndex(targetIndex);
   };
 
+  // Helper to toggle field visibility
+  const toggleFieldVisibility = (fieldName: keyof NonNullable<FeaturesSection['visibility']>) => {
+    const currentVisibility = data.visibility || {};
+    const newVisibility = {
+      ...currentVisibility,
+      [fieldName]: !(currentVisibility[fieldName] !== false),
+    };
+    onChange({ ...data, visibility: newVisibility });
+  };
+
+  // Helper to check if field is visible
+  const isFieldVisible = (fieldName: keyof NonNullable<FeaturesSection['visibility']>) => {
+    return data.visibility?.[fieldName] !== false;
+  };
+
+  // Helper to render visibility toggle
+  const renderVisibilityToggle = (fieldName: keyof NonNullable<FeaturesSection['visibility']>, label: string) => (
+    <div className="flex items-center justify-between gap-2 p-2 bg-muted/50 rounded-md">
+      <Label htmlFor={`${fieldName}-visibility`} className="text-sm font-medium cursor-pointer">
+        {label}
+      </Label>
+      <div className="flex items-center gap-2">
+        {isFieldVisible(fieldName) ? (
+          <Eye className="w-4 h-4 text-muted-foreground" />
+        ) : (
+          <EyeOff className="w-4 h-4 text-muted-foreground" />
+        )}
+        <Switch
+          id={`${fieldName}-visibility`}
+          checked={isFieldVisible(fieldName)}
+          onCheckedChange={() => toggleFieldVisibility(fieldName)}
+        />
+      </div>
+    </div>
+  );
+
   return (
     <Card>
       <CardHeader>
@@ -104,6 +141,12 @@ export default function FeaturesEditor({ data, onChange }: FeaturesEditorProps) 
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
+        {/* Visibility Toggles */}
+        <div className="p-4 bg-muted/50 rounded-lg space-y-2">
+          <h3 className="font-semibold text-sm mb-3">Visibility Controls</h3>
+          {renderVisibilityToggle('features', 'Hiển thị Features List')}
+        </div>
+
         {data.features.length === 0 ? (
           <div className="text-center py-12 border-2 border-dashed rounded-lg">
             <Sparkles className="w-12 h-12 mx-auto text-muted-foreground mb-4" />

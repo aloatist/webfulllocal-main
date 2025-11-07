@@ -180,6 +180,7 @@ export default function HomepageBlocksPage() {
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [newBlockType, setNewBlockType] = useState('');
+  const [hasPublishedSettings, setHasPublishedSettings] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -190,7 +191,20 @@ export default function HomepageBlocksPage() {
 
   useEffect(() => {
     loadBlocks();
+    checkPublishedSettings();
   }, []);
+
+  async function checkPublishedSettings() {
+    try {
+      const response = await fetch('/api/admin/homepage-settings-unified');
+      if (response.ok) {
+        const data = await response.json();
+        setHasPublishedSettings(data.settings?.status === 'PUBLISHED');
+      }
+    } catch (error) {
+      console.error('Error checking published settings:', error);
+    }
+  }
 
   async function loadBlocks() {
     try {
@@ -368,6 +382,42 @@ export default function HomepageBlocksPage() {
     }
   }
 
+  async function handleSyncToSettings() {
+    if (!confirm('Bạn có chắc muốn đồng bộ blocks về Home Settings? Điều này sẽ ghi đè dữ liệu hiện tại trong Home Settings.')) {
+      return;
+    }
+
+    try {
+      setSaving(true);
+      const response = await fetch('/api/admin/homepage-blocks/sync-to-settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          status: 'DRAFT', // Save as draft first
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to sync to settings');
+      }
+
+      const result = await response.json();
+      setStatus('success');
+      setErrorMessage('');
+      setTimeout(() => setStatus('idle'), 5000);
+      
+      // Check again for published settings
+      await checkPublishedSettings();
+    } catch (error) {
+      console.error('Error syncing to settings:', error);
+      setStatus('error');
+      setErrorMessage(error instanceof Error ? error.message : 'Không thể đồng bộ về Home Settings');
+    } finally {
+      setSaving(false);
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
@@ -378,6 +428,18 @@ export default function HomepageBlocksPage() {
 
   return (
     <div className="space-y-8">
+      {/* Warning Alert */}
+      {hasPublishedSettings && (
+        <Alert variant="destructive" className="mb-6">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            <strong>Cảnh báo:</strong> Hiện có Home Settings đã được PUBLISHED. 
+            Blocks sẽ không được hiển thị trên homepage khi có PUBLISHED settings. 
+            Nếu muốn sử dụng blocks, hãy chuyển Home Settings về DRAFT hoặc xóa PUBLISHED settings.
+          </AlertDescription>
+        </Alert>
+      )}
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -387,6 +449,24 @@ export default function HomepageBlocksPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            onClick={handleSyncToSettings}
+            disabled={saving}
+            title="Đồng bộ blocks về Home Settings"
+          >
+            {saving ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Đang đồng bộ...
+              </>
+            ) : (
+              <>
+                <RefreshCw className="w-4 h-4 mr-2" />
+                Đồng bộ về Home Settings
+              </>
+            )}
+          </Button>
           <Button
             variant="outline"
             onClick={async () => {

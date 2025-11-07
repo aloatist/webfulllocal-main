@@ -16,11 +16,16 @@ const defaultData: CTAData = {
   ctaLink: "tel:+84918267715",
   phone: "+84918 267 715",
   features: [
-  ]
+  ],
+  isVisible: true,
 };
 
 export function CTABookingSection({ data = defaultData }: CTABookingSectionProps) {
-  if (!data) return null;
+  if (!data || !data.isVisible) return null;
+
+  // Get visibility settings (default to true if not set)
+  const visibility = data.visibility || {};
+  const isVisible = (field: keyof typeof visibility) => visibility[field] !== false;
 
   return (
     <FadeIn delay={0.2}>
@@ -49,16 +54,21 @@ export function CTABookingSection({ data = defaultData }: CTABookingSectionProps
           </div>
 
           {/* Main Title */}
-          <h2 className="text-3xl md:text-5xl font-bold text-white text-center mb-4 drop-shadow-2xl">
-            {data.heading}
-          </h2>
+          {isVisible('heading') && (
+            <h2 className="text-3xl md:text-5xl font-bold text-white text-center mb-4 drop-shadow-2xl">
+              {data.heading}
+            </h2>
+          )}
           
-          <p className="text-lg md:text-xl text-white/95 text-center mb-8 max-w-3xl mx-auto drop-shadow-lg leading-relaxed">
-            {data.description}
-          </p>
+          {isVisible('description') && (
+            <p className="text-lg md:text-xl text-white/95 text-center mb-8 max-w-3xl mx-auto drop-shadow-lg leading-relaxed">
+              {data.description}
+            </p>
+          )}
 
           {/* Features Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          {isVisible('features') && data.features && data.features.length > 0 && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
             <div className="bg-white/10 backdrop-blur-md rounded-xl p-5 border-2 border-white/20 hover:bg-white/20 transition-all hover:-translate-y-1">
               <div className="flex items-center gap-3 mb-2">
                 <div className="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center">
@@ -89,31 +99,39 @@ export function CTABookingSection({ data = defaultData }: CTABookingSectionProps
               <p className="text-white/90 text-sm">Tư vấn miễn phí mọi lúc, mọi nơi</p>
             </div>
           </div>
+          )}
 
           {/* CTA Button */}
-          <div className="text-center">
-            <Link 
-              href={data.ctaLink || `tel:${data.phone}`}
-              className="group relative inline-flex overflow-hidden rounded-full p-[3px] focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-red-500"
-            >
-              <span className="absolute inset-[-1000%] animate-[spin_3s_linear_infinite] bg-gradient-to-r from-yellow-400 via-white to-yellow-400" />
-              
-              <span className="inline-flex h-full w-full cursor-pointer items-center justify-center rounded-full bg-gradient-to-r from-yellow-400 via-orange-400 to-yellow-400 px-10 py-5 text-xl font-bold text-gray-900 backdrop-blur-3xl transition-all duration-300 group-hover:scale-105 shadow-2xl">
-                <Phone className="mr-3 h-6 w-6 transition-transform duration-300 group-hover:rotate-12" />
-                {data.ctaText} -
-                <span className="ml-2 inline-flex items-center justify-center rounded-full border border-white/70 bg-white/20 px-3 py-1 text-2xl font-extrabold tracking-wide text-white shadow-lg transition-all duration-300 group-hover:bg-white/30 group-hover:text-yellow-900 group-hover:shadow-[0_0_25px_rgba(255,255,255,0.45)]">
-                  {data.phone}
+          {isVisible('ctaButton') && (
+            <div className="text-center">
+              <Link 
+                href={data.ctaLink || `tel:${data.phone}`}
+                className="group relative inline-flex overflow-hidden rounded-full p-[3px] focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-red-500"
+              >
+                <span className="absolute inset-[-1000%] animate-[spin_3s_linear_infinite] bg-gradient-to-r from-yellow-400 via-white to-yellow-400" />
+                
+                <span className="inline-flex h-full w-full cursor-pointer items-center justify-center rounded-full bg-gradient-to-r from-yellow-400 via-orange-400 to-yellow-400 px-10 py-5 text-xl font-bold text-gray-900 backdrop-blur-3xl transition-all duration-300 group-hover:scale-105 shadow-2xl">
+                  <Phone className="mr-3 h-6 w-6 transition-transform duration-300 group-hover:rotate-12" />
+                  {data.ctaText}
+                  {isVisible('phone') && data.phone && (
+                    <>
+                      {' - '}
+                      <span className="ml-2 inline-flex items-center justify-center rounded-full border border-white/70 bg-white/20 px-3 py-1 text-2xl font-extrabold tracking-wide text-white shadow-lg transition-all duration-300 group-hover:bg-white/30 group-hover:text-yellow-900 group-hover:shadow-[0_0_25px_rgba(255,255,255,0.45)]">
+                        {data.phone}
+                      </span>
+                    </>
+                  )}
+                  <Sparkles className="ml-3 h-6 w-6 animate-pulse" />
                 </span>
-                <Sparkles className="ml-3 h-6 w-6 animate-pulse" />
-              </span>
-            </Link>
+              </Link>
 
-            {data.features && data.features.length > 0 && (
-              <p className="mt-4 text-white/80 text-sm">
-                {data.features[0]}
-              </p>
-            )}
-          </div>
+              {isVisible('features') && data.features && data.features.length > 0 && (
+                <p className="mt-4 text-white/80 text-sm">
+                  {data.features[0]}
+                </p>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </FadeIn>

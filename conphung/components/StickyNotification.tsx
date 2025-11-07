@@ -15,7 +15,7 @@ const StickyNotification = () => {
     <>
       {isVisible ? (
         <div
-          className={`fixed top-30 right-4 max-w-xs bg-lime-800 p-1 rounded-lg shadow-lg z-[999999] flex flex-col items-center space-y-1 transition-all duration-500 ease-in-out ${
+          className={`fixed top-30 right-4 max-w-xs bg-lime-800 p-1 rounded-lg shadow-lg z-[999999] hidden md:flex flex-col items-center space-y-1 transition-all duration-500 ease-in-out ${
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-[-20px]"
           }`}
         >
@@ -48,7 +48,7 @@ const StickyNotification = () => {
       ) : (
         <button
           onClick={toggleVisibility}
-          className="fixed top-30 right-4 bg-lime-800 text-white px-3 py-2 rounded-lg shadow-lg hover:bg-lime-900 transition-all duration-300 z-[999999]"
+          className="fixed top-30 right-4 bg-lime-800 text-white px-3 py-2 rounded-lg shadow-lg hover:bg-lime-900 transition-all duration-300 z-[999999] hidden md:block"
         >
           Hiện thông báo
         </button>

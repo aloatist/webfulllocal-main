@@ -41,13 +41,13 @@ export default async function PostsPage() {
     <div className="mx-auto w-full max-w-5xl px-6 py-12">
       <header className="mb-10 text-center">
         <h1 className="text-4xl font-bold tracking-tight">Bài viết</h1>
-        <p className="mt-2 text-muted-foreground">
+        <p className="mt-2 text-gray-600 dark:text-gray-300 text-lg">
           Tin tức, câu chuyện và kinh nghiệm du lịch tại Cồn Phụng.
         </p>
       </header>
 
       {posts.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-border/60 bg-muted/30 p-10 text-center text-muted-foreground">
+        <div className="rounded-lg border border-dashed border-border/60 bg-gray-50 dark:bg-gray-800/30 p-10 text-center text-gray-600 dark:text-gray-400">
           Hiện chưa có bài viết. Vui lòng quay lại sau.
         </div>
       ) : (
@@ -68,7 +68,7 @@ export default async function PostsPage() {
                   />
                 </div>
               ) : (
-                <div className="flex aspect-[16/10] items-center justify-center bg-muted text-muted-foreground">
+                <div className="flex aspect-[16/10] items-center justify-center bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400">
                   Không có ảnh đại diện
                 </div>
               )}

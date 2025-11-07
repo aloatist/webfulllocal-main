@@ -8,6 +8,8 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import { 
   Save, 
   Eye, 
@@ -333,6 +335,170 @@ export default function UnifiedHomepageSettingsPage() {
     
     return sectionMap[sectionId] ?? false;
   };
+
+  // Check if section is visible (for homepage display)
+  const isSectionVisible = (sectionId: string) => {
+    if (!config) return true; // Default to visible if no config
+    
+    // Use isVisible if available, otherwise fallback to isActive, otherwise default to true
+    const visibilityMap: Record<string, boolean> = {
+      hero: config.hero?.isVisible !== false,
+      about: config.about?.isVisible !== false && config.about?.isActive !== false,
+      features: config.features?.isVisible !== false,
+      seo: true, // SEO is always "visible" (meta tags)
+      promotion: config.promotion?.isVisible !== false && config.promotion?.isActive !== false,
+      pricingSnapshot: config.pricingSnapshot?.isVisible !== false && config.pricingSnapshot?.isActive !== false,
+      ticket: config.ticket?.isVisible !== false,
+      tours: config.tourPricing?.isVisible !== false,
+      services: true, // Services visibility handled separately
+      restaurant: config.restaurant?.isVisible !== false && config.restaurant?.isActive !== false,
+      homestay: config.homestay?.isVisible !== false && config.homestay?.isActive !== false,
+      gallery: config.gallery?.isVisible !== false,
+      video: config.videoGuide?.isVisible !== false,
+      posts: config.latestPosts?.isVisible !== false,
+      certificates: config.certificates?.isVisible !== false,
+      policies: config.policyLinks?.isVisible !== false,
+      faq: config.faq?.isVisible !== false && config.faq?.isActive !== false,
+      socialProof: config.socialProof?.isVisible !== false && config.socialProof?.isActive !== false,
+      map: config.map?.isVisible !== false,
+      cta: config.ctaBooking?.isVisible !== false,
+      footer: config.footer?.isVisible !== false && config.footer?.isActive !== false,
+      system: true, // System settings not displayed on homepage
+    };
+    
+    return visibilityMap[sectionId] ?? true;
+  };
+
+  // Toggle section visibility
+  const toggleSectionVisibility = (sectionId: string, visible: boolean) => {
+    if (!config) return;
+
+    const updateSection = (section: any, newVisibility: boolean) => {
+      return { ...section, isVisible: newVisibility };
+    };
+
+    switch (sectionId) {
+      case 'hero':
+        setConfig({ ...config, hero: updateSection(config.hero, visible) });
+        break;
+      case 'about':
+        setConfig({
+          ...config,
+          about: config.about ? updateSection(config.about, visible) : { title: '', content: '', isActive: true, isVisible: visible },
+        });
+        break;
+      case 'features':
+        setConfig({ ...config, features: updateSection(config.features, visible) });
+        break;
+      case 'promotion':
+        setConfig({
+          ...config,
+          promotion: config.promotion ? updateSection(config.promotion, visible) : undefined,
+        });
+        break;
+      case 'pricingSnapshot':
+        setConfig({
+          ...config,
+          pricingSnapshot: config.pricingSnapshot ? updateSection(config.pricingSnapshot, visible) : undefined,
+        });
+        break;
+      case 'ticket':
+        setConfig({
+          ...config,
+          ticket: config.ticket ? updateSection(config.ticket, visible) : undefined,
+        });
+        break;
+      case 'tours':
+        setConfig({
+          ...config,
+          tourPricing: config.tourPricing ? updateSection(config.tourPricing, visible) : undefined,
+        });
+        break;
+      case 'restaurant':
+        setConfig({
+          ...config,
+          restaurant: config.restaurant ? updateSection(config.restaurant, visible) : undefined,
+        });
+        break;
+      case 'homestay':
+        setConfig({
+          ...config,
+          homestay: config.homestay ? updateSection(config.homestay, visible) : undefined,
+        });
+        break;
+      case 'gallery':
+        setConfig({
+          ...config,
+          gallery: config.gallery ? updateSection(config.gallery, visible) : undefined,
+        });
+        break;
+      case 'video':
+        setConfig({
+          ...config,
+          videoGuide: config.videoGuide ? updateSection(config.videoGuide, visible) : undefined,
+        });
+        break;
+      case 'posts':
+        setConfig({
+          ...config,
+          latestPosts: config.latestPosts ? updateSection(config.latestPosts, visible) : undefined,
+        });
+        break;
+      case 'certificates':
+        setConfig({ ...config, certificates: updateSection(config.certificates, visible) });
+        break;
+      case 'policies':
+        setConfig({
+          ...config,
+          policyLinks: config.policyLinks ? updateSection(config.policyLinks, visible) : undefined,
+        });
+        break;
+      case 'faq':
+        setConfig({
+          ...config,
+          faq: config.faq ? updateSection(config.faq, visible) : undefined,
+        });
+        break;
+      case 'socialProof':
+        setConfig({
+          ...config,
+          socialProof: config.socialProof ? updateSection(config.socialProof, visible) : undefined,
+        });
+        break;
+      case 'map':
+        setConfig({
+          ...config,
+          map: config.map ? updateSection(config.map, visible) : undefined,
+        });
+        break;
+      case 'cta':
+        setConfig({
+          ...config,
+          ctaBooking: config.ctaBooking ? updateSection(config.ctaBooking, visible) : undefined,
+        });
+        break;
+      case 'footer':
+        setConfig({
+          ...config,
+          footer: config.footer ? updateSection(config.footer, visible) : undefined,
+        });
+        break;
+    }
+  };
+
+  // Helper to render visibility toggle
+  const renderVisibilityToggle = (sectionId: string) => (
+    <div className="flex items-center gap-2">
+      <Label htmlFor={`${sectionId}-visibility`} className="text-sm text-muted-foreground cursor-pointer">
+        {isSectionVisible(sectionId) ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+      </Label>
+      <Switch
+        id={`${sectionId}-visibility`}
+        checked={isSectionVisible(sectionId)}
+        onCheckedChange={(checked) => toggleSectionVisibility(sectionId, checked)}
+      />
+    </div>
+  );
 
   // Update active category when section changes
   useEffect(() => {
@@ -697,12 +863,15 @@ export default function UnifiedHomepageSettingsPage() {
                       <Home className="w-5 h-5" />
                       <CardTitle>Hero Section</CardTitle>
                     </div>
-                    {isSectionActive('hero') && (
-                      <Badge variant="outline" className="border-green-500 text-green-700 bg-green-50">
-                        <CheckCircle2 className="w-3 h-3 mr-1" />
-                        Active
-                      </Badge>
-                    )}
+                    <div className="flex items-center gap-3">
+                      {isSectionActive('hero') && (
+                        <Badge variant="outline" className="border-green-500 text-green-700 bg-green-50">
+                          <CheckCircle2 className="w-3 h-3 mr-1" />
+                          Active
+                        </Badge>
+                      )}
+                      {renderVisibilityToggle('hero')}
+                    </div>
                   </div>
                   <CardDescription>
                     Tiêu đề chính, hình nền, mô tả và các nút CTA
@@ -725,12 +894,15 @@ export default function UnifiedHomepageSettingsPage() {
                       <FileText className="w-5 h-5" />
                       <CardTitle>Giới thiệu</CardTitle>
                     </div>
-                    {isSectionActive('about') && (
-                      <Badge variant="outline" className="border-green-500 text-green-700 bg-green-50">
-                        <CheckCircle2 className="w-3 h-3 mr-1" />
-                        Active
-                      </Badge>
-                    )}
+                    <div className="flex items-center gap-3">
+                      {isSectionActive('about') && (
+                        <Badge variant="outline" className="border-green-500 text-green-700 bg-green-50">
+                          <CheckCircle2 className="w-3 h-3 mr-1" />
+                          Active
+                        </Badge>
+                      )}
+                      {renderVisibilityToggle('about')}
+                    </div>
                   </div>
                   <CardDescription>
                     Nội dung giới thiệu về khu du lịch
@@ -816,12 +988,15 @@ export default function UnifiedHomepageSettingsPage() {
                       <Sparkles className="w-5 h-5" />
                       <CardTitle>Tính năng nổi bật</CardTitle>
                     </div>
-                    {isSectionActive('features') && (
-                      <Badge variant="outline" className="border-green-500 text-green-700 bg-green-50">
-                        <CheckCircle2 className="w-3 h-3 mr-1" />
-                        Active
-                      </Badge>
-                    )}
+                    <div className="flex items-center gap-3">
+                      {isSectionActive('features') && (
+                        <Badge variant="outline" className="border-green-500 text-green-700 bg-green-50">
+                          <CheckCircle2 className="w-3 h-3 mr-1" />
+                          Active
+                        </Badge>
+                      )}
+                      {renderVisibilityToggle('features')}
+                    </div>
                   </div>
                   <CardDescription>
                     Hiển thị 3 tính năng chính của dịch vụ
@@ -845,12 +1020,15 @@ export default function UnifiedHomepageSettingsPage() {
                       <Sparkles className="w-5 h-5" />
                       <CardTitle>Khuyến mãi đặc biệt</CardTitle>
                     </div>
-                    {isSectionActive('promotion') && (
-                      <Badge variant="outline" className="border-green-500 text-green-700 bg-green-50">
-                        <CheckCircle2 className="w-3 h-3 mr-1" />
-                        Active
-                      </Badge>
-                    )}
+                    <div className="flex items-center gap-3">
+                      {isSectionActive('promotion') && (
+                        <Badge variant="outline" className="border-green-500 text-green-700 bg-green-50">
+                          <CheckCircle2 className="w-3 h-3 mr-1" />
+                          Active
+                        </Badge>
+                      )}
+                      {renderVisibilityToggle('promotion')}
+                    </div>
                   </div>
                   <CardDescription>
                     Ưu đãi và khuyến mãi nổi bật
@@ -873,12 +1051,15 @@ export default function UnifiedHomepageSettingsPage() {
                       <ShoppingCart className="w-5 h-5" />
                       <CardTitle>Bảng Giá Tham Khảo</CardTitle>
                     </div>
-                    {isSectionActive('pricingSnapshot') && (
-                      <Badge variant="outline" className="border-green-500 text-green-700 bg-green-50">
-                        <CheckCircle2 className="w-3 h-3 mr-1" />
-                        Active
-                      </Badge>
-                    )}
+                    <div className="flex items-center gap-3">
+                      {isSectionActive('pricingSnapshot') && (
+                        <Badge variant="outline" className="border-green-500 text-green-700 bg-green-50">
+                          <CheckCircle2 className="w-3 h-3 mr-1" />
+                          Active
+                        </Badge>
+                      )}
+                      {renderVisibilityToggle('pricingSnapshot')}
+                    </div>
                   </div>
                   <CardDescription>
                     Tổng hợp giá vé và tour trong một section đẹp mắt
@@ -901,12 +1082,15 @@ export default function UnifiedHomepageSettingsPage() {
                       <ShoppingCart className="w-5 h-5" />
                       <CardTitle>Vé tham quan</CardTitle>
                     </div>
-                    {isSectionActive('ticket') && (
-                      <Badge variant="outline" className="border-green-500 text-green-700 bg-green-50">
-                        <CheckCircle2 className="w-3 h-3 mr-1" />
-                        Active
-                      </Badge>
-                    )}
+                    <div className="flex items-center gap-3">
+                      {isSectionActive('ticket') && (
+                        <Badge variant="outline" className="border-green-500 text-green-700 bg-green-50">
+                          <CheckCircle2 className="w-3 h-3 mr-1" />
+                          Active
+                        </Badge>
+                      )}
+                      {renderVisibilityToggle('ticket')}
+                    </div>
                   </div>
                   <CardDescription>
                     Giá vé cổng và các dịch vụ bao gồm
@@ -929,12 +1113,15 @@ export default function UnifiedHomepageSettingsPage() {
                       <Plane className="w-5 h-5" />
                       <CardTitle>Tour & Trải nghiệm</CardTitle>
                     </div>
-                    {isSectionActive('tours') && (
-                      <Badge variant="outline" className="border-green-500 text-green-700 bg-green-50">
-                        <CheckCircle2 className="w-3 h-3 mr-1" />
-                        Active
-                      </Badge>
-                    )}
+                    <div className="flex items-center gap-3">
+                      {isSectionActive('tours') && (
+                        <Badge variant="outline" className="border-green-500 text-green-700 bg-green-50">
+                          <CheckCircle2 className="w-3 h-3 mr-1" />
+                          Active
+                        </Badge>
+                      )}
+                      {renderVisibilityToggle('tours')}
+                    </div>
                   </div>
                   <CardDescription>
                     Bảng giá và thông tin các gói tour
@@ -985,12 +1172,15 @@ export default function UnifiedHomepageSettingsPage() {
                       <UtensilsCrossed className="w-5 h-5" />
                       <CardTitle>Nhà hàng</CardTitle>
                     </div>
-                    {isSectionActive('restaurant') && (
-                      <Badge variant="outline" className="border-green-500 text-green-700 bg-green-50">
-                        <CheckCircle2 className="w-3 h-3 mr-1" />
-                        Active
-                      </Badge>
-                    )}
+                    <div className="flex items-center gap-3">
+                      {isSectionActive('restaurant') && (
+                        <Badge variant="outline" className="border-green-500 text-green-700 bg-green-50">
+                          <CheckCircle2 className="w-3 h-3 mr-1" />
+                          Active
+                        </Badge>
+                      )}
+                      {renderVisibilityToggle('restaurant')}
+                    </div>
                   </div>
                   <CardDescription>
                     Thông tin về nhà hàng trong khu du lịch
@@ -1013,12 +1203,15 @@ export default function UnifiedHomepageSettingsPage() {
                       <Home className="w-5 h-5" />
                       <CardTitle>Homestay</CardTitle>
                     </div>
-                    {isSectionActive('homestay') && (
-                      <Badge variant="outline" className="border-green-500 text-green-700 bg-green-50">
-                        <CheckCircle2 className="w-3 h-3 mr-1" />
-                        Active
-                      </Badge>
-                    )}
+                    <div className="flex items-center gap-3">
+                      {isSectionActive('homestay') && (
+                        <Badge variant="outline" className="border-green-500 text-green-700 bg-green-50">
+                          <CheckCircle2 className="w-3 h-3 mr-1" />
+                          Active
+                        </Badge>
+                      )}
+                      {renderVisibilityToggle('homestay')}
+                    </div>
                   </div>
                   <CardDescription>
                     Quản lý thông tin homestay và lưu trú
@@ -1042,12 +1235,15 @@ export default function UnifiedHomepageSettingsPage() {
                       <Camera className="w-5 h-5" />
                       <CardTitle>Thư viện ảnh</CardTitle>
                     </div>
-                    {isSectionActive('gallery') && (
-                      <Badge variant="outline" className="border-green-500 text-green-700 bg-green-50">
-                        <CheckCircle2 className="w-3 h-3 mr-1" />
-                        Active
-                      </Badge>
-                    )}
+                    <div className="flex items-center gap-3">
+                      {isSectionActive('gallery') && (
+                        <Badge variant="outline" className="border-green-500 text-green-700 bg-green-50">
+                          <CheckCircle2 className="w-3 h-3 mr-1" />
+                          Active
+                        </Badge>
+                      )}
+                      {renderVisibilityToggle('gallery')}
+                    </div>
                   </div>
                   <CardDescription>
                     Quản lý hình ảnh trong gallery
@@ -1095,12 +1291,15 @@ export default function UnifiedHomepageSettingsPage() {
                       <Video className="w-5 h-5" />
                       <CardTitle>Video hướng dẫn</CardTitle>
                     </div>
-                    {isSectionActive('video') && (
-                      <Badge variant="outline" className="border-green-500 text-green-700 bg-green-50">
-                        <CheckCircle2 className="w-3 h-3 mr-1" />
-                        Active
-                      </Badge>
-                    )}
+                    <div className="flex items-center gap-3">
+                      {isSectionActive('video') && (
+                        <Badge variant="outline" className="border-green-500 text-green-700 bg-green-50">
+                          <CheckCircle2 className="w-3 h-3 mr-1" />
+                          Active
+                        </Badge>
+                      )}
+                      {renderVisibilityToggle('video')}
+                    </div>
                   </div>
                   <CardDescription>
                     Quản lý các video YouTube
@@ -1123,12 +1322,15 @@ export default function UnifiedHomepageSettingsPage() {
                       <FileText className="w-5 h-5" />
                       <CardTitle>Bài viết mới nhất</CardTitle>
                     </div>
-                    {isSectionActive('posts') && (
-                      <Badge variant="outline" className="border-green-500 text-green-700 bg-green-50">
-                        <CheckCircle2 className="w-3 h-3 mr-1" />
-                        Active
-                      </Badge>
-                    )}
+                    <div className="flex items-center gap-3">
+                      {isSectionActive('posts') && (
+                        <Badge variant="outline" className="border-green-500 text-green-700 bg-green-50">
+                          <CheckCircle2 className="w-3 h-3 mr-1" />
+                          Active
+                        </Badge>
+                      )}
+                      {renderVisibilityToggle('posts')}
+                    </div>
                   </div>
                   <CardDescription>
                     Cấu hình section hiển thị bài viết mới
@@ -1151,12 +1353,15 @@ export default function UnifiedHomepageSettingsPage() {
                       <Award className="w-5 h-5" />
                       <CardTitle>Giấy phép & Chứng nhận</CardTitle>
                     </div>
-                    {isSectionActive('certificates') && (
-                      <Badge variant="outline" className="border-green-500 text-green-700 bg-green-50">
-                        <CheckCircle2 className="w-3 h-3 mr-1" />
-                        Active
-                      </Badge>
-                    )}
+                    <div className="flex items-center gap-3">
+                      {isSectionActive('certificates') && (
+                        <Badge variant="outline" className="border-green-500 text-green-700 bg-green-50">
+                          <CheckCircle2 className="w-3 h-3 mr-1" />
+                          Active
+                        </Badge>
+                      )}
+                      {renderVisibilityToggle('certificates')}
+                    </div>
                   </div>
                   <CardDescription>
                     Quản lý các giấy phép và chứng nhận
@@ -1179,12 +1384,15 @@ export default function UnifiedHomepageSettingsPage() {
                       <Link2 className="w-5 h-5" />
                       <CardTitle>Chính sách</CardTitle>
                     </div>
-                    {isSectionActive('policies') && (
-                      <Badge variant="outline" className="border-green-500 text-green-700 bg-green-50">
-                        <CheckCircle2 className="w-3 h-3 mr-1" />
-                        Active
-                      </Badge>
-                    )}
+                    <div className="flex items-center gap-3">
+                      {isSectionActive('policies') && (
+                        <Badge variant="outline" className="border-green-500 text-green-700 bg-green-50">
+                          <CheckCircle2 className="w-3 h-3 mr-1" />
+                          Active
+                        </Badge>
+                      )}
+                      {renderVisibilityToggle('policies')}
+                    </div>
                   </div>
                   <CardDescription>
                     Các link chính sách ở footer
@@ -1207,12 +1415,15 @@ export default function UnifiedHomepageSettingsPage() {
                       <HelpCircle className="w-5 h-5" />
                       <CardTitle>Câu hỏi thường gặp</CardTitle>
                     </div>
-                    {isSectionActive('faq') && (
-                      <Badge variant="outline" className="border-green-500 text-green-700 bg-green-50">
-                        <CheckCircle2 className="w-3 h-3 mr-1" />
-                        Active
-                      </Badge>
-                    )}
+                    <div className="flex items-center gap-3">
+                      {isSectionActive('faq') && (
+                        <Badge variant="outline" className="border-green-500 text-green-700 bg-green-50">
+                          <CheckCircle2 className="w-3 h-3 mr-1" />
+                          Active
+                        </Badge>
+                      )}
+                      {renderVisibilityToggle('faq')}
+                    </div>
                   </div>
                   <CardDescription>
                     Quản lý FAQ section
@@ -1235,12 +1446,15 @@ export default function UnifiedHomepageSettingsPage() {
                       <Award className="w-5 h-5" />
                       <CardTitle>Social Proof</CardTitle>
                     </div>
-                    {isSectionActive('socialProof') && (
-                      <Badge variant="outline" className="border-green-500 text-green-700 bg-green-50">
-                        <CheckCircle2 className="w-3 h-3 mr-1" />
-                        Active
-                      </Badge>
-                    )}
+                    <div className="flex items-center gap-3">
+                      {isSectionActive('socialProof') && (
+                        <Badge variant="outline" className="border-green-500 text-green-700 bg-green-50">
+                          <CheckCircle2 className="w-3 h-3 mr-1" />
+                          Active
+                        </Badge>
+                      )}
+                      {renderVisibilityToggle('socialProof')}
+                    </div>
                   </div>
                   <CardDescription>
                     Quản lý đánh giá và testimonials từ khách hàng
@@ -1264,12 +1478,15 @@ export default function UnifiedHomepageSettingsPage() {
                       <Navigation className="w-5 h-5" />
                       <CardTitle>Bản đồ</CardTitle>
                     </div>
-                    {isSectionActive('map') && (
-                      <Badge variant="outline" className="border-green-500 text-green-700 bg-green-50">
-                        <CheckCircle2 className="w-3 h-3 mr-1" />
-                        Active
-                      </Badge>
-                    )}
+                    <div className="flex items-center gap-3">
+                      {isSectionActive('map') && (
+                        <Badge variant="outline" className="border-green-500 text-green-700 bg-green-50">
+                          <CheckCircle2 className="w-3 h-3 mr-1" />
+                          Active
+                        </Badge>
+                      )}
+                      {renderVisibilityToggle('map')}
+                    </div>
                   </div>
                   <CardDescription>
                     Google Maps embed và thông tin địa chỉ
@@ -1292,12 +1509,15 @@ export default function UnifiedHomepageSettingsPage() {
                       <Phone className="w-5 h-5" />
                       <CardTitle>CTA Đặt tour</CardTitle>
                     </div>
-                    {isSectionActive('cta') && (
-                      <Badge variant="outline" className="border-green-500 text-green-700 bg-green-50">
-                        <CheckCircle2 className="w-3 h-3 mr-1" />
-                        Active
-                      </Badge>
-                    )}
+                    <div className="flex items-center gap-3">
+                      {isSectionActive('cta') && (
+                        <Badge variant="outline" className="border-green-500 text-green-700 bg-green-50">
+                          <CheckCircle2 className="w-3 h-3 mr-1" />
+                          Active
+                        </Badge>
+                      )}
+                      {renderVisibilityToggle('cta')}
+                    </div>
                   </div>
                   <CardDescription>
                     Call-to-action section cuối trang
@@ -1321,12 +1541,15 @@ export default function UnifiedHomepageSettingsPage() {
                       <FileText className="w-5 h-5" />
                       <CardTitle>Footer</CardTitle>
                     </div>
-                    {isSectionActive('footer') && (
-                      <Badge variant="outline" className="border-green-500 text-green-700 bg-green-50">
-                        <CheckCircle2 className="w-3 h-3 mr-1" />
-                        Active
-                      </Badge>
-                    )}
+                    <div className="flex items-center gap-3">
+                      {isSectionActive('footer') && (
+                        <Badge variant="outline" className="border-green-500 text-green-700 bg-green-50">
+                          <CheckCircle2 className="w-3 h-3 mr-1" />
+                          Active
+                        </Badge>
+                      )}
+                      {renderVisibilityToggle('footer')}
+                    </div>
                   </div>
                   <CardDescription>
                     Quản lý footer của trang chủ

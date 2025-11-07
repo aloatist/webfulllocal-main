@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Plus, Trash2, Ticket, AlertTriangle, Palette } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { Plus, Trash2, Ticket, AlertTriangle, Palette, Eye, EyeOff } from 'lucide-react';
 import { Collapsible } from '@/components/ui/collapsible';
 import { StyleEditor } from '../homepage-settings/StyleEditor';
 import type { TicketSection } from '@/lib/homepage/schema';
@@ -41,6 +42,7 @@ export default function TicketSectionEditor({ data, onChange }: TicketSectionEdi
     pickupLocation: 'Bến phà Rạch Miễu cũ, thuộc xã Tân Thạch, huyện Châu Thành, tỉnh Bến Tre.',
     warningNote: 'Đến bến phà, vui lòng gọi Hotline để được hỗ trợ tàu đón, tránh nhầm lẫn không phải chính chủ khu du lịch Cồn Phụng.',
     imageUrl: '',
+    isVisible: true,
   };
 
   const updateField = (field: keyof TicketSection, value: any) => {
@@ -75,6 +77,42 @@ export default function TicketSectionEditor({ data, onChange }: TicketSectionEdi
     onChange({ ...ticket, includedItems: newItems });
   };
 
+  // Helper to toggle field visibility
+  const toggleFieldVisibility = (fieldName: keyof NonNullable<TicketSection['visibility']>) => {
+    const currentVisibility = ticket.visibility || {};
+    const newVisibility = {
+      ...currentVisibility,
+      [fieldName]: !(currentVisibility[fieldName] !== false),
+    };
+    onChange({ ...ticket, visibility: newVisibility });
+  };
+
+  // Helper to check if field is visible
+  const isFieldVisible = (fieldName: keyof NonNullable<TicketSection['visibility']>) => {
+    return ticket.visibility?.[fieldName] !== false;
+  };
+
+  // Helper to render visibility toggle
+  const renderVisibilityToggle = (fieldName: keyof NonNullable<TicketSection['visibility']>, label: string) => (
+    <div className="flex items-center justify-between gap-2 p-2 bg-muted/50 rounded-md">
+      <Label htmlFor={`${fieldName}-visibility`} className="text-sm font-medium cursor-pointer">
+        {label}
+      </Label>
+      <div className="flex items-center gap-2">
+        {isFieldVisible(fieldName) ? (
+          <Eye className="w-4 h-4 text-muted-foreground" />
+        ) : (
+          <EyeOff className="w-4 h-4 text-muted-foreground" />
+        )}
+        <Switch
+          id={`${fieldName}-visibility`}
+          checked={isFieldVisible(fieldName)}
+          onCheckedChange={() => toggleFieldVisibility(fieldName)}
+        />
+      </div>
+    </div>
+  );
+
   return (
     <Card>
       <CardHeader>
@@ -89,12 +127,14 @@ export default function TicketSectionEditor({ data, onChange }: TicketSectionEdi
       <CardContent className="space-y-6">
         {/* Header Fields */}
         <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
+          {renderVisibilityToggle('eyebrow', 'Hiển thị Eyebrow')}
           <div className="grid gap-2">
             <Label>Eyebrow Text</Label>
             <Input
               value={ticket.eyebrow}
               onChange={(e) => updateField('eyebrow', e.target.value)}
               placeholder="Vé Tham Quan"
+              disabled={!isFieldVisible('eyebrow')}
             />
           </div>
 
@@ -116,12 +156,14 @@ export default function TicketSectionEditor({ data, onChange }: TicketSectionEdi
             </div>
           </Collapsible>
 
+          {renderVisibilityToggle('heading', 'Hiển thị Heading')}
           <div className="grid gap-2">
             <Label>Heading</Label>
             <Input
               value={ticket.heading}
               onChange={(e) => updateField('heading', e.target.value)}
               placeholder="VÉ THAM QUAN KHU DU LỊCH SINH THÁI"
+              disabled={!isFieldVisible('heading')}
             />
           </div>
 
@@ -143,12 +185,14 @@ export default function TicketSectionEditor({ data, onChange }: TicketSectionEdi
             </div>
           </Collapsible>
 
+          {renderVisibilityToggle('subheading', 'Hiển thị Subheading')}
           <div className="grid gap-2">
             <Label>Subheading</Label>
             <Input
               value={ticket.subheading}
               onChange={(e) => updateField('subheading', e.target.value)}
               placeholder="CỒN PHỤNG BẾN TRE"
+              disabled={!isFieldVisible('subheading')}
             />
           </div>
 
@@ -170,6 +214,7 @@ export default function TicketSectionEditor({ data, onChange }: TicketSectionEdi
             </div>
           </Collapsible>
 
+          {renderVisibilityToggle('description', 'Hiển thị Description')}
           <div className="grid gap-2">
             <Label>Description</Label>
             <Textarea
@@ -177,6 +222,7 @@ export default function TicketSectionEditor({ data, onChange }: TicketSectionEdi
               onChange={(e) => updateField('description', e.target.value)}
               placeholder="🌿 Trải nghiệm thiên nhiên..."
               rows={2}
+              disabled={!isFieldVisible('description')}
             />
           </div>
 
@@ -200,7 +246,8 @@ export default function TicketSectionEditor({ data, onChange }: TicketSectionEdi
         </div>
 
         {/* Pricing */}
-        <div className="space-y-4">
+        <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
+          {renderVisibilityToggle('prices', 'Hiển thị Prices')}
           <h3 className="text-lg font-semibold">Giá vé</h3>
           
           <div className="grid md:grid-cols-2 gap-4">
@@ -213,6 +260,7 @@ export default function TicketSectionEditor({ data, onChange }: TicketSectionEdi
                   value={ticket.prices.adult}
                   onChange={(e) => updatePrice('adult', parseInt(e.target.value) || 0)}
                   placeholder="50000"
+                  disabled={!isFieldVisible('prices')}
                 />
                 <div className="flex items-center px-3 bg-muted rounded-md">
                   {ticket.prices.currency}
@@ -229,6 +277,7 @@ export default function TicketSectionEditor({ data, onChange }: TicketSectionEdi
                   value={ticket.prices.child}
                   onChange={(e) => updatePrice('child', parseInt(e.target.value) || 0)}
                   placeholder="30000"
+                  disabled={!isFieldVisible('prices')}
                 />
                 <div className="flex items-center px-3 bg-muted rounded-md">
                   {ticket.prices.currency}
@@ -250,20 +299,22 @@ export default function TicketSectionEditor({ data, onChange }: TicketSectionEdi
         </div>
 
         {/* Included Items */}
-        <div className="space-y-4">
+        <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
+          {renderVisibilityToggle('includedItems', 'Hiển thị Included Items')}
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold">Bao gồm trong vé ({ticket.includedItems.length})</h3>
           </div>
 
           {/* Add New Item */}
-          <div className="flex gap-2">
+          <div className={`flex gap-2 ${!isFieldVisible('includedItems') ? 'opacity-50 pointer-events-none' : ''}`}>
             <Input
               value={newItem}
               onChange={(e) => setNewItem(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && addIncludedItem()}
               placeholder="VD: 🚢 Miễn phí vé tàu khứ hồi"
+              disabled={!isFieldVisible('includedItems')}
             />
-            <Button onClick={addIncludedItem} size="sm">
+            <Button onClick={addIncludedItem} size="sm" disabled={!isFieldVisible('includedItems')}>
               <Plus className="w-4 h-4 mr-2" />
               Thêm
             </Button>
@@ -311,7 +362,8 @@ export default function TicketSectionEditor({ data, onChange }: TicketSectionEdi
         </div>
 
         {/* Location & Warning */}
-        <div className="space-y-4">
+        <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
+          {renderVisibilityToggle('pickupLocation', 'Hiển thị Pickup Location')}
           <div className="space-y-2">
             <Label>📍 Điểm đón khách</Label>
             <Textarea
@@ -319,9 +371,11 @@ export default function TicketSectionEditor({ data, onChange }: TicketSectionEdi
               onChange={(e) => updateField('pickupLocation', e.target.value)}
               placeholder="Địa chỉ điểm đón..."
               rows={2}
+              disabled={!isFieldVisible('pickupLocation')}
             />
           </div>
 
+          {renderVisibilityToggle('warningNote', 'Hiển thị Warning Note')}
           <div className="space-y-2">
             <Label className="flex items-center gap-2">
               <AlertTriangle className="w-4 h-4 text-orange-500" />
@@ -332,17 +386,23 @@ export default function TicketSectionEditor({ data, onChange }: TicketSectionEdi
               onChange={(e) => updateField('warningNote', e.target.value)}
               placeholder="Lưu ý cho khách..."
               rows={3}
+              disabled={!isFieldVisible('warningNote')}
             />
           </div>
         </div>
 
         {/* Image Picker (Optional) */}
-        <ImagePicker
-          value={ticket.imageUrl || ''}
-          onChange={(url) => updateField('imageUrl', url)}
-          label="Hình ảnh (Optional)"
-          aspectRatio="16/9"
-        />
+        <div className="space-y-2 p-4 bg-muted/50 rounded-lg">
+          {renderVisibilityToggle('imageUrl', 'Hiển thị Image')}
+          <div className={!isFieldVisible('imageUrl') ? 'opacity-50 pointer-events-none' : ''}>
+            <ImagePicker
+              value={ticket.imageUrl || ''}
+              onChange={(url) => updateField('imageUrl', url)}
+              label="Hình ảnh (Optional)"
+              aspectRatio="16/9"
+            />
+          </div>
+        </div>
 
         {/* Container Styling */}
         <Collapsible

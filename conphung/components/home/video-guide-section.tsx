@@ -12,6 +12,7 @@ interface VideoGuideSectionProps {
 const defaultData: VideoData = {
   heading: "VIDEO HƯỚNG DẪN ĐƯỜNG ĐI",
   description: "Xem video để biết cách di chuyển đến Cồn Phụng dễ dàng nhất từ TP.HCM và các tỉnh lân cận",
+  isVisible: true,
   videos: [
     {
       title: "Hướng dẫn đi Cồn Phụng từ TP.HCM",
@@ -29,7 +30,13 @@ const defaultData: VideoData = {
 };
 
 export function VideoGuideSection({ data = defaultData }: VideoGuideSectionProps) {
-  if (!data || !data.videos || data.videos.length === 0) return null;
+  if (!data || !data.isVisible) return null;
+
+  // Get visibility settings (default to true if not set)
+  const visibility = data.visibility || {};
+  const isVisible = (field: keyof typeof visibility) => visibility[field] !== false;
+
+  if (!isVisible('videos') || !data.videos || data.videos.length === 0) return null;
 
   return (
     <FadeIn delay={0.2}>
@@ -46,10 +53,12 @@ export function VideoGuideSection({ data = defaultData }: VideoGuideSectionProps
               <span className="text-sm font-semibold text-blue-700 dark:text-blue-300">Hướng Dẫn</span>
             </div>
             
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-blue-600 via-cyan-600 to-emerald-600 bg-clip-text text-transparent">
-              {data.heading}
-            </h2>
-            {data.description && (
+            {isVisible('heading') && (
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-blue-600 via-cyan-600 to-emerald-600 bg-clip-text text-transparent">
+                {data.heading}
+              </h2>
+            )}
+            {isVisible('description') && data.description && (
               <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-lg">
                 {data.description}
               </p>
@@ -90,8 +99,9 @@ export function VideoGuideSection({ data = defaultData }: VideoGuideSectionProps
           </div>
 
           {/* Video Grid */}
-          <StaggerContainer staggerDelay={0.15} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {data.videos.map((video, index) => (
+          {isVisible('videos') && (
+            <StaggerContainer staggerDelay={0.15} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {data.videos.map((video, index) => (
               <StaggerItem key={index}>
                 <div className="group relative overflow-hidden rounded-2xl bg-white dark:bg-gray-800 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
                   {/* Video Thumbnail */}
@@ -152,8 +162,9 @@ export function VideoGuideSection({ data = defaultData }: VideoGuideSectionProps
                   </div>
                 </div>
               </StaggerItem>
-            ))}
-          </StaggerContainer>
+              ))}
+            </StaggerContainer>
+          )}
 
           {/* Bottom Note */}
           <div className="mt-8 text-center">

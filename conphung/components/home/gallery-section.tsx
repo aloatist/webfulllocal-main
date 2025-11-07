@@ -31,6 +31,7 @@ const defaultData: GalleryData = {
     },
   ],
   bottomText: "✨ Hơn 1000+ hình ảnh đẹp về thiên nhiên, văn hóa và con người Cồn Phụng",
+  isVisible: true,
   images: [
     { url: "/uploads/2024/10/22196236_901710536664938_7027468764014750282_n.webp", alt: "Cồn Phụng - Du lịch sinh thái" },
     { url: "/uploads/2024/10/22405754_905859629583362_7823146011914182650_n-1.webp", alt: "Cồn Phụng - Khung cảnh thiên nhiên" },
@@ -77,13 +78,17 @@ const defaultData: GalleryData = {
 };
 
 export function GallerySection({ data, className }: GallerySectionProps & { className?: string }) {
+  if (!data || !data.isVisible) return null;
+
+  // Get visibility settings (default to true if not set)
+  const visibility = data.visibility || {};
+  const isVisible = (field: keyof typeof visibility) => visibility[field] !== false;
+
   // Merge data with defaults
   const displayData = data || defaultData;
   const images = displayData.images || defaultData.images;
   const ecoFeatures = displayData.ecoFeatures || defaultData.ecoFeatures || [];
   const bottomText = displayData.bottomText || defaultData.bottomText || '';
-
-  if (!displayData) return null;
 
   return (
     <div className={cn("relative overflow-hidden rounded-3xl bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 p-8 md:p-12 shadow-xl mb-12 max-w-4xl mx-auto", className)}>
@@ -99,17 +104,19 @@ export function GallerySection({ data, className }: GallerySectionProps & { clas
               <span className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">Thư Viện Ảnh</span>
             </div>
             
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-emerald-600 via-green-600 to-lime-600 bg-clip-text text-transparent">
-              {displayData.heading}
-            </h2>
-            {displayData.description && (
+            {isVisible('heading') && (
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-emerald-600 via-green-600 to-lime-600 bg-clip-text text-transparent">
+                {displayData.heading}
+              </h2>
+            )}
+            {isVisible('description') && displayData.description && (
               <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-lg mb-6">
                 {displayData.description}
               </p>
             )}
 
             {/* Eco Tourism Features - Below description */}
-            {ecoFeatures && ecoFeatures.length > 0 && (
+            {isVisible('ecoFeatures') && ecoFeatures && ecoFeatures.length > 0 && (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6" role="region" aria-label="Eco Tourism Features">
                 {ecoFeatures.map((feature, index) => {
                   const iconGradients = [
@@ -141,7 +148,7 @@ export function GallerySection({ data, className }: GallerySectionProps & { clas
             )}
 
             {/* Bottom Text - Below Eco Tourism Features */}
-            {bottomText && (
+            {isVisible('bottomText') && bottomText && (
               <div className="text-center mb-8">
                 <p className="text-gray-600 dark:text-gray-400 italic">
                   {bottomText}
@@ -151,7 +158,7 @@ export function GallerySection({ data, className }: GallerySectionProps & { clas
           </div>
 
           {/* Carousel */}
-          {images && images.length > 0 && (
+          {isVisible('images') && images && images.length > 0 && (
             <div className="rounded-2xl overflow-hidden shadow-2xl border-4 border-white dark:border-gray-700">
               <CarouselSlider images={images} />
             </div>

@@ -12,6 +12,10 @@ interface AboutSectionProps {
 export function AboutSection({ data }: AboutSectionProps) {
   if (!data || !data.isActive) return null;
 
+  // Get visibility settings (default to true if not set)
+  const visibility = data.visibility || {};
+  const isVisible = (field: keyof typeof visibility) => visibility[field] !== false;
+
   // Parse EditorJS content - handle both string and object formats
   let contentBlocks: ReturnType<typeof parseEditorContent> | null = null;
   if (data.content) {
@@ -55,9 +59,9 @@ export function AboutSection({ data }: AboutSectionProps) {
     <FadeIn delay={0.2}>
             <section className="py-16 md:py-24 px-4">
         <div className="container mx-auto max-w-6xl">
-          <div className={`grid gap-8 md:gap-12 items-center ${data.image ? 'md:grid-cols-2' : 'md:grid-cols-1'}`}>
+          <div className={`grid gap-8 md:gap-12 items-center ${isVisible('image') && data.image ? 'md:grid-cols-2' : 'md:grid-cols-1'}`}>
             {/* Image */}
-            {data.image && (
+            {isVisible('image') && data.image && (
               <div className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-xl">                                                                     
                 <Image
                   src={data.image}
@@ -69,13 +73,13 @@ export function AboutSection({ data }: AboutSectionProps) {
             )}
 
             {/* Content */}
-            <div className={`space-y-6 ${!data.image ? 'max-w-4xl mx-auto' : ''}`}>
-              {data.title && (
+            <div className={`space-y-6 ${!(isVisible('image') && data.image) ? 'max-w-4xl mx-auto' : ''}`}>
+              {isVisible('title') && data.title && (
                 <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
                   {data.title}
                 </h2>
               )}
-              {contentBlocks && Array.isArray(contentBlocks) && contentBlocks.length > 0 && (
+              {isVisible('content') && contentBlocks && Array.isArray(contentBlocks) && contentBlocks.length > 0 && (
                 <div className="prose prose-lg max-w-none dark:prose-invert">
                   {contentBlocks.map((block, i) => {
                     if (!block || typeof block !== 'object') return null;

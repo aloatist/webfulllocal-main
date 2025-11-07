@@ -63,8 +63,8 @@ export function HomestayCard({ homestay }: HomestayCardProps) {
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             />
           ) : (
-            <div className="flex h-full items-center justify-center bg-muted">
-              <span className="text-muted-foreground">No image</span>
+            <div className="flex h-full items-center justify-center bg-gray-100 dark:bg-gray-800">
+              <span className="text-gray-500 dark:text-gray-400">Chưa có ảnh</span>
             </div>
           )}
 
@@ -145,19 +145,19 @@ export function HomestayCard({ homestay }: HomestayCardProps) {
           {/* Amenities */}
           <div className="flex flex-wrap gap-2">
             {homestay.hasWifi && (
-              <div className="flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-xs">
+              <div className="flex items-center gap-1 rounded-full bg-gray-100 dark:bg-gray-700 px-2 py-1 text-xs text-gray-700 dark:text-gray-200 font-medium">
                 <Wifi className="h-3 w-3" />
                 <span>WiFi</span>
               </div>
             )}
             {homestay.hasParking && (
-              <div className="flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-xs">
+              <div className="flex items-center gap-1 rounded-full bg-gray-100 dark:bg-gray-700 px-2 py-1 text-xs text-gray-700 dark:text-gray-200 font-medium">
                 <Car className="h-3 w-3" />
                 <span>Đỗ xe</span>
               </div>
             )}
             {homestay.hasPool && (
-              <div className="flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-xs">
+              <div className="flex items-center gap-1 rounded-full bg-gray-100 dark:bg-gray-700 px-2 py-1 text-xs text-gray-700 dark:text-gray-200 font-medium">
                 <Waves className="h-3 w-3" />
                 <span>Hồ bơi</span>
               </div>

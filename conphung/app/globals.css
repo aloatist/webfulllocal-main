@@ -204,6 +204,11 @@
   }
 
   /* FOCUS: Stronger focus indicators */
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 
+           focus-visible:ring-offset-2 transition-shadow;
+  }
+
   .focus-visible-strong {
     @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 
            focus-visible:ring-offset-2 focus-visible:ring-offset-white
@@ -226,6 +231,21 @@
            border-2 border-gray-200 dark:border-gray-700
            rounded-xl shadow-md hover:shadow-xl
            transition-all duration-300;
+  }
+
+  /* MOBILE: Typography and touch targets for mobile devices */
+  @media (max-width: 640px) {
+    .text-mobile-sm { font-size: 14px !important; }
+    .text-mobile-base { font-size: 16px !important; }
+    .text-mobile-lg { font-size: 18px !important; }
+    .text-mobile-xl { font-size: 20px !important; }
+    .text-mobile-2xl { font-size: 24px !important; }
+    
+    /* Ensure minimum touch target size (WCAG 2.1 AA) */
+    .touch-target {
+      min-width: 44px !important;
+      min-height: 44px !important;
+    }
   }
 
   /* Hide scrollbar for Chrome, Safari and Opera */

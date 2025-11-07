@@ -70,11 +70,11 @@ const navigation: NavItem[] = [
     ],
   },
   {
-    title: 'Tours',
+    title: 'Tour du lịch',
     icon: MapPin,
     children: [
       {
-        title: 'Tất cả Tours',
+        title: 'Tất cả tour',
         href: '/admin/tours',
         icon: MapPin,
       },
@@ -87,11 +87,11 @@ const navigation: NavItem[] = [
     ],
   },
   {
-    title: 'Homestays',
+    title: 'Homestay',
     icon: Home,
     children: [
       {
-        title: 'Tất cả Homestays',
+        title: 'Tất cả homestay',
         href: '/admin/homestays',
         icon: Home,
       },
@@ -120,38 +120,38 @@ const navigation: NavItem[] = [
     ],
   },
   {
-    title: 'n8n Automation',
+    title: 'Tự động hóa n8n',
     icon: Zap,
     children: [
       {
-        title: '📊 Dashboard',
+        title: '📊 Bảng điều khiển',
         href: '/admin/n8n',
         icon: BarChart3,
       },
       {
-        title: '🔗 Webhooks',
+        title: '🔗 Webhook',
         href: '/admin/n8n/webhooks',
         icon: Webhook,
       },
       {
-        title: '⚙️ Workflows',
+        title: '⚙️ Quy trình',
         href: '/admin/n8n/workflows',
         icon: Workflow,
       },
       {
-        title: '⚡ Rules',
+        title: '⚡ Luật tự động',
         href: '/admin/n8n/rules',
         icon: Zap,
       },
       {
-        title: '🔌 Connections',
+        title: '🔌 Kết nối',
         href: '/admin/n8n/connections',
         icon: Link2,
       },
     ],
   },
   {
-    title: 'Marketing',
+    title: 'Tiếp thị',
     icon: Megaphone,
     children: [
       
@@ -177,13 +177,13 @@ const navigation: NavItem[] = [
     icon: Palette,
     children: [
       {
-        title: 'Templates',
+        title: 'Mẫu giao diện',
         href: '/admin/templates',
         icon: Palette,
         badge: 'NEW',
       },
       {
-        title: 'Themes',
+        title: 'Chủ đề',
         href: '/admin/themes',
         icon: Palette,
       },

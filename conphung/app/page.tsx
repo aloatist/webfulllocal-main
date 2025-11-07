@@ -40,7 +40,7 @@ import { FAQ } from '@/components/schema/FAQSchema';
 import { AboutSection } from '@/components/home/about-section';
 
 export const dynamic = 'force-dynamic';
-export const revalidate = 0; // Always revalidate to get latest data
+export const revalidate = 0; // Always revalidate to get latest data (including blocks sortOrder changes)
 
 // Components
 
@@ -90,30 +90,22 @@ export default async function Home() {
   // getHomepageConfig() now checks HomepageSettings.sections (PUBLISHED) first, then HomepageSection
   const homepageConfig = await getHomepageConfig();
 
-  // Priority 2: Try to load blocks (blocks system) - only use if no published settings
-  // In development, also check DRAFT if no PUBLISHED exists
+  // Priority 2: Try to load blocks (blocks system) - only use if no PUBLISHED settings
+  // IMPORTANT: Only check PUBLISHED, not DRAFT - DRAFT should not block blocks from being used
   const publishedSettings = await prisma.homepageSettings.findFirst({
     where: { status: 'PUBLISHED' },
     orderBy: { updatedAt: 'desc' },
   });
 
-  // In development mode, if no PUBLISHED, check for DRAFT (for testing)
-  const draftSettings = process.env.NODE_ENV === 'development' && !publishedSettings
-    ? await prisma.homepageSettings.findFirst({
-        where: { status: 'DRAFT' },
-        orderBy: { updatedAt: 'desc' },
-      })
-    : null;
-
-  const activeSettings = publishedSettings || draftSettings;
-  const hasPublishedSettings = activeSettings?.sections && typeof activeSettings.sections === 'object';
+  // Check if PUBLISHED settings exist and have sections
+  const hasPublishedSettings = publishedSettings?.sections && typeof publishedSettings.sections === 'object';
 
   const blocks = await prisma.homepageBlock.findMany({
     where: {
       status: 'ACTIVE',
       themeId: null, // Only global blocks for now
     },
-    orderBy: { sortOrder: 'asc' },
+    orderBy: { sortOrder: 'asc' }, // Sort by sortOrder to respect user's drag & drop order
     select: {
       id: true,
       type: true,
@@ -127,7 +119,8 @@ export default async function Home() {
 
   // Determine which data source to use
   // Priority: HomepageSettings.sections (PUBLISHED) > HomepageBlock > HomepageSection > DEFAULT_CONFIG
-  // Since getHomepageConfig() now handles HomepageSettings.sections, we only check blocks if no published settings
+  // IMPORTANT: Only PUBLISHED settings block blocks. DRAFT settings do NOT block blocks.
+  // This allows users to use blocks system even when there are DRAFT settings.
   const useBlocks = !hasPublishedSettings && blocks.length > 0;
 
   // Debug: Log which data source is being used (only in development)
@@ -138,9 +131,9 @@ export default async function Home() {
       hasPublishedSettings,
       blocksCount: blocks.length,
       hasHomepageConfig: !!homepageConfig,
-      settingsStatus: activeSettings?.status || 'none',
+      settingsStatus: publishedSettings?.status || 'none',
       hasPublished: !!publishedSettings,
-      hasDraft: !!draftSettings,
+      blocksSortOrder: blocks.map(b => ({ id: b.id, type: b.type, sortOrder: b.sortOrder })),
     });
   }
 
@@ -214,27 +207,33 @@ const ExampleJsx = ({
       {/* ============================================ */}
       
       {/* 1. Hero Section - Modern Redesigned */}
-      <HeroModernRedesigned 
-        data={homepageConfig?.hero}
-      />
+      {homepageConfig?.hero?.isVisible !== false && (
+        <HeroModernRedesigned 
+          data={homepageConfig?.hero}
+        />
+      )}
 
       {/* 2. About Section - Giới thiệu */}
-      {homepageConfig?.about?.isActive && (
+      {homepageConfig?.about?.isVisible !== false && homepageConfig?.about?.isActive && (
         <AboutSection data={homepageConfig.about} />
       )}
 
       {/* 3. Features Section - Using Features data from config */}
-      <FeaturesSection data={homepageConfig?.features} />
+      {homepageConfig?.features?.isVisible !== false && (
+        <FeaturesSection data={homepageConfig?.features} />
+      )}
 
       {/* 4. Promotion Section - Limited Time Offers (Creates urgency) */}
-      <PromotionSection data={homepageConfig?.promotion} />
+      {homepageConfig?.promotion?.isVisible !== false && homepageConfig?.promotion?.isActive && (
+        <PromotionSection data={homepageConfig?.promotion} />
+      )}
 
       {/* ============================================ */}
       {/* PHASE 2: SHOW OPTIONS & PRICING             */}
       {/* ============================================ */}
       
       {/* 4. Pricing Snapshot - Modern Design */}
-      {homepageConfig?.pricingSnapshot?.isActive !== false && (
+      {homepageConfig?.pricingSnapshot?.isVisible !== false && homepageConfig?.pricingSnapshot?.isActive !== false && (
         <PricingSnapshotModern 
           pricingSnapshotData={homepageConfig?.pricingSnapshot}
           ticketData={homepageConfig?.ticket}
@@ -244,64 +243,62 @@ const ExampleJsx = ({
       )}
 
       {/* 5. Tour Experiences - Detailed tour options */}
-      <TourPricingSection data={homepageConfig?.tourPricing} />
+      {homepageConfig?.tourPricing?.isVisible !== false && (
+        <TourPricingSection data={homepageConfig?.tourPricing} />
+      )}
       
       {/* 5.5. Ticket Section - Ticket pricing */}
-      <TicketSection data={homepageConfig?.ticket} />
+      {homepageConfig?.ticket?.isVisible !== false && (
+        <TicketSection data={homepageConfig?.ticket} />
+      )}
 
       {/* 6. Homestay - Accommodation option */}
-      {homepageConfig?.homestay?.isActive ? (
+      {homepageConfig?.homestay?.isVisible !== false && homepageConfig?.homestay?.isActive ? (
         <HomestaySection data={homepageConfig.homestay} />
-      ) : (
-        <HomestaySection />
-      )}
+      ) : null}
 
       {/* ============================================ */}
       {/* PHASE 3: BUILD TRUST & CREDIBILITY          */}
       {/* ============================================ */}
       
       {/* 7. Social Proof - Modern Testimonials */}
-      {homepageConfig?.socialProof?.isActive ? (
+      {homepageConfig?.socialProof?.isVisible !== false && homepageConfig?.socialProof?.isActive ? (
         <SocialProofModern data={homepageConfig.socialProof} />
-      ) : (
-        <SocialProofModern />
-      )}
+      ) : null}
 
       {/* 8. Gallery - Visual proof of experience (Lazy loaded) */}
-      <LazySectionWrapper>
-        <div className="my-12 md:my-16">
-          <GallerySection data={homepageConfig?.gallery} />
-        </div>
-      </LazySectionWrapper>
+      {homepageConfig?.gallery?.isVisible !== false && (
+        <LazySectionWrapper>
+          <div className="my-12 md:my-16">
+            <GallerySection data={homepageConfig?.gallery} />
+          </div>
+        </LazySectionWrapper>
+      )}
 
       {/* 9. Video Guide - See it in action (Lazy loaded) */}
-      <LazySectionWrapper>
-        <div className="my-12 md:my-16">
-          <VideoGuideSection data={homepageConfig?.videoGuide} />
-        </div>
-      </LazySectionWrapper>
+      {homepageConfig?.videoGuide?.isVisible !== false && (
+        <LazySectionWrapper>
+          <div className="my-12 md:my-16">
+            <VideoGuideSection data={homepageConfig?.videoGuide} />
+          </div>
+        </LazySectionWrapper>
+      )}
 
       {/* ============================================ */}
       {/* PHASE 4: ADDRESS OBJECTIONS                 */}
       {/* ============================================ */}
       
       {/* 10. FAQ - Answer common questions */}
-      {homepageConfig?.faq?.isActive && homepageConfig.faq.items && homepageConfig.faq.items.length > 0 ? (
+      {homepageConfig?.faq?.isVisible !== false && homepageConfig?.faq?.isActive && homepageConfig.faq.items && homepageConfig.faq.items.length > 0 ? (
         <div className="my-20 md:my-24">
           <FAQ items={homepageConfig.faq.items} />
         </div>
-      ) : (
-        <div className="my-20 md:my-24">
-          <FAQ items={faqs} />
-        </div>
-      )}
+      ) : null}
 
       {/* 11. Restaurant Section - Show food quality */}
-      {homepageConfig?.restaurant?.isActive ? (
+      {homepageConfig?.restaurant?.isVisible !== false && homepageConfig?.restaurant?.isActive ? (
         <RestaurantSection data={homepageConfig.restaurant} />
-      ) : (
-        <RestaurantSection />
-      )}
+      ) : null}
 
 
       {/* ============================================ */}
@@ -309,34 +306,44 @@ const ExampleJsx = ({
       {/* ============================================ */}
       
       {/* 12. Certificates & Licenses - Compact trust badges */}
-      <CertificatesSectionCompact data={homepageConfig?.certificates} />
+      {homepageConfig?.certificates?.isVisible !== false && (
+        <CertificatesSectionCompact data={homepageConfig?.certificates} />
+      )}
 
       {/* 13. Latest Posts - Educational content (Lazy loaded) */}
-      <LazySectionWrapper>
-        <div className="my-12 md:my-16">
-          <LatestPostsSection 
-            posts={posts} 
-            config={homepageConfig?.latestPosts}
-          />
-        </div>
-      </LazySectionWrapper>
+      {homepageConfig?.latestPosts?.isVisible !== false && (
+        <LazySectionWrapper>
+          <div className="my-12 md:my-16">
+            <LatestPostsSection 
+              posts={posts} 
+              config={homepageConfig?.latestPosts}
+            />
+          </div>
+        </LazySectionWrapper>
+      )}
 
       {/* ============================================ */}
       {/* PHASE 6: FINAL CONVERSION PUSH              */}
       {/* ============================================ */}
       
       {/* 14. Map Section - Show location & accessibility */}
-      <MapSection data={homepageConfig?.map} />
+      {homepageConfig?.map?.isVisible !== false && (
+        <MapSection data={homepageConfig?.map} />
+      )}
 
       {/* 15. CTA Booking - Final call-to-action */}
-      <CTABookingSection data={homepageConfig?.ctaBooking} />
+      {homepageConfig?.ctaBooking?.isVisible !== false && (
+        <CTABookingSection data={homepageConfig?.ctaBooking} />
+      )}
 
       {/* ============================================ */}
       {/* OPTIONAL: FOOTER CONTENT (Moved to sections) */}
       {/* ============================================ */}
       
       {/* Policy Links - Compact footer links */}
-      <PolicyLinksSectionCompact data={homepageConfig?.policyLinks} />
+      {homepageConfig?.policyLinks?.isVisible !== false && (
+        <PolicyLinksSectionCompact data={homepageConfig?.policyLinks} />
+      )}
 
       </article>
 
@@ -351,11 +358,17 @@ const LatestPostsSection = ({
   config 
 }: { 
   posts: LatestPost[]; 
-  config?: { heading?: string; description?: string; ctaText?: string; ctaLink?: string; postCount?: number };
+  config?: { heading?: string; description?: string; ctaText?: string; ctaLink?: string; postCount?: number; visibility?: { heading?: boolean; description?: boolean; ctaButton?: boolean; posts?: boolean } };
 }) => {
-  if (posts.length === 0) {
+  if (!config || posts.length === 0) {
     return null;
   }
+
+  // Get visibility settings (default to true if not set)
+  const visibility = config.visibility || {};
+  const isVisible = (field: keyof typeof visibility) => visibility[field] !== false;
+
+  if (!isVisible('posts')) return null;
 
   return (
     <section className="mt-12 rounded-3xl bg-gradient-to-br from-emerald-50/50 via-white to-emerald-50/30 dark:from-gray-800 dark:via-gray-900 dark:to-gray-800 px-6 md:px-8 py-12 md:py-16 shadow-xl border border-emerald-100 dark:border-gray-700">
@@ -363,12 +376,16 @@ const LatestPostsSection = ({
         <div className="inline-flex items-center gap-2 bg-emerald-100 dark:bg-emerald-900/30 px-5 py-2 rounded-full mb-6">
           <span className="text-sm font-bold text-emerald-700 dark:text-emerald-300">📰 Tin Tức & Blog</span>
         </div>
-        <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight mb-4 bg-gradient-to-r from-gray-900 via-emerald-700 to-gray-900 dark:from-white dark:via-emerald-400 dark:to-white bg-clip-text text-transparent">
-          {config?.heading || 'Bài Viết Mới Nhất'}
-        </h2>
-        <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
-          {config?.description || 'Những câu chuyện và mẹo hữu ích dành cho hành trình khám phá Cồn Phụng.'}
-        </p>
+        {isVisible('heading') && (
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight mb-4 bg-gradient-to-r from-gray-900 via-emerald-700 to-gray-900 dark:from-white dark:via-emerald-400 dark:to-white bg-clip-text text-transparent">
+            {config?.heading || 'Bài Viết Mới Nhất'}
+          </h2>
+        )}
+        {isVisible('description') && (
+          <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
+            {config?.description || 'Những câu chuyện và mẹo hữu ích dành cho hành trình khám phá Cồn Phụng.'}
+          </p>
+        )}
       </div>
 
       <div className="grid gap-6 md:grid-cols-3">
@@ -420,17 +437,19 @@ const LatestPostsSection = ({
         ))}
       </div>
 
-      <div className="mt-8 text-center">
-        <Link
-          href={config?.ctaLink || '/posts'}
-          className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 px-8 py-3 text-base font-bold text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
-        >
-          {config?.ctaText || 'Xem Tất Cả Bài Viết'}
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-          </svg>
-        </Link>
-      </div>
+      {isVisible('ctaButton') && (
+        <div className="mt-8 text-center">
+          <Link
+            href={config?.ctaLink || '/posts'}
+            className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 px-8 py-3 text-base font-bold text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
+          >
+            {config?.ctaText || 'Xem Tất Cả Bài Viết'}
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </Link>
+        </div>
+      )}
     </section>
   );
 };

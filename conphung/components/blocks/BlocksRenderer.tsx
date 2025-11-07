@@ -61,12 +61,14 @@ export async function BlocksRenderer({ blocks, posts = [] }: BlocksRendererProps
             text: block.fields.secondaryCtaText,
             link: block.fields.secondaryCtaLink,
           },
+          usps: block.fields.usps || [],
         };
       case 'about':
         return {
           title: block.fields.title,
           content: block.fields.content,
           image: block.fields.image,
+          imageId: block.fields.imageId,
           isActive: true,
         };
       case 'feature':
@@ -90,6 +92,7 @@ export async function BlocksRenderer({ blocks, posts = [] }: BlocksRendererProps
           eyebrow: block.fields.eyebrow,
           heading: block.fields.heading,
           description: block.fields.description,
+          paymentInfo: block.fields.paymentInfo,
           isActive: true,
         };
       case 'tourList':
@@ -99,6 +102,8 @@ export async function BlocksRenderer({ blocks, posts = [] }: BlocksRendererProps
           heading: block.fields.heading,
           description: block.fields.description,
           tours: block.fields.tours || [],
+          highlights: block.fields.highlights || [],
+          bottomNote: block.fields.bottomNote,
         };
       case 'ticket':
         return {
@@ -108,6 +113,9 @@ export async function BlocksRenderer({ blocks, posts = [] }: BlocksRendererProps
           description: block.fields.description,
           prices: block.fields.prices || {},
           includedItems: block.fields.includedItems || [],
+          pickupLocation: block.fields.pickupLocation,
+          warningNote: block.fields.warningNote,
+          imageUrl: block.fields.imageUrl,
           isActive: true,
         };
       case 'homestay':
@@ -119,6 +127,7 @@ export async function BlocksRenderer({ blocks, posts = [] }: BlocksRendererProps
           amenities: block.fields.amenities || [],
           highlights: block.fields.highlights || [],
           bottomNote: block.fields.bottomNote,
+          cocoIslandCard: block.fields.cocoIslandCard || null,
           isActive: true,
         };
       case 'testimonial':
@@ -140,6 +149,8 @@ export async function BlocksRenderer({ blocks, posts = [] }: BlocksRendererProps
           heading: block.fields.heading,
           description: block.fields.description,
           images: block.fields.images || [],
+          ecoFeatures: block.fields.ecoFeatures || [],
+          bottomText: block.fields.bottomText,
         };
       case 'videoGuide':
         return {
@@ -155,11 +166,13 @@ export async function BlocksRenderer({ blocks, posts = [] }: BlocksRendererProps
         };
       case 'restaurant':
         return {
+          eyebrow: block.fields.eyebrow,
           title: block.fields.title,
           description: block.fields.description,
           capacity: block.fields.capacity,
           specialties: block.fields.specialties || [],
           image: block.fields.image,
+          imageId: block.fields.imageId,
           isActive: true,
         };
       case 'certificates':
@@ -217,12 +230,15 @@ export async function BlocksRenderer({ blocks, posts = [] }: BlocksRendererProps
     return {};
   };
 
+  // Ensure blocks are sorted by sortOrder (should already be sorted from query, but double-check)
+  const sortedBlocks = [...blocks].sort((a, b) => a.sortOrder - b.sortOrder);
+
   return (
     <>
       <article className="prose-m-none">
         <OrganizationSchema />
         
-        {blocks.map((block) => {
+        {sortedBlocks.map((block) => {
           const sectionData = convertBlockToSection(block);
           
           switch (block.type) {

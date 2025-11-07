@@ -51,6 +51,12 @@ const defaultTrustStats = [
 ]
 
 export function SocialProofModern({ data }: SocialProofModernProps = {}) {
+  if (!data || !data.isVisible) return null;
+
+  // Get visibility settings (default to true if not set)
+  const visibility = data.visibility || {};
+  const isVisible = (field: keyof typeof visibility) => visibility[field] !== false;
+
   const displayData = data || {
     eyebrow: 'Đánh Giá Từ Khách Hàng',
     heading: 'Khách Hàng Nói Gì Về Chúng Tôi',
@@ -62,6 +68,7 @@ export function SocialProofModern({ data }: SocialProofModernProps = {}) {
     bottomCTAText: '🌟 Trở thành khách hàng hài lòng tiếp theo!',
     bottomCTADescription: 'Đặt tour ngay để nhận ưu đãi tốt nhất và trải nghiệm dịch vụ 5 sao',
     isActive: true,
+    isVisible: true,
   };
   return (
     <section className="py-20 md:py-28 bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 relative overflow-hidden">
@@ -77,7 +84,7 @@ export function SocialProofModern({ data }: SocialProofModernProps = {}) {
         <FadeIn>
           <div className="text-center mb-16">
             {/* Rating Stars */}
-            {(displayData.overallRating || displayData.ratingText) && (
+            {isVisible('overallRating') && (displayData.overallRating || displayData.ratingText) && (
               <div className="flex items-center justify-center gap-1 mb-6">
                 {[1, 2, 3, 4, 5].map((i) => (
                   <Star 
@@ -94,7 +101,7 @@ export function SocialProofModern({ data }: SocialProofModernProps = {}) {
               </div>
             )}
             
-            {displayData.eyebrow && (
+            {isVisible('eyebrow') && displayData.eyebrow && (
               <div className="inline-flex items-center gap-2 bg-emerald-100 dark:bg-emerald-900/30 px-5 py-2.5 rounded-full mb-6">
                 <Sparkles className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                 <span className="text-sm font-bold text-emerald-700 dark:text-emerald-300">
@@ -103,10 +110,12 @@ export function SocialProofModern({ data }: SocialProofModernProps = {}) {
               </div>
             )}
             
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 bg-gradient-to-r from-gray-900 via-emerald-700 to-gray-900 dark:from-white dark:via-emerald-400 dark:to-white bg-clip-text text-transparent">
-              {displayData.heading}
-            </h2>
-            {displayData.description && (
+            {isVisible('heading') && (
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 bg-gradient-to-r from-gray-900 via-emerald-700 to-gray-900 dark:from-white dark:via-emerald-400 dark:to-white bg-clip-text text-transparent">
+                {displayData.heading}
+              </h2>
+            )}
+            {isVisible('description') && displayData.description && (
               <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
                 {displayData.description}
               </p>
@@ -115,7 +124,7 @@ export function SocialProofModern({ data }: SocialProofModernProps = {}) {
         </FadeIn>
 
         {/* Trust Stats - Enhanced */}
-        {displayData.trustStats && displayData.trustStats.length > 0 && (
+        {isVisible('trustStats') && displayData.trustStats && displayData.trustStats.length > 0 && (
           <FadeIn delay={0.2}>
             <div className="grid grid-cols-3 gap-4 md:gap-6 mb-16">
               {displayData.trustStats.map((stat, index) => {
@@ -149,7 +158,7 @@ export function SocialProofModern({ data }: SocialProofModernProps = {}) {
         )}
 
         {/* Reviews Grid - Enhanced */}
-        {displayData.testimonials && displayData.testimonials.length > 0 && (
+        {isVisible('testimonials') && displayData.testimonials && displayData.testimonials.length > 0 && (
           <StaggerContainer staggerDelay={0.15} className="grid md:grid-cols-3 gap-8 md:gap-10">
             {displayData.testimonials.map((review, index) => (
             <StaggerItem key={review.id}>
@@ -227,7 +236,7 @@ export function SocialProofModern({ data }: SocialProofModernProps = {}) {
         )}
 
         {/* Bottom CTA - Enhanced */}
-        {(displayData.bottomCTAText || displayData.bottomCTADescription) && (
+        {isVisible('bottomCTA') && (displayData.bottomCTAText || displayData.bottomCTADescription) && (
           <FadeIn delay={0.6}>
             <div className="mt-16 text-center">
               <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-emerald-50 via-green-50 to-emerald-50 dark:from-emerald-900/20 dark:via-green-900/20 dark:to-emerald-900/20 p-10 md:p-12 border-2 border-emerald-200 dark:border-emerald-800 shadow-xl">

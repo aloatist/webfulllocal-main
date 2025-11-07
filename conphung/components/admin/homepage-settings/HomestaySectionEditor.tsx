@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, Trash2, GripVertical, Image as ImageIcon } from 'lucide-react';
+import { Plus, Trash2, GripVertical, Image as ImageIcon, Eye, EyeOff } from 'lucide-react';
 import type { HomestaySection } from '@/lib/homepage/schema';
 import { ImagePicker } from '@/components/admin/homepage/ImagePicker';
 
@@ -36,6 +36,7 @@ export function HomestaySectionEditor({ data, onChange }: HomestaySectionEditorP
     ],
     bottomNote: '💡 Đặt phòng sớm để nhận giá tốt nhất và chọn phòng đẹp',
     isActive: true,
+    isVisible: true,
   };
 
   const handleChange = (field: keyof HomestaySection, value: any) => {
@@ -138,6 +139,42 @@ export function HomestaySectionEditor({ data, onChange }: HomestaySectionEditorP
     updateCocoIslandCard('roomAmenities', currentAmenities.filter((_, i) => i !== index));
   };
 
+  // Helper to toggle field visibility
+  const toggleFieldVisibility = (fieldName: keyof NonNullable<HomestaySection['visibility']>) => {
+    const currentVisibility = sectionData.visibility || {};
+    const newVisibility = {
+      ...currentVisibility,
+      [fieldName]: !(currentVisibility[fieldName] !== false),
+    };
+    handleChange('visibility', newVisibility);
+  };
+
+  // Helper to check if field is visible
+  const isFieldVisible = (fieldName: keyof NonNullable<HomestaySection['visibility']>) => {
+    return sectionData.visibility?.[fieldName] !== false;
+  };
+
+  // Helper to render visibility toggle
+  const renderVisibilityToggle = (fieldName: keyof NonNullable<HomestaySection['visibility']>, label: string) => (
+    <div className="flex items-center justify-between gap-2 p-2 bg-muted/50 rounded-md">
+      <Label htmlFor={`${fieldName}-visibility`} className="text-sm font-medium cursor-pointer">
+        {label}
+      </Label>
+      <div className="flex items-center gap-2">
+        {isFieldVisible(fieldName) ? (
+          <Eye className="w-4 h-4 text-muted-foreground" />
+        ) : (
+          <EyeOff className="w-4 h-4 text-muted-foreground" />
+        )}
+        <Switch
+          id={`${fieldName}-visibility`}
+          checked={isFieldVisible(fieldName)}
+          onCheckedChange={() => toggleFieldVisibility(fieldName)}
+        />
+      </div>
+    </div>
+  );
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -157,44 +194,60 @@ export function HomestaySectionEditor({ data, onChange }: HomestaySectionEditorP
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="eyebrow">Eyebrow Text</Label>
-        <Input
-          id="eyebrow"
-          value={sectionData.eyebrow || ''}
-          onChange={(e) => handleChange('eyebrow', e.target.value)}
-          placeholder="Lưu Trú"
-        />
+        {renderVisibilityToggle('eyebrow', 'Hiển thị Eyebrow')}
+        <div className="space-y-2">
+          <Label htmlFor="eyebrow">Eyebrow Text</Label>
+          <Input
+            id="eyebrow"
+            value={sectionData.eyebrow || ''}
+            onChange={(e) => handleChange('eyebrow', e.target.value)}
+            placeholder="Lưu Trú"
+            disabled={!isFieldVisible('eyebrow')}
+          />
+        </div>
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="heading">Tiêu đề chính</Label>
-        <Input
-          id="heading"
-          value={sectionData.heading}
-          onChange={(e) => handleChange('heading', e.target.value)}
-          placeholder="LƯU TRÚ HOMESTAY SINH THÁI"
-        />
+        {renderVisibilityToggle('heading', 'Hiển thị Heading')}
+        <div className="space-y-2">
+          <Label htmlFor="heading">Tiêu đề chính</Label>
+          <Input
+            id="heading"
+            value={sectionData.heading}
+            onChange={(e) => handleChange('heading', e.target.value)}
+            placeholder="LƯU TRÚ HOMESTAY SINH THÁI"
+            disabled={!isFieldVisible('heading')}
+          />
+        </div>
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="subheading">Tiêu đề phụ</Label>
-        <Input
-          id="subheading"
-          value={sectionData.subheading || ''}
-          onChange={(e) => handleChange('subheading', e.target.value)}
-          placeholder="COCO ISLAND CỒN PHỤNG"
-        />
+        {renderVisibilityToggle('subheading', 'Hiển thị Subheading')}
+        <div className="space-y-2">
+          <Label htmlFor="subheading">Tiêu đề phụ</Label>
+          <Input
+            id="subheading"
+            value={sectionData.subheading || ''}
+            onChange={(e) => handleChange('subheading', e.target.value)}
+            placeholder="COCO ISLAND CỒN PHỤNG"
+            disabled={!isFieldVisible('subheading')}
+          />
+        </div>
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="description">Mô tả</Label>
-        <Textarea
-          id="description"
-          value={sectionData.description}
-          onChange={(e) => handleChange('description', e.target.value)}
-          placeholder="🌿 Nghỉ dưỡng giữa thiên nhiên - Trải nghiệm homestay xanh mát"
-          rows={3}
-        />
+        {renderVisibilityToggle('description', 'Hiển thị Description')}
+        <div className="space-y-2">
+          <Label htmlFor="description">Mô tả</Label>
+          <Textarea
+            id="description"
+            value={sectionData.description}
+            onChange={(e) => handleChange('description', e.target.value)}
+            placeholder="🌿 Nghỉ dưỡng giữa thiên nhiên - Trải nghiệm homestay xanh mát"
+            rows={3}
+            disabled={!isFieldVisible('description')}
+          />
+        </div>
       </div>
 
       {/* Amenities */}
@@ -207,13 +260,16 @@ export function HomestaySectionEditor({ data, onChange }: HomestaySectionEditorP
                 Các tiện ích hiển thị trong grid
               </CardDescription>
             </div>
-            <Button type="button" size="sm" variant="outline" onClick={addAmenity}>
+            {renderVisibilityToggle('amenities', 'Hiển thị Amenities')}
+          </div>
+        </CardHeader>
+        <CardContent className={`space-y-3 ${!isFieldVisible('amenities') ? 'opacity-50 pointer-events-none' : ''}`}>
+          <div className="flex justify-end">
+            <Button type="button" size="sm" variant="outline" onClick={addAmenity} disabled={!isFieldVisible('amenities')}>
               <Plus className="w-4 h-4 mr-1" />
               Thêm
             </Button>
           </div>
-        </CardHeader>
-        <CardContent className="space-y-3">
           {sectionData.amenities.map((amenity, index) => (
             <div key={index} className="flex items-center gap-2 p-3 border rounded-lg">
               <GripVertical className="w-4 h-4 text-muted-foreground" />
@@ -222,11 +278,13 @@ export function HomestaySectionEditor({ data, onChange }: HomestaySectionEditorP
                   value={amenity.icon}
                   onChange={(e) => updateAmenity(index, 'icon', e.target.value)}
                   placeholder="Icon (lucide name)"
+                  disabled={!isFieldVisible('amenities')}
                 />
                 <Input
                   value={amenity.label}
                   onChange={(e) => updateAmenity(index, 'label', e.target.value)}
                   placeholder="Label"
+                  disabled={!isFieldVisible('amenities')}
                 />
               </div>
               <Button
@@ -234,6 +292,7 @@ export function HomestaySectionEditor({ data, onChange }: HomestaySectionEditorP
                 size="sm"
                 variant="ghost"
                 onClick={() => removeAmenity(index)}
+                disabled={!isFieldVisible('amenities')}
               >
                 <Trash2 className="w-4 h-4" />
               </Button>
@@ -252,13 +311,16 @@ export function HomestaySectionEditor({ data, onChange }: HomestaySectionEditorP
                 Các highlight cards hiển thị dưới amenities
               </CardDescription>
             </div>
-            <Button type="button" size="sm" variant="outline" onClick={addHighlight}>
+            {renderVisibilityToggle('highlights', 'Hiển thị Highlights')}
+          </div>
+        </CardHeader>
+        <CardContent className={`space-y-3 ${!isFieldVisible('highlights') ? 'opacity-50 pointer-events-none' : ''}`}>
+          <div className="flex justify-end">
+            <Button type="button" size="sm" variant="outline" onClick={addHighlight} disabled={!isFieldVisible('highlights')}>
               <Plus className="w-4 h-4 mr-1" />
               Thêm
             </Button>
           </div>
-        </CardHeader>
-        <CardContent className="space-y-3">
           {sectionData.highlights.map((highlight, index) => (
             <div key={index} className="p-3 border rounded-lg space-y-2">
               <div className="flex items-center gap-2">
@@ -268,12 +330,14 @@ export function HomestaySectionEditor({ data, onChange }: HomestaySectionEditorP
                   onChange={(e) => updateHighlight(index, 'icon', e.target.value)}
                   placeholder="Icon (lucide name)"
                   className="flex-1"
+                  disabled={!isFieldVisible('highlights')}
                 />
                 <Button
                   type="button"
                   size="sm"
                   variant="ghost"
                   onClick={() => removeHighlight(index)}
+                  disabled={!isFieldVisible('highlights')}
                 >
                   <Trash2 className="w-4 h-4" />
                 </Button>
@@ -282,12 +346,14 @@ export function HomestaySectionEditor({ data, onChange }: HomestaySectionEditorP
                 value={highlight.title}
                 onChange={(e) => updateHighlight(index, 'title', e.target.value)}
                 placeholder="Title"
+                disabled={!isFieldVisible('highlights')}
               />
               <Textarea
                 value={highlight.description}
                 onChange={(e) => updateHighlight(index, 'description', e.target.value)}
                 placeholder="Description"
                 rows={2}
+                disabled={!isFieldVisible('highlights')}
               />
             </div>
           ))}
@@ -295,27 +361,34 @@ export function HomestaySectionEditor({ data, onChange }: HomestaySectionEditorP
       </Card>
 
       <div className="space-y-2">
-        <Label htmlFor="bottomNote">Ghi chú cuối</Label>
-        <Input
-          id="bottomNote"
-          value={sectionData.bottomNote || ''}
-          onChange={(e) => handleChange('bottomNote', e.target.value)}
-          placeholder="💡 Đặt phòng sớm để nhận giá tốt nhất và chọn phòng đẹp"
-        />
+        {renderVisibilityToggle('bottomNote', 'Hiển thị Bottom Note')}
+        <div className="space-y-2">
+          <Label htmlFor="bottomNote">Ghi chú cuối</Label>
+          <Input
+            id="bottomNote"
+            value={sectionData.bottomNote || ''}
+            onChange={(e) => handleChange('bottomNote', e.target.value)}
+            placeholder="💡 Đặt phòng sớm để nhận giá tốt nhất và chọn phòng đẹp"
+            disabled={!isFieldVisible('bottomNote')}
+          />
+        </div>
       </div>
 
       {/* Coco Island Card Editor */}
       <Card className="border-2 border-orange-200">
         <CardHeader>
-          <div className="flex items-center gap-2">
-            <ImageIcon className="w-5 h-5 text-orange-600" />
-            <CardTitle>Coco Island Card</CardTitle>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <ImageIcon className="w-5 h-5 text-orange-600" />
+              <CardTitle>Coco Island Card</CardTitle>
+            </div>
+            {renderVisibilityToggle('cocoIslandCard', 'Hiển thị Coco Island Card')}
           </div>
           <CardDescription>
             Chỉnh sửa thông tin card Homestay Coco Island (giá, hình ảnh, amenities)
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className={`space-y-4 ${!isFieldVisible('cocoIslandCard') ? 'opacity-50 pointer-events-none' : ''}`}>
           {/* Image */}
           <div className="space-y-2">
             <Label>Hình ảnh</Label>

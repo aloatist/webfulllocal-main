@@ -162,7 +162,7 @@ export function FeaturedServicesEditor({ services, onChange }: FeaturedServicesE
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Sparkles className="w-5 h-5" />
-          Featured Services
+          Dịch vụ nổi bật
         </CardTitle>
         <CardDescription>
           Chọn và sắp xếp các dịch vụ nổi bật hiển thị trên trang chủ
@@ -280,4 +280,3 @@ export function FeaturedServicesEditor({ services, onChange }: FeaturedServicesE
     </Card>
   );
 }
-

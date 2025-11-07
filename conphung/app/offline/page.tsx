@@ -35,12 +35,12 @@ export default function OfflinePage() {
             </li>
             <li>
               <a href="/tours" className="text-primary hover:underline">
-                Tours
+                Tour du lịch
               </a>
             </li>
             <li>
               <a href="/homestays" className="text-primary hover:underline">
-                Homestays
+                Homestay
               </a>
             </li>
           </ul>

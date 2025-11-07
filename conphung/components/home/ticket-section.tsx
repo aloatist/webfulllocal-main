@@ -35,6 +35,10 @@ const defaultData: TicketData = {
 export function TicketSection({ data = defaultData }: TicketSectionProps) {
   if (!data) return null;
 
+  // Get visibility settings (default to true if not set)
+  const visibility = data.visibility || {};
+  const isVisible = (field: keyof typeof visibility) => visibility[field] !== false;
+
   // Merge data with defaultData to ensure all fields exist
   const mergedData = {
     ...defaultData,
@@ -58,20 +62,28 @@ export function TicketSection({ data = defaultData }: TicketSectionProps) {
         <div className="relative z-10">
           {/* Header */}
           <div className="text-center mb-10">
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-100 to-green-100 dark:from-emerald-900/30 dark:to-green-900/30 px-5 py-2 rounded-full mb-4">
-              <Ticket className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-                            <span className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">{mergedData.eyebrow}</span>                                              
-            </div>
+            {isVisible('eyebrow') && mergedData.eyebrow && (
+              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-100 to-green-100 dark:from-emerald-900/30 dark:to-green-900/30 px-5 py-2 rounded-full mb-4">
+                <Ticket className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                <span className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">{mergedData.eyebrow}</span>                                              
+              </div>
+            )}
             
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-emerald-600 via-green-600 to-lime-600 bg-clip-text text-transparent">      
-              {mergedData.heading}
-            </h2>
-            <h3 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-white mb-3">                                                                  
-              {mergedData.subheading}
-            </h3>
-            <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-lg">                                                                          
-              {mergedData.description}
-            </p>
+            {isVisible('heading') && (
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-emerald-600 via-green-600 to-lime-600 bg-clip-text text-transparent">      
+                {mergedData.heading}
+              </h2>
+            )}
+            {isVisible('subheading') && (
+              <h3 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-white mb-3">                                                                  
+                {mergedData.subheading}
+              </h3>
+            )}
+            {isVisible('description') && (
+              <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-lg">                                                                          
+                {mergedData.description}
+              </p>
+            )}
           </div>
 
           {/* Features Grid */}
@@ -108,14 +120,20 @@ export function TicketSection({ data = defaultData }: TicketSectionProps) {
           </div>
 
           {/* Ticket Table */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden border-4 border-emerald-100 dark:border-emerald-900/30">             
-            <Vethamquanconphung 
-              pickupLocation={mergedData.pickupLocation}
-              warningNote={mergedData.warningNote}
-              includedItems={mergedData.includedItems}
-              includedItemsStyle={mergedData.styles?.includedItems}
-            />
-          </div>
+          {isVisible('prices') || isVisible('includedItems') || isVisible('pickupLocation') || isVisible('warningNote') ? (
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden border-4 border-emerald-100 dark:border-emerald-900/30">             
+              <Vethamquanconphung 
+                pickupLocation={isVisible('pickupLocation') ? mergedData.pickupLocation : undefined}
+                warningNote={isVisible('warningNote') ? mergedData.warningNote : undefined}
+                includedItems={isVisible('includedItems') ? mergedData.includedItems : []}
+                includedItemsStyle={mergedData.styles?.includedItems}
+                originalPrice={isVisible('prices') ? mergedData.prices.adult : undefined}
+                finalPrice={isVisible('prices') ? mergedData.prices.child : undefined}
+                currency={isVisible('prices') ? mergedData.prices.currency : undefined}
+                imageUrl={isVisible('imageUrl') ? mergedData.imageUrl : undefined}
+              />
+            </div>
+          ) : null}
 
           {/* Bottom Note */}
           <div className="mt-8 text-center">

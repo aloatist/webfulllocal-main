@@ -21,6 +21,10 @@ const defaultData: PromotionData = {
 export function PromotionSection({ data = defaultData }: PromotionSectionProps) {
   if (!data || !data.isActive) return null;
 
+  // Get visibility settings (default to true if not set)
+  const visibility = data.visibility || {};
+  const isVisible = (field: keyof typeof visibility) => visibility[field] !== false;
+
   return (
     <FadeIn delay={0.2}>
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-600 via-green-600 to-lime-600 p-8 md:p-12 shadow-2xl mb-12">
@@ -36,17 +40,23 @@ export function PromotionSection({ data = defaultData }: PromotionSectionProps) 
         <div className="relative z-10">
           {/* Header */}
           <div className="text-center mb-8">
-            <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full mb-4">
-              <Sparkles className="w-5 h-5 text-yellow-300" />
-              <span className="text-white font-semibold">{data.eyebrow}</span>
-            </div>
-            <h2 className="text-3xl md:text-5xl font-bold text-white mb-3">
-              {data.heading}
-            </h2>
-            <p className="text-white/90 text-lg">
-              {data.description}
-            </p>
-            {data.discount && (
+            {isVisible('eyebrow') && data.eyebrow && (
+              <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full mb-4">
+                <Sparkles className="w-5 h-5 text-yellow-300" />
+                <span className="text-white font-semibold">{data.eyebrow}</span>
+              </div>
+            )}
+            {isVisible('heading') && (
+              <h2 className="text-3xl md:text-5xl font-bold text-white mb-3">
+                {data.heading}
+              </h2>
+            )}
+            {isVisible('description') && (
+              <p className="text-white/90 text-lg">
+                {data.description}
+              </p>
+            )}
+            {isVisible('discount') && data.discount && (
               <div className="mt-4 inline-block bg-yellow-400 text-gray-900 px-6 py-2 rounded-full font-bold text-xl">
                 Giảm {data.discount}
               </div>
@@ -54,7 +64,7 @@ export function PromotionSection({ data = defaultData }: PromotionSectionProps) 
           </div>
           
           {/* Promotion Image */}
-          {data.imageUrl && (
+          {isVisible('imageUrl') && data.imageUrl && (
             <div className="max-w-4xl mx-auto">
               <div className="relative aspect-square rounded-2xl overflow-hidden shadow-2xl border-4 border-white/20 group">
                 <Image

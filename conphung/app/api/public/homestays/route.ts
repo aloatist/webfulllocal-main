@@ -30,6 +30,8 @@ const publicListSchema = z.object({
   sortOrder: z.enum(['asc', 'desc']).default('desc'),
 })
 
+// Enable caching with revalidation every hour for better performance
+export const revalidate = 3600; // 1 hour
 export const dynamic = 'force-static'
 
 export async function GET(request: Request) {

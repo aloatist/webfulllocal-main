@@ -112,6 +112,42 @@ export default function TourPricingEditor({ data, onChange }: TourPricingEditorP
     updateTour(tourIndex, { includedItems: newItems });
   };
 
+  // Helper to toggle field visibility
+  const toggleFieldVisibility = (fieldName: keyof NonNullable<TourPricingSection['visibility']>) => {
+    const currentVisibility = tourPricing.visibility || {};
+    const newVisibility = {
+      ...currentVisibility,
+      [fieldName]: !(currentVisibility[fieldName] !== false),
+    };
+    onChange({ ...tourPricing, visibility: newVisibility });
+  };
+
+  // Helper to check if field is visible
+  const isFieldVisible = (fieldName: keyof NonNullable<TourPricingSection['visibility']>) => {
+    return tourPricing.visibility?.[fieldName] !== false;
+  };
+
+  // Helper to render visibility toggle
+  const renderVisibilityToggle = (fieldName: keyof NonNullable<TourPricingSection['visibility']>, label: string) => (
+    <div className="flex items-center justify-between gap-2 p-2 bg-muted/50 rounded-md">
+      <Label htmlFor={`${fieldName}-visibility`} className="text-sm font-medium cursor-pointer">
+        {label}
+      </Label>
+      <div className="flex items-center gap-2">
+        {isFieldVisible(fieldName) ? (
+          <Eye className="w-4 h-4 text-muted-foreground" />
+        ) : (
+          <EyeOff className="w-4 h-4 text-muted-foreground" />
+        )}
+        <Switch
+          id={`${fieldName}-visibility`}
+          checked={isFieldVisible(fieldName)}
+          onCheckedChange={() => toggleFieldVisibility(fieldName)}
+        />
+      </div>
+    </div>
+  );
+
   return (
     <Card>
       <CardHeader>
@@ -126,12 +162,14 @@ export default function TourPricingEditor({ data, onChange }: TourPricingEditorP
       <CardContent className="space-y-6">
         {/* Header Fields */}
         <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
+          {renderVisibilityToggle('eyebrow', 'Hiển thị Eyebrow')}
           <div className="grid gap-2">
             <Label>Eyebrow Text</Label>
             <Input
               value={tourPricing.eyebrow}
               onChange={(e) => updateField('eyebrow', e.target.value)}
               placeholder="Tour Du Lịch"
+              disabled={!isFieldVisible('eyebrow')}
             />
           </div>
 
@@ -153,12 +191,14 @@ export default function TourPricingEditor({ data, onChange }: TourPricingEditorP
             </div>
           </Collapsible>
 
+          {renderVisibilityToggle('heading', 'Hiển thị Heading')}
           <div className="grid gap-2">
             <Label>Heading</Label>
             <Input
               value={tourPricing.heading}
               onChange={(e) => updateField('heading', e.target.value)}
               placeholder="BẢNG GIÁ VÉ TOUR"
+              disabled={!isFieldVisible('heading')}
             />
           </div>
 
@@ -180,6 +220,7 @@ export default function TourPricingEditor({ data, onChange }: TourPricingEditorP
             </div>
           </Collapsible>
 
+          {renderVisibilityToggle('description', 'Hiển thị Description')}
           <div className="grid gap-2">
             <Label>Description</Label>
             <Textarea
@@ -187,6 +228,7 @@ export default function TourPricingEditor({ data, onChange }: TourPricingEditorP
               onChange={(e) => updateField('description', e.target.value)}
               placeholder="🌿 Tour khám phá sinh thái..."
               rows={2}
+              disabled={!isFieldVisible('description')}
             />
           </div>
 
@@ -210,7 +252,8 @@ export default function TourPricingEditor({ data, onChange }: TourPricingEditorP
 
           {/* Tour Highlights */}
           <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
-            <div className="flex items-center justify-between">
+            {renderVisibilityToggle('highlights', 'Hiển thị Highlights')}
+            <div className={`flex items-center justify-between ${!isFieldVisible('highlights') ? 'opacity-50 pointer-events-none' : ''}`}>
               <div>
                 <Label>Tour Highlights (4 highlights)</Label>
                 <p className="text-xs text-muted-foreground">
@@ -320,12 +363,14 @@ export default function TourPricingEditor({ data, onChange }: TourPricingEditorP
             )}
           </div>
 
-                    <div className="grid gap-2">
+                    {renderVisibilityToggle('bottomNote', 'Hiển thị Bottom Note')}
+          <div className="grid gap-2">
             <Label>Ghi chú dưới cùng (Bottom Note)</Label>
             <Input
               value={tourPricing.bottomNote || ''}
               onChange={(e) => updateField('bottomNote', e.target.value)}
-              placeholder="💡 Bao gồm: Xe đưa đón + Du thuyền + Ăn trưa + Hướng dẫn viên"                                                                       
+              placeholder="💡 Bao gồm: Xe đưa đón + Du thuyền + Ăn trưa + Hướng dẫn viên"
+              disabled={!isFieldVisible('bottomNote')}
             />
             <p className="text-sm text-muted-foreground">
               Ghi chú hiển thị dưới cùng của section tour pricing
@@ -352,26 +397,28 @@ export default function TourPricingEditor({ data, onChange }: TourPricingEditorP
         </div>
 
         {/* Tours List */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold">Tours ({tourPricing.tours.length})</h3>
-            <Button onClick={addTour} size="sm">
-              <Plus className="w-4 h-4 mr-2" />
-              Thêm Tour
-            </Button>
-          </div>
-
-          {tourPricing.tours.length === 0 ? (
-            <div className="text-center py-12 border-2 border-dashed rounded-lg">
-              <Ship className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-              <p className="text-muted-foreground mb-4">Chưa có tour nào</p>
-              <Button onClick={addTour} variant="outline">
+        <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
+          {renderVisibilityToggle('tours', 'Hiển thị Tours List')}
+          <div className={`space-y-4 ${!isFieldVisible('tours') ? 'opacity-50 pointer-events-none' : ''}`}>
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold">Tours ({tourPricing.tours.length})</h3>
+              <Button onClick={addTour} size="sm" disabled={!isFieldVisible('tours')}>
                 <Plus className="w-4 h-4 mr-2" />
-                Thêm Tour Đầu Tiên
+                Thêm Tour
               </Button>
             </div>
-          ) : (
-            <div className="space-y-3">
+
+            {tourPricing.tours.length === 0 ? (
+              <div className="text-center py-12 border-2 border-dashed rounded-lg">
+                <Ship className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+                <p className="text-muted-foreground mb-4">Chưa có tour nào</p>
+                <Button onClick={addTour} variant="outline" disabled={!isFieldVisible('tours')}>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Thêm Tour Đầu Tiên
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-3">
               {tourPricing.tours.map((tour, index) => (
                 <Card key={tour.id} className={`border-2 ${tour.isActive ? 'border-green-200' : 'border-gray-200'}`}>
                   <CardHeader className="pb-3">
@@ -585,8 +632,9 @@ export default function TourPricingEditor({ data, onChange }: TourPricingEditorP
                   )}
                 </Card>
               ))}
-            </div>
-          )}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Container Styling */}

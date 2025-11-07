@@ -16,14 +16,30 @@ export const heroSectionSchema = z.object({
     text: z.string(),
     link: z.string(),
     style: styleSchema.optional(),
+    isVisible: z.boolean().default(true).optional(), // Visibility for primary CTA
   }),
   secondaryCta: z.object({
     text: z.string(),
     link: z.string(),
     style: styleSchema.optional(),
+    isVisible: z.boolean().default(true).optional(), // Visibility for secondary CTA
   }),
   // USPs (Unique Selling Points) - Badges displayed below CTAs
   usps: z.array(z.string()).optional(), // e.g., ["🌿 Thân Thiện Môi Trường", "🍃 Trải Nghiệm Xanh", "🌱 Chính Chủ"]
+  // Visibility control for section
+  isVisible: z.boolean().default(true),
+  // Visibility control for individual fields
+  visibility: z.object({
+    eyebrow: z.boolean().default(true).optional(),
+    mainTitle: z.boolean().default(true).optional(),
+    subtitle: z.boolean().default(true).optional(),
+    description: z.boolean().default(true).optional(),
+    backgroundImage: z.boolean().default(true).optional(),
+    phone: z.boolean().default(true).optional(),
+    address: z.boolean().default(true).optional(),
+    openingHours: z.boolean().default(true).optional(),
+    usps: z.boolean().default(true).optional(),
+  }).optional(),
   // Styling for different elements
   styles: z.object({
     eyebrow: styleSchema.optional(),
@@ -45,6 +61,13 @@ export const featureItemSchema = z.object({
 
 export const featuresSectionSchema = z.object({
   features: z.array(featureItemSchema),
+  isVisible: z.boolean().default(true),
+  // Visibility control for individual fields
+  visibility: z.object({
+    heading: z.boolean().default(true).optional(),
+    description: z.boolean().default(true).optional(),
+    features: z.boolean().default(true).optional(),
+  }).optional(),
   styles: z.object({
     heading: styleSchema.optional(),
     description: styleSchema.optional(),
@@ -66,6 +89,15 @@ export const certificatesSectionSchema = z.object({
   description: z.string(),
   certificates: z.array(certificateItemSchema),
   bottomNote: z.string(),
+  isVisible: z.boolean().default(true),
+  // Visibility control for individual fields
+  visibility: z.object({
+    eyebrow: z.boolean().default(true).optional(),
+    heading: z.boolean().default(true).optional(),
+    description: z.boolean().default(true).optional(),
+    certificates: z.boolean().default(true).optional(),
+    bottomNote: z.boolean().default(true).optional(),
+  }).optional(),
   styles: z.object({
     eyebrow: styleSchema.optional(),
     heading: styleSchema.optional(),
@@ -86,6 +118,14 @@ export const policyLinksSectionSchema = z.object({
   subtitle: z.string().optional(),
   bottomText: z.string().optional(),
   links: z.array(policyLinkSchema),
+  isVisible: z.boolean().default(true),
+  // Visibility control for individual fields
+  visibility: z.object({
+    title: z.boolean().default(true).optional(),
+    subtitle: z.boolean().default(true).optional(),
+    bottomText: z.boolean().default(true).optional(),
+    links: z.boolean().default(true).optional(),
+  }).optional(),
   styles: z.object({
     container: styleSchema.optional(),
   }).optional(),
@@ -98,6 +138,14 @@ export const latestPostsSectionSchema = z.object({
   ctaText: z.string(),
   ctaLink: z.string(),
   postCount: z.number().min(1).max(12),
+  isVisible: z.boolean().default(true),
+  // Visibility control for individual fields
+  visibility: z.object({
+    heading: z.boolean().default(true).optional(),
+    description: z.boolean().default(true).optional(),
+    ctaButton: z.boolean().default(true).optional(),
+    posts: z.boolean().default(true).optional(),
+  }).optional(),
   styles: z.object({
     heading: styleSchema.optional(),
     description: styleSchema.optional(),
@@ -120,6 +168,15 @@ export const gallerySectionSchema = z.object({
     alt: z.string(),
     caption: z.string().optional(),
   })),
+  isVisible: z.boolean().default(true),
+  // Visibility control for individual fields
+  visibility: z.object({
+    heading: z.boolean().default(true).optional(),
+    description: z.boolean().default(true).optional(),
+    ecoFeatures: z.boolean().default(true).optional(),
+    bottomText: z.boolean().default(true).optional(),
+    images: z.boolean().default(true).optional(),
+  }).optional(),
   styles: z.object({
     heading: styleSchema.optional(),
     description: styleSchema.optional(),
@@ -136,6 +193,14 @@ export const mapSectionSchema = z.object({
   coordinates: z.object({
     lat: z.number(),
     lng: z.number(),
+  }).optional(),
+  isVisible: z.boolean().default(true),
+  // Visibility control for individual fields
+  visibility: z.object({
+    heading: z.boolean().default(true).optional(),
+    description: z.boolean().default(true).optional(),
+    map: z.boolean().default(true).optional(),
+    address: z.boolean().default(true).optional(),
   }).optional(),
   styles: z.object({
     heading: styleSchema.optional(),
@@ -154,6 +219,13 @@ export const videoGuideSectionSchema = z.object({
     thumbnail: z.string().optional(),
     duration: z.string().optional(),
   })),
+  isVisible: z.boolean().default(true),
+  // Visibility control for individual fields
+  visibility: z.object({
+    heading: z.boolean().default(true).optional(),
+    description: z.boolean().default(true).optional(),
+    videos: z.boolean().default(true).optional(),
+  }).optional(),
   styles: z.object({
     heading: styleSchema.optional(),
     description: styleSchema.optional(),
@@ -169,6 +241,15 @@ export const ctaBookingSectionSchema = z.object({
   ctaLink: z.string(),
   phone: z.string(),
   features: z.array(z.string()),
+  isVisible: z.boolean().default(true),
+  // Visibility control for individual fields
+  visibility: z.object({
+    heading: z.boolean().default(true).optional(),
+    description: z.boolean().default(true).optional(),
+    ctaButton: z.boolean().default(true).optional(),
+    phone: z.boolean().default(true).optional(),
+    features: z.boolean().default(true).optional(),
+  }).optional(),
   styles: z.object({
     heading: styleSchema.optional(),
     description: styleSchema.optional(),
@@ -184,7 +265,16 @@ export const promotionSectionSchema = z.object({
   description: z.string(),
   imageUrl: z.string(),
   discount: z.string(),
-  isActive: z.boolean(),
+  isActive: z.boolean(), // Keep for backward compatibility
+  isVisible: z.boolean().default(true), // New unified visibility field
+  // Visibility control for individual fields
+  visibility: z.object({
+    eyebrow: z.boolean().default(true).optional(),
+    heading: z.boolean().default(true).optional(),
+    description: z.boolean().default(true).optional(),
+    imageUrl: z.boolean().default(true).optional(),
+    discount: z.boolean().default(true).optional(),
+  }).optional(),
   styles: z.object({
     eyebrow: styleSchema.optional(),
     heading: styleSchema.optional(),
@@ -211,6 +301,19 @@ export const ticketSectionSchema = z.object({
   pickupLocation: z.string(),
   warningNote: z.string(),
   imageUrl: z.string().optional(),
+  isVisible: z.boolean().default(true),
+  // Visibility control for individual fields
+  visibility: z.object({
+    eyebrow: z.boolean().default(true).optional(),
+    heading: z.boolean().default(true).optional(),
+    subheading: z.boolean().default(true).optional(),
+    description: z.boolean().default(true).optional(),
+    prices: z.boolean().default(true).optional(),
+    includedItems: z.boolean().default(true).optional(),
+    pickupLocation: z.boolean().default(true).optional(),
+    warningNote: z.boolean().default(true).optional(),
+    imageUrl: z.boolean().default(true).optional(),
+  }).optional(),
   styles: z.object({
     eyebrow: styleSchema.optional(),
     heading: styleSchema.optional(),
@@ -251,6 +354,16 @@ export const tourPricingSectionSchema = z.object({
   tours: z.array(tourItemSchema),
   bottomNote: z.string().optional(),
   highlights: z.array(tourHighlightItemSchema).optional(),
+  isVisible: z.boolean().default(true),
+  // Visibility control for individual fields
+  visibility: z.object({
+    eyebrow: z.boolean().default(true).optional(),
+    heading: z.boolean().default(true).optional(),
+    description: z.boolean().default(true).optional(),
+    tours: z.boolean().default(true).optional(),
+    bottomNote: z.boolean().default(true).optional(),
+    highlights: z.boolean().default(true).optional(),
+  }).optional(),
   styles: z.object({
     eyebrow: styleSchema.optional(),
     heading: styleSchema.optional(),
@@ -266,7 +379,14 @@ export const aboutSectionSchema = z.object({
   content: z.string(), // EditorJS JSON string
   image: z.string().optional(),
   imageId: z.string().optional(),
-  isActive: z.boolean().default(true),
+  isActive: z.boolean().default(true), // Keep for backward compatibility
+  isVisible: z.boolean().default(true), // New unified visibility field
+  // Visibility control for individual fields
+  visibility: z.object({
+    title: z.boolean().default(true).optional(),
+    content: z.boolean().default(true).optional(),
+    image: z.boolean().default(true).optional(),
+  }).optional(),
   styles: z.object({
     title: styleSchema.optional(),
     content: styleSchema.optional(),
@@ -283,7 +403,17 @@ export const restaurantSectionSchema = z.object({
   specialties: z.array(z.string()),
   image: z.string().optional(),
   imageId: z.string().optional(),
-  isActive: z.boolean().default(true),
+  isActive: z.boolean().default(true), // Keep for backward compatibility
+  isVisible: z.boolean().default(true), // New unified visibility field
+  // Visibility control for individual fields
+  visibility: z.object({
+    eyebrow: z.boolean().default(true).optional(),
+    title: z.boolean().default(true).optional(),
+    description: z.boolean().default(true).optional(),
+    capacity: z.boolean().default(true).optional(),
+    specialties: z.boolean().default(true).optional(),
+    image: z.boolean().default(true).optional(),
+  }).optional(),
   styles: z.object({
     eyebrow: styleSchema.optional(),
     title: styleSchema.optional(),
@@ -301,7 +431,13 @@ export const faqItemSchema = z.object({
 export const faqSectionSchema = z.object({
   heading: z.string().optional(),
   items: z.array(faqItemSchema),
-  isActive: z.boolean().default(true),
+  isActive: z.boolean().default(true), // Keep for backward compatibility
+  isVisible: z.boolean().default(true), // New unified visibility field
+  // Visibility control for individual fields
+  visibility: z.object({
+    heading: z.boolean().default(true).optional(),
+    items: z.boolean().default(true).optional(),
+  }).optional(),
   styles: z.object({
     heading: styleSchema.optional(),
     container: styleSchema.optional(),
@@ -314,7 +450,16 @@ export const pricingSnapshotSectionSchema = z.object({
   heading: z.string().optional(),
   description: z.string().optional(),
   paymentInfo: z.string().optional(),
-  isActive: z.boolean().default(true),
+  isActive: z.boolean().default(true), // Keep for backward compatibility
+  isVisible: z.boolean().default(true), // New unified visibility field
+  // Visibility control for individual fields
+  visibility: z.object({
+    eyebrow: z.boolean().default(true).optional(),
+    heading: z.boolean().default(true).optional(),
+    description: z.boolean().default(true).optional(),
+    paymentInfo: z.boolean().default(true).optional(),
+    pricingCards: z.boolean().default(true).optional(), // For the 3 pricing cards
+  }).optional(),
   styles: z.object({
     eyebrow: styleSchema.optional(),
     heading: styleSchema.optional(),
@@ -339,7 +484,19 @@ export const homestaySectionSchema = z.object({
     description: z.string(),
   })).optional(),
   bottomNote: z.string().optional(),
-  isActive: z.boolean().default(true),
+  isActive: z.boolean().default(true), // Keep for backward compatibility
+  isVisible: z.boolean().default(true), // New unified visibility field
+  // Visibility control for individual fields
+  visibility: z.object({
+    eyebrow: z.boolean().default(true).optional(),
+    heading: z.boolean().default(true).optional(),
+    subheading: z.boolean().default(true).optional(),
+    description: z.boolean().default(true).optional(),
+    amenities: z.boolean().default(true).optional(),
+    highlights: z.boolean().default(true).optional(),
+    bottomNote: z.boolean().default(true).optional(),
+    cocoIslandCard: z.boolean().default(true).optional(),
+  }).optional(),
   // Coco Island Card data
   cocoIslandCard: z.object({
     imageUrl: z.string(),
@@ -388,7 +545,18 @@ export const socialProofSectionSchema = z.object({
   trustStats: z.array(trustStatSchema),
   bottomCTAText: z.string().optional(),
   bottomCTADescription: z.string().optional(),
-  isActive: z.boolean().default(true),
+  isActive: z.boolean().default(true), // Keep for backward compatibility
+  isVisible: z.boolean().default(true), // New unified visibility field
+  // Visibility control for individual fields
+  visibility: z.object({
+    eyebrow: z.boolean().default(true).optional(),
+    heading: z.boolean().default(true).optional(),
+    description: z.boolean().default(true).optional(),
+    overallRating: z.boolean().default(true).optional(),
+    testimonials: z.boolean().default(true).optional(),
+    trustStats: z.boolean().default(true).optional(),
+    bottomCTA: z.boolean().default(true).optional(),
+  }).optional(),
   styles: z.object({
     eyebrow: styleSchema.optional(),
     heading: styleSchema.optional(),
@@ -471,7 +639,20 @@ export const footerSectionSchema = z.object({
     container: styleSchema.optional(),
   }).optional(),
   
-  isActive: z.boolean().default(true),
+  isActive: z.boolean().default(true), // Keep for backward compatibility
+  isVisible: z.boolean().default(true), // New unified visibility field
+  // Visibility control for individual fields
+  visibility: z.object({
+    contactSection: z.boolean().default(true).optional(),
+    teamMembers: z.boolean().default(true).optional(),
+    companyInfo: z.boolean().default(true).optional(),
+    socialLinks: z.boolean().default(true).optional(),
+    linkGroups: z.boolean().default(true).optional(),
+    contactInfo: z.boolean().default(true).optional(),
+    newsletter: z.boolean().default(true).optional(),
+    legalInfo: z.boolean().default(true).optional(),
+    copyright: z.boolean().default(true).optional(),
+  }).optional(),
 });
 
 // Main Homepage Config Schema (Extended)

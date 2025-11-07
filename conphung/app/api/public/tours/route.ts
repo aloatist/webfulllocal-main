@@ -2,7 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getPublishedTours } from '@/lib/tours/public'
 import { z } from 'zod'
 
-export const dynamic = 'force-dynamic';
+// Enable caching with revalidation every hour for better performance
+export const revalidate = 3600; // 1 hour
+export const dynamic = 'force-static'; // Changed from 'force-dynamic' to enable caching
 
 const querySchema = z.object({
   limit: z

@@ -34,6 +34,13 @@ const defaultData: FeaturesData = {
 export function FeaturesSection({ data = defaultData }: FeaturesSectionProps) {
   if (!data || !data.features || data.features.length === 0) return null;
 
+  // Get visibility settings (default to true if not set)
+  const visibility = data.visibility || {};
+  const isVisible = (field: keyof typeof visibility) => visibility[field] !== false;
+
+  // Don't render if features are hidden
+  if (!isVisible('features')) return null;
+
   return (
     <FadeIn delay={0.2}>
       <div className="py-12">

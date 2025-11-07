@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Plus, Trash2, Video } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { Plus, Trash2, Video, Eye, EyeOff } from 'lucide-react';
 import type { VideoGuideSection } from '@/lib/homepage/schema';
 import { ImagePicker } from './ImagePicker';
 
@@ -71,6 +72,42 @@ export default function VideoGuideEditor({ data, onChange }: VideoGuideEditorPro
     setExpandedIndex(targetIndex);
   };
 
+  // Helper to toggle field visibility
+  const toggleFieldVisibility = (fieldName: keyof NonNullable<VideoGuideSection['visibility']>) => {
+    const currentVisibility = videoGuide.visibility || {};
+    const newVisibility = {
+      ...currentVisibility,
+      [fieldName]: !(currentVisibility[fieldName] !== false),
+    };
+    onChange({ ...videoGuide, visibility: newVisibility });
+  };
+
+  // Helper to check if field is visible
+  const isFieldVisible = (fieldName: keyof NonNullable<VideoGuideSection['visibility']>) => {
+    return videoGuide.visibility?.[fieldName] !== false;
+  };
+
+  // Helper to render visibility toggle
+  const renderVisibilityToggle = (fieldName: keyof NonNullable<VideoGuideSection['visibility']>, label: string) => (
+    <div className="flex items-center justify-between gap-2 p-2 bg-muted/50 rounded-md">
+      <Label htmlFor={`${fieldName}-visibility`} className="text-sm font-medium cursor-pointer">
+        {label}
+      </Label>
+      <div className="flex items-center gap-2">
+        {isFieldVisible(fieldName) ? (
+          <Eye className="w-4 h-4 text-muted-foreground" />
+        ) : (
+          <EyeOff className="w-4 h-4 text-muted-foreground" />
+        )}
+        <Switch
+          id={`${fieldName}-visibility`}
+          checked={isFieldVisible(fieldName)}
+          onCheckedChange={() => toggleFieldVisibility(fieldName)}
+        />
+      </div>
+    </div>
+  );
+
   return (
     <Card>
       <CardHeader>
@@ -86,22 +123,30 @@ export default function VideoGuideEditor({ data, onChange }: VideoGuideEditorPro
         {/* Header */}
         <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
           <div className="space-y-2">
-            <Label>Heading</Label>
-            <Input
-              value={videoGuide.heading}
-              onChange={(e) => updateField('heading', e.target.value)}
-              placeholder="VIDEO HƯỚNG DẪN ĐƯỜNG ĐI"
-            />
+            {renderVisibilityToggle('heading', 'Hiển thị Heading')}
+            <div className="space-y-2">
+              <Label>Heading</Label>
+              <Input
+                value={videoGuide.heading}
+                onChange={(e) => updateField('heading', e.target.value)}
+                placeholder="VIDEO HƯỚNG DẪN ĐƯỜNG ĐI"
+                disabled={!isFieldVisible('heading')}
+              />
+            </div>
           </div>
 
           <div className="space-y-2">
-            <Label>Description</Label>
-            <Textarea
-              value={videoGuide.description}
-              onChange={(e) => updateField('description', e.target.value)}
-              placeholder="Xem video để dễ dàng tìm đường..."
-              rows={2}
-            />
+            {renderVisibilityToggle('description', 'Hiển thị Description')}
+            <div className="space-y-2">
+              <Label>Description</Label>
+              <Textarea
+                value={videoGuide.description}
+                onChange={(e) => updateField('description', e.target.value)}
+                placeholder="Xem video để dễ dàng tìm đường..."
+                rows={2}
+                disabled={!isFieldVisible('description')}
+              />
+            </div>
           </div>
         </div>
 
@@ -109,23 +154,27 @@ export default function VideoGuideEditor({ data, onChange }: VideoGuideEditorPro
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold">Videos ({videoGuide.videos.length})</h3>
-            <Button onClick={addVideo} size="sm">
+            {renderVisibilityToggle('videos', 'Hiển thị Videos')}
+          </div>
+          <div className={`flex justify-end ${!isFieldVisible('videos') ? 'opacity-50 pointer-events-none' : ''}`}>
+            <Button onClick={addVideo} size="sm" disabled={!isFieldVisible('videos')}>
               <Plus className="w-4 h-4 mr-2" />
               Thêm Video
             </Button>
           </div>
 
-          {videoGuide.videos.length === 0 ? (
-            <div className="text-center py-12 border-2 border-dashed rounded-lg">
-              <Video className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-              <p className="text-muted-foreground mb-4">Chưa có video nào</p>
-              <Button onClick={addVideo} variant="outline">
-                <Plus className="w-4 h-4 mr-2" />
-                Thêm video đầu tiên
-              </Button>
-            </div>
-          ) : (
-            <div className="space-y-3">
+          <div className={!isFieldVisible('videos') ? 'opacity-50 pointer-events-none' : ''}>
+            {videoGuide.videos.length === 0 ? (
+              <div className="text-center py-12 border-2 border-dashed rounded-lg">
+                <Video className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+                <p className="text-muted-foreground mb-4">Chưa có video nào</p>
+                <Button onClick={addVideo} variant="outline" disabled={!isFieldVisible('videos')}>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Thêm video đầu tiên
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-3">
               {videoGuide.videos.map((video, index) => (
                 <Card key={index} className="border-2">
                   <CardHeader className="pb-3">
@@ -230,8 +279,9 @@ export default function VideoGuideEditor({ data, onChange }: VideoGuideEditorPro
                   )}
                 </Card>
               ))}
-            </div>
-          )}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Summary */}

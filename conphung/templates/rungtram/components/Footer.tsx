@@ -27,7 +27,7 @@ export default function Footer() {
             <ul className="space-y-2 text-sm">
               <li><Link href="/" className="text-green-200 hover:text-white transition-colors">Trang Chủ</Link></li>
               <li><Link href="/about" className="text-green-200 hover:text-white transition-colors">Giới Thiệu</Link></li>
-              <li><Link href="/tours" className="text-green-200 hover:text-white transition-colors">Tours</Link></li>
+              <li><Link href="/tours" className="text-green-200 hover:text-white transition-colors">Tour du lịch</Link></li>
               <li><Link href="/contact" className="text-green-200 hover:text-white transition-colors">Liên Hệ</Link></li>
             </ul>
           </div>
@@ -64,10 +64,9 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-green-800 pt-6 text-center text-sm text-green-200">
-          <p>&copy; {new Date().getFullYear()} Rừng Tràm Sân Chim. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Rừng Tràm Sân Chim. Bảo lưu mọi quyền.</p>
         </div>
       </div>
     </footer>
   );
 }
-

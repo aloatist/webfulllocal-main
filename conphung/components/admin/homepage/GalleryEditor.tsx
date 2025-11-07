@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Plus, Trash2, Images } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { Plus, Trash2, Images, Eye, EyeOff } from 'lucide-react';
 import type { GallerySection } from '@/lib/homepage/schema';
 import { ImagePicker } from './ImagePicker';
 
@@ -152,6 +153,42 @@ export default function GalleryEditor({ data, onChange }: GalleryEditorProps) {
     setExpandedIndex(targetIndex);
   };
 
+  // Helper to toggle field visibility
+  const toggleFieldVisibility = (fieldName: keyof NonNullable<GallerySection['visibility']>) => {
+    const currentVisibility = gallery.visibility || {};
+    const newVisibility = {
+      ...currentVisibility,
+      [fieldName]: !(currentVisibility[fieldName] !== false),
+    };
+    onChange({ ...gallery, visibility: newVisibility });
+  };
+
+  // Helper to check if field is visible
+  const isFieldVisible = (fieldName: keyof NonNullable<GallerySection['visibility']>) => {
+    return gallery.visibility?.[fieldName] !== false;
+  };
+
+  // Helper to render visibility toggle
+  const renderVisibilityToggle = (fieldName: keyof NonNullable<GallerySection['visibility']>, label: string) => (
+    <div className="flex items-center justify-between gap-2 p-2 bg-muted/50 rounded-md">
+      <Label htmlFor={`${fieldName}-visibility`} className="text-sm font-medium cursor-pointer">
+        {label}
+      </Label>
+      <div className="flex items-center gap-2">
+        {isFieldVisible(fieldName) ? (
+          <Eye className="w-4 h-4 text-muted-foreground" />
+        ) : (
+          <EyeOff className="w-4 h-4 text-muted-foreground" />
+        )}
+        <Switch
+          id={`${fieldName}-visibility`}
+          checked={isFieldVisible(fieldName)}
+          onCheckedChange={() => toggleFieldVisibility(fieldName)}
+        />
+      </div>
+    </div>
+  );
+
   return (
     <Card>
       <CardHeader>
@@ -167,22 +204,30 @@ export default function GalleryEditor({ data, onChange }: GalleryEditorProps) {
         {/* Header */}
         <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
           <div className="space-y-2">
-            <Label>Heading</Label>
-            <Input
-              value={gallery.heading}
-              onChange={(e) => updateField('heading', e.target.value)}
-              placeholder="MỘT SỐ HÌNH ẢNH"
-            />
+            {renderVisibilityToggle('heading', 'Hiển thị Heading')}
+            <div className="space-y-2">
+              <Label>Heading</Label>
+              <Input
+                value={gallery.heading}
+                onChange={(e) => updateField('heading', e.target.value)}
+                placeholder="MỘT SỐ HÌNH ẢNH"
+                disabled={!isFieldVisible('heading')}
+              />
+            </div>
           </div>
 
           <div className="space-y-2">
-            <Label>Description</Label>
-            <Textarea
-              value={gallery.description || ''}
-              onChange={(e) => updateField('description', e.target.value)}
-              placeholder="Khám phá vẻ đẹp..."
-              rows={2}
-            />
+            {renderVisibilityToggle('description', 'Hiển thị Description')}
+            <div className="space-y-2">
+              <Label>Description</Label>
+              <Textarea
+                value={gallery.description || ''}
+                onChange={(e) => updateField('description', e.target.value)}
+                placeholder="Khám phá vẻ đẹp..."
+                rows={2}
+                disabled={!isFieldVisible('description')}
+              />
+            </div>
           </div>
         </div>
 
@@ -190,8 +235,9 @@ export default function GalleryEditor({ data, onChange }: GalleryEditorProps) {
         <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
           <div className="flex items-center justify-between">
             <Label className="text-base font-semibold">Eco Tourism Features (3 Cards)</Label>
+            {renderVisibilityToggle('ecoFeatures', 'Hiển thị Eco Features')}
           </div>
-          <div className="grid md:grid-cols-3 gap-4">
+          <div className={`grid md:grid-cols-3 gap-4 ${!isFieldVisible('ecoFeatures') ? 'opacity-50 pointer-events-none' : ''}`}>
             {(gallery.ecoFeatures || []).map((feature, index) => (
               <Card key={index} className="border-2">
                 <CardHeader className="pb-3">
@@ -209,6 +255,7 @@ export default function GalleryEditor({ data, onChange }: GalleryEditorProps) {
                       }}
                       placeholder="Du lịch sinh thái"
                       className="h-8 text-sm"
+                      disabled={!isFieldVisible('ecoFeatures')}
                     />
                   </div>
                   <div className="space-y-2">
@@ -222,6 +269,7 @@ export default function GalleryEditor({ data, onChange }: GalleryEditorProps) {
                       }}
                       placeholder="Không gian sinh thái"
                       className="h-8 text-sm"
+                      disabled={!isFieldVisible('ecoFeatures')}
                     />
                   </div>
                   <div className="space-y-2">
@@ -234,6 +282,7 @@ export default function GalleryEditor({ data, onChange }: GalleryEditorProps) {
                         updateField('ecoFeatures', newFeatures);
                       }}
                       className="w-full h-8 text-sm rounded-md border border-input bg-background px-3 py-1"
+                      disabled={!isFieldVisible('ecoFeatures')}
                     >
                       <option value="trees">Trees</option>
                       <option value="building">Building</option>
@@ -248,57 +297,64 @@ export default function GalleryEditor({ data, onChange }: GalleryEditorProps) {
 
         {/* Bottom Text */}
         <div className="space-y-2 p-4 bg-muted/50 rounded-lg">
-          <Label>Bottom Text</Label>
-          <Input
-            value={gallery.bottomText || ''}
-            onChange={(e) => updateField('bottomText', e.target.value)}
-            placeholder="✨ Hơn 1000+ hình ảnh đẹp..."
-          />
-          <p className="text-xs text-muted-foreground">
-            Text hiển thị dưới phần Eco Tourism Features
-          </p>
+          {renderVisibilityToggle('bottomText', 'Hiển thị Bottom Text')}
+          <div className="space-y-2">
+            <Label>Bottom Text</Label>
+            <Input
+              value={gallery.bottomText || ''}
+              onChange={(e) => updateField('bottomText', e.target.value)}
+              placeholder="✨ Hơn 1000+ hình ảnh đẹp..."
+              disabled={!isFieldVisible('bottomText')}
+            />
+            <p className="text-xs text-muted-foreground">
+              Text hiển thị dưới phần Eco Tourism Features
+            </p>
+          </div>
         </div>
 
         {/* Images */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold">Hình ảnh ({gallery.images.length})</h3>
-            <div className="flex gap-2">
+            {renderVisibilityToggle('images', 'Hiển thị Images')}
+          </div>
+            <div className={`flex gap-2 ${!isFieldVisible('images') ? 'opacity-50 pointer-events-none' : ''}`}>
               {gallery.images.length > 0 && (
                 <>
-                  <Button onClick={loadDefaultImages} variant="outline" size="sm">
+                  <Button onClick={loadDefaultImages} variant="outline" size="sm" disabled={!isFieldVisible('images')}>
                     <Images className="w-4 h-4 mr-2" />
                     Thay Thế Bằng Ảnh Mặc Định
                   </Button>
-                  <Button onClick={addDefaultImages} variant="outline" size="sm">
+                  <Button onClick={addDefaultImages} variant="outline" size="sm" disabled={!isFieldVisible('images')}>
                     <Plus className="w-4 h-4 mr-2" />
                     Thêm Ảnh Mặc Định
                   </Button>
                 </>
               )}
-              <Button onClick={addImage} size="sm">
+              <Button onClick={addImage} size="sm" disabled={!isFieldVisible('images')}>
                 <Plus className="w-4 h-4 mr-2" />
                 Thêm hình
               </Button>
             </div>
           </div>
 
-          {gallery.images.length === 0 ? (
-            <div className="text-center py-12 border-2 border-dashed rounded-lg">
-              <Images className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-              <p className="text-muted-foreground mb-4">Chưa có hình ảnh nào</p>
-              <div className="flex gap-2 justify-center">
-                <Button onClick={loadDefaultImages} variant="default">
-                  <Images className="w-4 h-4 mr-2" />
-                  Load Ảnh Mặc Định ({DEFAULT_GALLERY_IMAGES.length} ảnh)
-                </Button>
-                <Button onClick={addImage} variant="outline">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Thêm hình đầu tiên
-                </Button>
+          <div className={!isFieldVisible('images') ? 'opacity-50 pointer-events-none' : ''}>
+            {gallery.images.length === 0 ? (
+              <div className="text-center py-12 border-2 border-dashed rounded-lg">
+                <Images className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+                <p className="text-muted-foreground mb-4">Chưa có hình ảnh nào</p>
+                <div className="flex gap-2 justify-center">
+                  <Button onClick={loadDefaultImages} variant="default" disabled={!isFieldVisible('images')}>
+                    <Images className="w-4 h-4 mr-2" />
+                    Load Ảnh Mặc Định ({DEFAULT_GALLERY_IMAGES.length} ảnh)
+                  </Button>
+                  <Button onClick={addImage} variant="outline" disabled={!isFieldVisible('images')}>
+                    <Plus className="w-4 h-4 mr-2" />
+                    Thêm hình đầu tiên
+                  </Button>
+                </div>
               </div>
-            </div>
-          ) : (
+            ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
               {gallery.images.map((image, index) => (
                 <Card key={index} className="border-2">

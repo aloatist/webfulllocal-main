@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Collapsible } from '@/components/ui/collapsible';
 import { StyleEditor } from '../homepage-settings/StyleEditor';
-import { Sparkles, Palette } from 'lucide-react';
+import { Sparkles, Palette, Eye, EyeOff } from 'lucide-react';
 import type { PromotionSection } from '@/lib/homepage/schema';
 import { ImagePicker } from './ImagePicker';
 
@@ -25,11 +25,48 @@ export default function PromotionSectionEditor({ data, onChange }: PromotionSect
     imageUrl: '',
     discount: '30%',
     isActive: true,
+    isVisible: true,
   };
 
   const updateField = (field: keyof PromotionSection, value: any) => {
     onChange({ ...promotion, [field]: value });
   };
+
+  // Helper to toggle field visibility
+  const toggleFieldVisibility = (fieldName: keyof NonNullable<PromotionSection['visibility']>) => {
+    const currentVisibility = promotion.visibility || {};
+    const newVisibility = {
+      ...currentVisibility,
+      [fieldName]: !(currentVisibility[fieldName] !== false),
+    };
+    onChange({ ...promotion, visibility: newVisibility });
+  };
+
+  // Helper to check if field is visible
+  const isFieldVisible = (fieldName: keyof NonNullable<PromotionSection['visibility']>) => {
+    return promotion.visibility?.[fieldName] !== false;
+  };
+
+  // Helper to render visibility toggle
+  const renderVisibilityToggle = (fieldName: keyof NonNullable<PromotionSection['visibility']>, label: string) => (
+    <div className="flex items-center justify-between gap-2 p-2 bg-muted/50 rounded-md">
+      <Label htmlFor={`${fieldName}-visibility`} className="text-sm font-medium cursor-pointer">
+        {label}
+      </Label>
+      <div className="flex items-center gap-2">
+        {isFieldVisible(fieldName) ? (
+          <Eye className="w-4 h-4 text-muted-foreground" />
+        ) : (
+          <EyeOff className="w-4 h-4 text-muted-foreground" />
+        )}
+        <Switch
+          id={`${fieldName}-visibility`}
+          checked={isFieldVisible(fieldName)}
+          onCheckedChange={() => toggleFieldVisibility(fieldName)}
+        />
+      </div>
+    </div>
+  );
 
   return (
     <Card>
@@ -61,15 +98,19 @@ export default function PromotionSectionEditor({ data, onChange }: PromotionSect
         <div className="grid gap-4">
           {/* Eyebrow Text */}
           <div className="space-y-2">
-            <Label>Eyebrow Text</Label>
-            <Input
-              value={promotion.eyebrow}
-              onChange={(e) => updateField('eyebrow', e.target.value)}
-              placeholder="Ưu Đãi Đặc Biệt"
-            />
-            <p className="text-xs text-muted-foreground">
-              Text nhỏ phía trên heading
-            </p>
+            {renderVisibilityToggle('eyebrow', 'Hiển thị Eyebrow')}
+            <div className="space-y-2">
+              <Label>Eyebrow Text</Label>
+              <Input
+                value={promotion.eyebrow}
+                onChange={(e) => updateField('eyebrow', e.target.value)}
+                placeholder="Ưu Đãi Đặc Biệt"
+                disabled={!isFieldVisible('eyebrow')}
+              />
+              <p className="text-xs text-muted-foreground">
+                Text nhỏ phía trên heading
+              </p>
+            </div>
           </div>
 
           {/* Eyebrow Styling */}
@@ -92,12 +133,16 @@ export default function PromotionSectionEditor({ data, onChange }: PromotionSect
 
           {/* Heading */}
           <div className="space-y-2">
-            <Label>Heading</Label>
-            <Input
-              value={promotion.heading}
-              onChange={(e) => updateField('heading', e.target.value)}
-              placeholder="COMBO TOUR THÁNG NÀY"
-            />
+            {renderVisibilityToggle('heading', 'Hiển thị Heading')}
+            <div className="space-y-2">
+              <Label>Heading</Label>
+              <Input
+                value={promotion.heading}
+                onChange={(e) => updateField('heading', e.target.value)}
+                placeholder="COMBO TOUR THÁNG NÀY"
+                disabled={!isFieldVisible('heading')}
+              />
+            </div>
           </div>
 
           {/* Heading Styling */}
@@ -120,13 +165,17 @@ export default function PromotionSectionEditor({ data, onChange }: PromotionSect
 
           {/* Description */}
           <div className="space-y-2">
-            <Label>Description</Label>
-            <Textarea
-              value={promotion.description}
-              onChange={(e) => updateField('description', e.target.value)}
-              placeholder="Giảm giá lên đến 30% - Số lượng có hạn"
-              rows={2}
-            />
+            {renderVisibilityToggle('description', 'Hiển thị Description')}
+            <div className="space-y-2">
+              <Label>Description</Label>
+              <Textarea
+                value={promotion.description}
+                onChange={(e) => updateField('description', e.target.value)}
+                placeholder="Giảm giá lên đến 30% - Số lượng có hạn"
+                rows={2}
+                disabled={!isFieldVisible('description')}
+              />
+            </div>
           </div>
 
           {/* Description Styling */}
@@ -149,16 +198,20 @@ export default function PromotionSectionEditor({ data, onChange }: PromotionSect
 
           {/* Discount */}
           <div className="space-y-2">
-            <Label>Discount</Label>
-            <div className="flex gap-2">
-              <Input
-                value={promotion.discount}
-                onChange={(e) => updateField('discount', e.target.value)}
-                placeholder="30%"
-                className="max-w-[200px]"
-              />
-              <div className="flex items-center text-sm text-muted-foreground">
-                VD: 30%, 50%, Giảm 500K, v.v.
+            {renderVisibilityToggle('discount', 'Hiển thị Discount')}
+            <div className="space-y-2">
+              <Label>Discount</Label>
+              <div className="flex gap-2">
+                <Input
+                  value={promotion.discount}
+                  onChange={(e) => updateField('discount', e.target.value)}
+                  placeholder="30%"
+                  className="max-w-[200px]"
+                  disabled={!isFieldVisible('discount')}
+                />
+                <div className="flex items-center text-sm text-muted-foreground">
+                  VD: 30%, 50%, Giảm 500K, v.v.
+                </div>
               </div>
             </div>
           </div>
@@ -182,15 +235,20 @@ export default function PromotionSectionEditor({ data, onChange }: PromotionSect
           </Collapsible>
 
           {/* Image Picker */}
-          <ImagePicker
-            value={promotion.imageUrl}
-            onChange={(url) => updateField('imageUrl', url)}
-            label="Hình ảnh Promotion"
-            aspectRatio="1/1"
-          />
-          <p className="text-xs text-muted-foreground">
-            Khuyến nghị: 1:1 ratio, min 800x800px
-          </p>
+          <div className="space-y-2">
+            {renderVisibilityToggle('imageUrl', 'Hiển thị Image')}
+            <div className={!isFieldVisible('imageUrl') ? 'opacity-50 pointer-events-none' : ''}>
+              <ImagePicker
+                value={promotion.imageUrl}
+                onChange={(url) => updateField('imageUrl', url)}
+                label="Hình ảnh Promotion"
+                aspectRatio="1/1"
+              />
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Khuyến nghị: 1:1 ratio, min 800x800px
+            </p>
+          </div>
         </div>
 
 

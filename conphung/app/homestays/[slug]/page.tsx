@@ -17,6 +17,7 @@ import {
   Waves, Wind, Home, Coffee, Shield, Calendar, Clock, XCircle 
 } from 'lucide-react';
 import { Breadcrumb } from '@/components/schema/BreadcrumbSchema';
+import { HomestaySchema } from '@/components/schema/HomestaySchema';
 
 interface PageProps {
   params: {
@@ -124,6 +125,33 @@ export default async function HomestayDetailPage({ params }: PageProps) {
 
   // Structured data for SEO
   const structuredData = generateHomestayStructuredData(homestay);
+  
+  // Calculate average rating if reviews exist
+  const averageRating = homestay.HomestayReview && homestay.HomestayReview.length > 0
+    ? homestay.HomestayReview.reduce((sum, review) => sum + review.overallRating, 0) / homestay.HomestayReview.length
+    : null;
+  
+  // Prepare data for HomestaySchema
+  const homestaySchemaData = {
+    title: homestay.title,
+    slug: homestay.slug,
+    summary: homestay.summary,
+    heroImageUrl: homestay.heroImageUrl,
+    pricePerNight: homestay.pricePerNight,
+    city: homestay.city,
+    district: homestay.district,
+    address: homestay.address,
+    latitude: homestay.latitude,
+    longitude: homestay.longitude,
+    maxGuests: homestay.maxGuests,
+    numBedrooms: homestay.numBedrooms,
+    numBathrooms: homestay.numBathrooms,
+    amenities: homestay.amenities as string[] | null,
+    checkinTime: homestay.checkinTime,
+    checkoutTime: homestay.checkoutTime,
+    rating: averageRating,
+    reviewCount: homestay.HomestayReview?.length || 0,
+  };
 
   // Type labels
   const typeLabels: Record<string, string> = {
@@ -152,7 +180,9 @@ export default async function HomestayDetailPage({ params }: PageProps) {
 
   return (
     <>
-      {/* Structured Data */}
+      {/* Structured Data - HomestaySchema */}
+      <HomestaySchema homestay={homestaySchemaData} />
+      {/* Legacy Structured Data (can be removed if HomestaySchema covers all) */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: renderStructuredData(structuredData) }}

@@ -151,12 +151,14 @@ function convertSectionToBlockFields(sectionKey: string, sectionData: any): any 
         primaryCtaLink: sectionData.primaryCta?.link || '',
         secondaryCtaText: sectionData.secondaryCta?.text || '',
         secondaryCtaLink: sectionData.secondaryCta?.link || '',
+        usps: sectionData.usps || [],
       };
     case 'about':
       return {
         title: sectionData.title || '',
         content: sectionData.content || '',
         image: sectionData.image || '',
+        imageId: sectionData.imageId || '',
       };
     case 'features':
       return {
@@ -178,6 +180,7 @@ function convertSectionToBlockFields(sectionKey: string, sectionData: any): any 
         eyebrow: sectionData.eyebrow || '',
         heading: sectionData.heading || '',
         description: sectionData.description || '',
+        paymentInfo: sectionData.paymentInfo || '',
       };
     case 'ticket':
       return {
@@ -187,6 +190,9 @@ function convertSectionToBlockFields(sectionKey: string, sectionData: any): any 
         description: sectionData.description || '',
         prices: sectionData.prices || {},
         includedItems: sectionData.includedItems || [],
+        pickupLocation: sectionData.pickupLocation || '',
+        warningNote: sectionData.warningNote || '',
+        imageUrl: sectionData.imageUrl || '',
       };
     case 'tourPricing':
       return {
@@ -194,6 +200,8 @@ function convertSectionToBlockFields(sectionKey: string, sectionData: any): any 
         heading: sectionData.heading || '',
         description: sectionData.description || '',
         tours: sectionData.tours || [],
+        highlights: sectionData.highlights || [],
+        bottomNote: sectionData.bottomNote || '',
       };
     case 'homestay':
       return {
@@ -204,6 +212,7 @@ function convertSectionToBlockFields(sectionKey: string, sectionData: any): any 
         amenities: sectionData.amenities || [],
         highlights: sectionData.highlights || [],
         bottomNote: sectionData.bottomNote || '',
+        cocoIslandCard: sectionData.cocoIslandCard || null,
       };
     case 'socialProof':
       return {
@@ -222,6 +231,8 @@ function convertSectionToBlockFields(sectionKey: string, sectionData: any): any 
         heading: sectionData.heading || '',
         description: sectionData.description || '',
         images: sectionData.images || [],
+        ecoFeatures: sectionData.ecoFeatures || [],
+        bottomText: sectionData.bottomText || '',
       };
     case 'videoGuide':
       return {
@@ -236,11 +247,13 @@ function convertSectionToBlockFields(sectionKey: string, sectionData: any): any 
       };
     case 'restaurant':
       return {
+        eyebrow: sectionData.eyebrow || '',
         title: sectionData.title || '',
         description: sectionData.description || '',
         capacity: sectionData.capacity || '',
         specialties: sectionData.specialties || [],
         image: sectionData.image || '',
+        imageId: sectionData.imageId || '',
       };
     case 'certificates':
       return {

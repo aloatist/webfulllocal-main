@@ -6,7 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Info, Sparkles } from 'lucide-react';
+import { Info, Sparkles, Eye, EyeOff } from 'lucide-react';
 import type { PricingSnapshotSection } from '@/lib/homepage/schema';
 
 interface PricingSnapshotEditorProps {
@@ -21,6 +21,7 @@ export function PricingSnapshotEditor({ data, onChange }: PricingSnapshotEditorP
     description: 'Giá ưu đãi - Minh bạch - Không phí ẩn - Cam kết giá tốt nhất',
     paymentInfo: '💳 Thanh toán: Tiền mặt • Chuyển khoản • Ví điện tử • Miễn phí hủy trong 24h',
     isActive: true,
+    isVisible: true,
   };
 
   const handleChange = (field: keyof PricingSnapshotSection, value: any) => {
@@ -29,6 +30,42 @@ export function PricingSnapshotEditor({ data, onChange }: PricingSnapshotEditorP
       [field]: value,
     });
   };
+
+  // Helper to toggle field visibility
+  const toggleFieldVisibility = (fieldName: keyof NonNullable<PricingSnapshotSection['visibility']>) => {
+    const currentVisibility = sectionData.visibility || {};
+    const newVisibility = {
+      ...currentVisibility,
+      [fieldName]: !(currentVisibility[fieldName] !== false),
+    };
+    onChange({ ...sectionData, visibility: newVisibility });
+  };
+
+  // Helper to check if field is visible
+  const isFieldVisible = (fieldName: keyof NonNullable<PricingSnapshotSection['visibility']>) => {
+    return sectionData.visibility?.[fieldName] !== false;
+  };
+
+  // Helper to render visibility toggle
+  const renderVisibilityToggle = (fieldName: keyof NonNullable<PricingSnapshotSection['visibility']>, label: string) => (
+    <div className="flex items-center justify-between gap-2 p-2 bg-muted/50 rounded-md">
+      <Label htmlFor={`${fieldName}-visibility`} className="text-sm font-medium cursor-pointer">
+        {label}
+      </Label>
+      <div className="flex items-center gap-2">
+        {isFieldVisible(fieldName) ? (
+          <Eye className="w-4 h-4 text-muted-foreground" />
+        ) : (
+          <EyeOff className="w-4 h-4 text-muted-foreground" />
+        )}
+        <Switch
+          id={`${fieldName}-visibility`}
+          checked={isFieldVisible(fieldName)}
+          onCheckedChange={() => toggleFieldVisibility(fieldName)}
+        />
+      </div>
+    </div>
+  );
 
   return (
     <div className="space-y-6">
@@ -57,56 +94,79 @@ export function PricingSnapshotEditor({ data, onChange }: PricingSnapshotEditorP
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="eyebrow">Eyebrow Text</Label>
-        <Input
-          id="eyebrow"
-          value={sectionData.eyebrow || ''}
-          onChange={(e) => handleChange('eyebrow', e.target.value)}
-          placeholder="Giá Ưu Đãi"
-        />
+        {renderVisibilityToggle('eyebrow', 'Hiển thị Eyebrow')}
+        <div className="space-y-2">
+          <Label htmlFor="eyebrow">Eyebrow Text</Label>
+          <Input
+            id="eyebrow"
+            value={sectionData.eyebrow || ''}
+            onChange={(e) => handleChange('eyebrow', e.target.value)}
+            placeholder="Giá Ưu Đãi"
+            disabled={!isFieldVisible('eyebrow')}
+          />
+          <p className="text-xs text-muted-foreground">
+            Text nhỏ phía trên tiêu đề chính (badge)
+          </p>
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        {renderVisibilityToggle('heading', 'Hiển thị Heading')}
+        <div className="space-y-2">
+          <Label htmlFor="heading">Tiêu đề chính</Label>
+          <Input
+            id="heading"
+            value={sectionData.heading || ''}
+            onChange={(e) => handleChange('heading', e.target.value)}
+            placeholder="Bảng Giá Tham Khảo"
+            disabled={!isFieldVisible('heading')}
+          />
+          <p className="text-xs text-muted-foreground">
+            Tiêu đề lớn của section
+          </p>
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        {renderVisibilityToggle('description', 'Hiển thị Description')}
+        <div className="space-y-2">
+          <Label htmlFor="description">Mô tả</Label>
+          <Textarea
+            id="description"
+            value={sectionData.description || ''}
+            onChange={(e) => handleChange('description', e.target.value)}
+            placeholder="Giá ưu đãi - Minh bạch - Không phí ẩn - Cam kết giá tốt nhất"
+            rows={3}
+            disabled={!isFieldVisible('description')}
+          />
+          <p className="text-xs text-muted-foreground">
+            Mô tả ngắn gọn phía dưới tiêu đề
+          </p>
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        {renderVisibilityToggle('pricingCards', 'Hiển thị Pricing Cards')}
         <p className="text-xs text-muted-foreground">
-          Text nhỏ phía trên tiêu đề chính (badge)
+          Hiển thị 3 cards: Vé Tham Quan, Tour Khám Phá, Lưu Trú Homestay
         </p>
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="heading">Tiêu đề chính</Label>
-        <Input
-          id="heading"
-          value={sectionData.heading || ''}
-          onChange={(e) => handleChange('heading', e.target.value)}
-          placeholder="Bảng Giá Tham Khảo"
-        />
-        <p className="text-xs text-muted-foreground">
-          Tiêu đề lớn của section
-        </p>
-      </div>
-
-            <div className="space-y-2">
-        <Label htmlFor="description">Mô tả</Label>
-        <Textarea
-          id="description"
-          value={sectionData.description || ''}
-          onChange={(e) => handleChange('description', e.target.value)}
-          placeholder="Giá ưu đãi - Minh bạch - Không phí ẩn - Cam kết giá tốt nhất"                                                                            
-          rows={3}
-        />
-        <p className="text-xs text-muted-foreground">
-          Mô tả ngắn gọn phía dưới tiêu đề
-        </p>
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="paymentInfo">💳 Thông tin thanh toán (Payment Info)</Label>
-        <Input
-          id="paymentInfo"
-          value={sectionData.paymentInfo || ''}
-          onChange={(e) => handleChange('paymentInfo', e.target.value)}
-          placeholder="💳 Thanh toán: Tiền mặt • Chuyển khoản • Ví điện tử • Miễn phí hủy trong 24h"
-        />
-        <p className="text-xs text-muted-foreground">
-          Thông tin về phương thức thanh toán và chính sách hủy hiển thị dưới cùng section
-        </p>
+        {renderVisibilityToggle('paymentInfo', 'Hiển thị Payment Info')}
+        <div className="space-y-2">
+          <Label htmlFor="paymentInfo">💳 Thông tin thanh toán (Payment Info)</Label>
+          <Input
+            id="paymentInfo"
+            value={sectionData.paymentInfo || ''}
+            onChange={(e) => handleChange('paymentInfo', e.target.value)}
+            placeholder="💳 Thanh toán: Tiền mặt • Chuyển khoản • Ví điện tử • Miễn phí hủy trong 24h"
+            disabled={!isFieldVisible('paymentInfo')}
+          />
+          <p className="text-xs text-muted-foreground">
+            Thông tin về phương thức thanh toán và chính sách hủy hiển thị dưới cùng section
+          </p>
+        </div>
       </div>
 
       <Card className="bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800">

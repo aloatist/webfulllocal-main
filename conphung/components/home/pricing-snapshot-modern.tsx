@@ -290,6 +290,10 @@ export function PricingSnapshotModern({ pricingSnapshotData, ticketData, tourDat
     return options;
   }, [ticketData, tourData, homestayData]);
   
+  // Get visibility settings (default to true if not set)
+  const visibility = pricingSnapshotData?.visibility || {};
+  const isVisible = (field: keyof typeof visibility) => visibility[field] !== false;
+  
   return (
     <section id="pricing" className="py-20 md:py-28 bg-gradient-to-br from-white via-emerald-50/30 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 relative overflow-hidden">
       {/* Background Decorative Elements */}
@@ -299,11 +303,10 @@ export function PricingSnapshotModern({ pricingSnapshotData, ticketData, tourDat
       </div>
 
       <div className="container mx-auto max-w-7xl px-4 md:px-6 relative z-10">
-        
         {/* Header */}
         <FadeIn>
           <div className="text-center mb-16 md:mb-20">
-            {pricingSnapshotData?.eyebrow && (
+            {isVisible('eyebrow') && pricingSnapshotData?.eyebrow && (
               <div className="inline-flex items-center gap-2 bg-emerald-100 dark:bg-emerald-900/30 px-5 py-2.5 rounded-full mb-6">
                 <Sparkles className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                 <span className="text-sm font-bold text-emerald-700 dark:text-emerald-300">
@@ -312,10 +315,12 @@ export function PricingSnapshotModern({ pricingSnapshotData, ticketData, tourDat
               </div>
             )}
             
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 bg-gradient-to-r from-gray-900 via-emerald-700 to-gray-900 dark:from-white dark:via-emerald-400 dark:to-white bg-clip-text text-transparent">
-              {pricingSnapshotData?.heading || 'Bảng Giá Tham Khảo'}
-            </h2>
-            {pricingSnapshotData?.description && (
+            {isVisible('heading') && (
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 bg-gradient-to-r from-gray-900 via-emerald-700 to-gray-900 dark:from-white dark:via-emerald-400 dark:to-white bg-clip-text text-transparent">
+                {pricingSnapshotData?.heading || 'Bảng Giá Tham Khảo'}
+              </h2>
+            )}
+            {isVisible('description') && pricingSnapshotData?.description && (
               <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
                 {pricingSnapshotData.description}
               </p>
@@ -324,7 +329,8 @@ export function PricingSnapshotModern({ pricingSnapshotData, ticketData, tourDat
         </FadeIn>
 
         {/* Pricing Cards */}
-        <StaggerContainer staggerDelay={0.15} className="grid md:grid-cols-3 gap-8 md:gap-10 mb-16">
+        {isVisible('pricingCards') && (
+          <StaggerContainer staggerDelay={0.15} className="grid md:grid-cols-3 gap-8 md:gap-10 mb-16">
           {pricingOptions.map((option, index) => (
             <StaggerItem key={option.id}>
               <Card 
@@ -432,7 +438,8 @@ export function PricingSnapshotModern({ pricingSnapshotData, ticketData, tourDat
               </Card>
             </StaggerItem>
           ))}
-        </StaggerContainer>
+          </StaggerContainer>
+        )}
 
         {/* Trust Badges */}
         <FadeIn delay={0.6}>
@@ -458,8 +465,8 @@ export function PricingSnapshotModern({ pricingSnapshotData, ticketData, tourDat
           </div>
         </FadeIn>
 
-                {/* Payment Info */}
-        {pricingSnapshotData?.paymentInfo && (
+        {/* Payment Info */}
+        {isVisible('paymentInfo') && pricingSnapshotData?.paymentInfo && (
           <FadeIn delay={0.7}>
             <div className="text-center">
               <div className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-900/20 dark:to-green-900/20 px-6 py-3 rounded-xl border border-emerald-200 dark:border-emerald-800">                  

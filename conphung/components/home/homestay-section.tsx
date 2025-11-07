@@ -32,7 +32,14 @@ const defaultData: HomestaySectionType = {
 };
 
 export function HomestaySection({ data }: HomestaySectionProps = {}) {
+  if (!data || !data.isActive) return null;
+
+  // Get visibility settings (default to true if not set)
+  const visibility = data.visibility || {};
+  const isVisible = (field: keyof typeof visibility) => visibility[field] !== false;
+
   const displayData = data || defaultData;
+  
   return (
     <FadeIn delay={0.2}>
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 dark:from-gray-900 dark:to-gray-800 p-8 md:p-12 shadow-xl mb-12">
@@ -43,28 +50,32 @@ export function HomestaySection({ data }: HomestaySectionProps = {}) {
         <div className="relative z-10">
           {/* Header */}
           <div className="text-center mb-10">
-            {displayData.eyebrow && (
+            {isVisible('eyebrow') && displayData.eyebrow && (
               <div className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-100 to-yellow-100 dark:from-orange-900/30 dark:to-yellow-900/30 px-5 py-2 rounded-full mb-4">
                 <Home className="w-5 h-5 text-orange-600 dark:text-orange-400" />
                 <span className="text-sm font-semibold text-orange-700 dark:text-orange-300">{displayData.eyebrow}</span>
               </div>
             )}
             
-            <h2 className="text-3xl md:text-4xl font-bold mb-3 bg-gradient-to-r from-orange-600 via-amber-600 to-yellow-600 bg-clip-text text-transparent">
-              {displayData.heading}
-            </h2>
-            {displayData.subheading && (
+            {isVisible('heading') && (
+              <h2 className="text-3xl md:text-4xl font-bold mb-3 bg-gradient-to-r from-orange-600 via-amber-600 to-yellow-600 bg-clip-text text-transparent">
+                {displayData.heading}
+              </h2>
+            )}
+            {isVisible('subheading') && displayData.subheading && (
               <h3 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-white mb-3">
                 {displayData.subheading}
               </h3>
             )}
-            <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-lg">
-              {displayData.description}
-            </p>
+            {isVisible('description') && (
+              <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-lg">
+                {displayData.description}
+              </p>
+            )}
           </div>
 
           {/* Amenities Grid */}
-          {displayData.amenities && displayData.amenities.length > 0 && (
+          {isVisible('amenities') && displayData.amenities && displayData.amenities.length > 0 && (
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
               {displayData.amenities.map((amenity, index) => {
                 const IconComponent = (LucideIcons as any)[amenity.icon] || LucideIcons.Star;
@@ -88,7 +99,7 @@ export function HomestaySection({ data }: HomestaySectionProps = {}) {
           )}
 
           {/* Highlights */}
-          {displayData.highlights && displayData.highlights.length > 0 && (
+          {isVisible('highlights') && displayData.highlights && displayData.highlights.length > 0 && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
               {displayData.highlights.map((highlight, index) => {
                 const IconComponent = (LucideIcons as any)[highlight.icon] || LucideIcons.Star;
@@ -111,20 +122,22 @@ export function HomestaySection({ data }: HomestaySectionProps = {}) {
           )}
 
           {/* Homestay Content */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden border-4 border-orange-100 dark:border-orange-900/30">
-            <HomestayCocoIsland 
-              imageUrl={displayData.cocoIslandCard?.imageUrl}
-              originalPrice={displayData.cocoIslandCard?.originalPrice}
-              discount={displayData.cocoIslandCard?.discount}
-              finalPrice={displayData.cocoIslandCard?.finalPrice}
-              currency={displayData.cocoIslandCard?.currency}
-              includedItems={displayData.cocoIslandCard?.includedItems}
-              roomAmenities={displayData.cocoIslandCard?.roomAmenities}
-            />
-          </div>
+          {isVisible('cocoIslandCard') && (
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden border-4 border-orange-100 dark:border-orange-900/30">
+              <HomestayCocoIsland 
+                imageUrl={displayData.cocoIslandCard?.imageUrl}
+                originalPrice={displayData.cocoIslandCard?.originalPrice}
+                discount={displayData.cocoIslandCard?.discount}
+                finalPrice={displayData.cocoIslandCard?.finalPrice}
+                currency={displayData.cocoIslandCard?.currency}
+                includedItems={displayData.cocoIslandCard?.includedItems}
+                roomAmenities={displayData.cocoIslandCard?.roomAmenities}
+              />
+            </div>
+          )}
 
           {/* Bottom Note */}
-          {displayData.bottomNote && (
+          {isVisible('bottomNote') && displayData.bottomNote && (
             <div className="mt-8 text-center">
               <div className="inline-flex items-center gap-2 bg-white dark:bg-gray-800 px-6 py-3 rounded-full shadow-md">
                 <Home className="w-5 h-5 text-orange-600" />

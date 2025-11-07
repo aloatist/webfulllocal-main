@@ -72,7 +72,7 @@ export default function AttendanceDashboardPage() {
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 py-10">
       <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">Dashboard</p>
+          <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">Bảng điều khiển</p>
           <h1 className="text-3xl font-semibold sm:text-4xl">Thống kê điểm danh realtime</h1>
           <p className="text-sm text-muted-foreground">
             Dữ liệu lấy từ máy chủ NestJS ({apiBaseUrl}). Bảng bên dưới tự động cập nhật mỗi {Math.round(POLL_INTERVAL_MS / 1000)} giây.

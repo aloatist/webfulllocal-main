@@ -5,10 +5,12 @@ import dynamic from 'next/dynamic';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import { ImageUpload } from './ImageUpload';
 import { Collapsible } from '@/components/ui/collapsible';
 import { StyleEditor } from './StyleEditor';
-import { FileText, Loader2, Palette } from 'lucide-react';
+import { FileText, Loader2, Palette, Eye, EyeOff } from 'lucide-react';
+import type { AboutSection } from '@/lib/homepage/schema';
 
 const Editor = dynamic(() => import('@/components/editor'), { 
   ssr: false,
@@ -21,6 +23,12 @@ interface AboutSectionEditorProps {
     aboutContent?: string | null; // EditorJS JSON string
     aboutImage?: string | null;
     aboutImageId?: string | null;
+    visibility?: {
+      title?: boolean;
+      content?: boolean;
+      image?: boolean;
+    };
+    styles?: any;
   };
   onChange: (data: Partial<AboutSectionEditorProps['data']>) => void;
 }
@@ -37,6 +45,42 @@ export function AboutSectionEditor({ data, onChange }: AboutSectionEditorProps) 
     onChange({ [field]: value });
   };
 
+  // Helper to toggle field visibility
+  const toggleFieldVisibility = (fieldName: 'title' | 'content' | 'image') => {
+    const currentVisibility = data.visibility || {};
+    const newVisibility = {
+      ...currentVisibility,
+      [fieldName]: !(currentVisibility[fieldName] !== false), // Default to true if undefined
+    };
+    onChange({ visibility: newVisibility });
+  };
+
+  // Helper to check if field is visible
+  const isFieldVisible = (fieldName: 'title' | 'content' | 'image') => {
+    return data.visibility?.[fieldName] !== false;
+  };
+
+  // Helper to render visibility toggle
+  const renderVisibilityToggle = (fieldName: 'title' | 'content' | 'image', label: string) => (
+    <div className="flex items-center justify-between gap-2 p-2 bg-muted/50 rounded-md">
+      <Label htmlFor={`${fieldName}-visibility`} className="text-sm font-medium cursor-pointer">
+        {label}
+      </Label>
+      <div className="flex items-center gap-2">
+        {isFieldVisible(fieldName) ? (
+          <Eye className="w-4 h-4 text-muted-foreground" />
+        ) : (
+          <EyeOff className="w-4 h-4 text-muted-foreground" />
+        )}
+        <Switch
+          id={`${fieldName}-visibility`}
+          checked={isFieldVisible(fieldName)}
+          onCheckedChange={() => toggleFieldVisibility(fieldName)}
+        />
+      </div>
+    </div>
+  );
+
   return (
     <Card>
       <CardHeader>
@@ -51,13 +95,17 @@ export function AboutSectionEditor({ data, onChange }: AboutSectionEditorProps) 
       <CardContent className="space-y-4">
         {/* Title */}
         <div className="space-y-2">
-          <Label htmlFor="aboutTitle">Title</Label>
-          <Input
-            id="aboutTitle"
-            value={data.aboutTitle || ''}
-            onChange={(e) => updateField('aboutTitle', e.target.value)}
-            placeholder="THÔNG TIN VỀ CHÚNG TÔI"
-          />
+          {renderVisibilityToggle('title', 'Hiển thị Title')}
+          <div className="space-y-2">
+            <Label htmlFor="aboutTitle">Title</Label>
+            <Input
+              id="aboutTitle"
+              value={data.aboutTitle || ''}
+              onChange={(e) => updateField('aboutTitle', e.target.value)}
+              placeholder="THÔNG TIN VỀ CHÚNG TÔI"
+              disabled={!isFieldVisible('title')}
+            />
+          </div>
         </div>
 
         {/* Title Styling */}
@@ -80,16 +128,19 @@ export function AboutSectionEditor({ data, onChange }: AboutSectionEditorProps) 
 
         {/* Rich Text Content */}
         <div className="space-y-2">
-          <Label>Content (Rich Text)</Label>
-          <div key={editorKey}>
-            <Editor
-              value={data.aboutContent || ''}
-              onChange={(jsonString) => updateField('aboutContent', jsonString)}
-            />
+          {renderVisibilityToggle('content', 'Hiển thị Content')}
+          <div className="space-y-2">
+            <Label>Content (Rich Text)</Label>
+            <div key={editorKey} className={!isFieldVisible('content') ? 'opacity-50 pointer-events-none' : ''}>
+              <Editor
+                value={data.aboutContent || ''}
+                onChange={(jsonString) => updateField('aboutContent', jsonString)}
+              />
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Sử dụng editor để tạo nội dung phong phú với headings, lists, images, embeds...
+            </p>
           </div>
-          <p className="text-sm text-muted-foreground">
-            Sử dụng editor để tạo nội dung phong phú với headings, lists, images, embeds...
-          </p>
         </div>
 
         {/* Content Styling */}
@@ -112,20 +163,25 @@ export function AboutSectionEditor({ data, onChange }: AboutSectionEditorProps) 
 
         {/* Image */}
         <div className="space-y-2">
-          <Label>Image</Label>
-          <ImageUpload
-            currentImage={data.aboutImage || null}
-            currentImageId={data.aboutImageId || null}
-            field="aboutImage"
-            onUpload={(url, publicId) => {
-              updateField('aboutImage', url);
-              updateField('aboutImageId', publicId);
-            }}
-            onRemove={() => {
-              updateField('aboutImage', null);
-              updateField('aboutImageId', null);
-            }}
-          />
+          {renderVisibilityToggle('image', 'Hiển thị Image')}
+          <div className="space-y-2">
+            <Label>Image</Label>
+            <div className={!isFieldVisible('image') ? 'opacity-50 pointer-events-none' : ''}>
+              <ImageUpload
+                currentImage={data.aboutImage || null}
+                currentImageId={data.aboutImageId || null}
+                field="aboutImage"
+                onUpload={(url, publicId) => {
+                  updateField('aboutImage', url);
+                  updateField('aboutImageId', publicId);
+                }}
+                onRemove={() => {
+                  updateField('aboutImage', null);
+                  updateField('aboutImageId', null);
+                }}
+              />
+            </div>
+          </div>
         </div>
       </CardContent>
     </Card>

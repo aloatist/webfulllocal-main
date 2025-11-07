@@ -639,20 +639,20 @@ export function PostEditor({ postId }: PostEditorProps) {
               })}
               {formData.tagIds.length === 0 && (
                 <p className="text-xs text-muted-foreground">
-                  Select tags relevant to the destination, hotel, or experience.
+                  Chọn các thẻ liên quan đến điểm đến, khách sạn hoặc trải nghiệm.
                 </p>
               )}
             </div>
           </div>
 
           <div>
-            <Label>Featured Image</Label>
+            <Label>Ảnh nổi bật</Label>
             <div className="mt-2">
               {formData.featuredImageId && formData.featuredImageUrl ? (
                 <div className="relative aspect-video overflow-hidden rounded-lg border border-border">
                   <Image
                     src={formData.featuredImageUrl}
-                    alt="Featured"
+                    alt="Ảnh nổi bật"
                     fill
                     className="object-cover"
                     sizes="(max-width: 768px) 100vw, 320px"
@@ -664,7 +664,7 @@ export function PostEditor({ postId }: PostEditorProps) {
                     className="absolute right-3 top-3"
                     onClick={handleRemoveFeaturedImage}
                   >
-                    Remove
+                    Xóa
                   </Button>
                 </div>
               ) : (
@@ -676,14 +676,14 @@ export function PostEditor({ postId }: PostEditorProps) {
                       className="w-full"
                     >
                       <ImagePlusIcon className="mr-2 h-4 w-4" />
-                      Choose Image
+                      Chọn ảnh
                     </Button>
                   </DialogTrigger>
                   <DialogContent className="max-w-4xl">
                     <DialogHeader>
-                      <DialogTitle>Choose Featured Image</DialogTitle>
+                      <DialogTitle>Chọn ảnh nổi bật</DialogTitle>
                       <DialogDescription>
-                        Upload a new image or select from your media library
+                        Tải ảnh mới hoặc chọn từ thư viện media
                       </DialogDescription>
                     </DialogHeader>
                     <div className="space-y-4">
@@ -692,9 +692,9 @@ export function PostEditor({ postId }: PostEditorProps) {
                         <div className="flex flex-col items-center justify-center space-y-3">
                           <ImagePlusIcon className="h-10 w-10 text-muted-foreground" />
                           <div className="text-center">
-                            <p className="text-sm font-medium">Upload New Image</p>
+                            <p className="text-sm font-medium">Tải ảnh mới</p>
                             <p className="text-xs text-muted-foreground">
-                              PNG, JPG, GIF up to 5MB
+                              PNG, JPG, GIF tối đa 5MB
                             </p>
                           </div>
                           <label htmlFor="file-upload" className="cursor-pointer">
@@ -708,12 +708,12 @@ export function PostEditor({ postId }: PostEditorProps) {
                                 {uploading ? (
                                   <>
                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    Uploading...
+                                    Đang tải lên...
                                   </>
                                 ) : (
                                   <>
                                     <ImagePlusIcon className="mr-2 h-4 w-4" />
-                                    Select File
+                                    Chọn tệp
                                   </>
                                 )}
                               </span>
@@ -737,7 +737,7 @@ export function PostEditor({ postId }: PostEditorProps) {
                         </div>
                         <div className="relative flex justify-center text-xs uppercase">
                           <span className="bg-background px-2 text-muted-foreground">
-                            Or choose from library
+                            Hoặc chọn từ thư viện
                           </span>
                         </div>
                       </div>
@@ -755,7 +755,7 @@ export function PostEditor({ postId }: PostEditorProps) {
                         <MediaGrid items={mediaItems} onSelect={handleMediaSelect} />
                       ) : (
                         <p className="text-sm text-muted-foreground">
-                          No media files available yet. Upload images in the media library first.
+                          Chưa có tệp media. Vui lòng tải ảnh lên thư viện trước.
                         </p>
                       )}
                       <div className="flex justify-end">
@@ -765,7 +765,7 @@ export function PostEditor({ postId }: PostEditorProps) {
                           onClick={loadMediaLibrary}
                           disabled={mediaLoading}
                         >
-                          Refresh Library
+                          Làm mới thư viện
                         </Button>
                       </div>
                     </div>
@@ -777,10 +777,10 @@ export function PostEditor({ postId }: PostEditorProps) {
 
           <div className="space-y-4">
             <div>
-              <Label>SEO Settings</Label>
+              <Label>Thiết lập SEO</Label>
               <div className="mt-2 space-y-2">
                 <Input
-                  placeholder="SEO Title"
+                  placeholder="Tiêu đề SEO"
                   value={formData.seo?.title ?? ''}
                   onChange={(event) =>
                     setFormData((prev) => ({
@@ -790,7 +790,7 @@ export function PostEditor({ postId }: PostEditorProps) {
                   }
                 />
                 <Textarea
-                  placeholder="SEO Description"
+                  placeholder="Mô tả SEO"
                   value={formData.seo?.description ?? ''}
                   onChange={(event) =>
                     setFormData((prev) => ({
@@ -801,7 +801,7 @@ export function PostEditor({ postId }: PostEditorProps) {
                   rows={3}
                 />
                 <Input
-                  placeholder="Keywords (comma separated)"
+                  placeholder="Từ khóa (phân tách bằng dấu phẩy)"
                   value={formData.seo?.keywords ?? ''}
                   onChange={(event) =>
                     setFormData((prev) => ({

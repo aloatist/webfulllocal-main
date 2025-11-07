@@ -24,6 +24,13 @@ function formatDepartureDate(tour: PublicTour) {
 export function TourCard({ tour }: TourCardProps) {
   const heroSrc = tour.heroImageUrl ?? tour.TourMedia?.[0]?.Media?.url ?? undefined;
   const upcomingDate = formatDepartureDate(tour);
+  const difficultyLabels: Record<string, string> = {
+    EASY: 'Dễ',
+    MEDIUM: 'Trung bình',
+    HARD: 'Khó',
+    EXTREME: 'Thử thách',
+  };
+  const difficultyText = tour.difficulty ? (difficultyLabels[tour.difficulty] ?? tour.difficulty) : null;
 
   return (
     <Link
@@ -48,7 +55,7 @@ export function TourCard({ tour }: TourCardProps) {
         )}
         {tour.isFeatured && (
           <Badge className="absolute left-4 top-4 bg-purple-600 text-white shadow">
-            Featured
+            Nổi bật
           </Badge>
         )}
       </div>
@@ -70,9 +77,9 @@ export function TourCard({ tour }: TourCardProps) {
               ? ` • ${tour.durationNights} đêm`
               : ''}
           </span>
-          {tour.difficulty && (
+          {difficultyText && (
             <span className="rounded-full bg-gray-100 dark:bg-gray-800 px-3 py-1.5 text-gray-700 dark:text-gray-300 font-medium border border-gray-200 dark:border-gray-700">
-              Độ khó: {tour.difficulty.toLowerCase()}
+              Độ khó: {difficultyText}
             </span>
           )}
           {tour.departureCity && (

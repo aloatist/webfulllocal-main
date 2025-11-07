@@ -4,7 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Map } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { Map, Eye, EyeOff } from 'lucide-react';
 import type { MapSection } from '@/lib/homepage/schema';
 
 interface MapEditorProps {
@@ -33,6 +34,42 @@ export default function MapEditor({ data, onChange }: MapEditorProps) {
     });
   };
 
+  // Helper to toggle field visibility
+  const toggleFieldVisibility = (fieldName: keyof NonNullable<MapSection['visibility']>) => {
+    const currentVisibility = mapData.visibility || {};
+    const newVisibility = {
+      ...currentVisibility,
+      [fieldName]: !(currentVisibility[fieldName] !== false),
+    };
+    onChange({ ...mapData, visibility: newVisibility });
+  };
+
+  // Helper to check if field is visible
+  const isFieldVisible = (fieldName: keyof NonNullable<MapSection['visibility']>) => {
+    return mapData.visibility?.[fieldName] !== false;
+  };
+
+  // Helper to render visibility toggle
+  const renderVisibilityToggle = (fieldName: keyof NonNullable<MapSection['visibility']>, label: string) => (
+    <div className="flex items-center justify-between gap-2 p-2 bg-muted/50 rounded-md">
+      <Label htmlFor={`${fieldName}-visibility`} className="text-sm font-medium cursor-pointer">
+        {label}
+      </Label>
+      <div className="flex items-center gap-2">
+        {isFieldVisible(fieldName) ? (
+          <Eye className="w-4 h-4 text-muted-foreground" />
+        ) : (
+          <EyeOff className="w-4 h-4 text-muted-foreground" />
+        )}
+        <Switch
+          id={`${fieldName}-visibility`}
+          checked={isFieldVisible(fieldName)}
+          onCheckedChange={() => toggleFieldVisibility(fieldName)}
+        />
+      </div>
+    </div>
+  );
+
   return (
     <Card>
       <CardHeader>
@@ -47,33 +84,45 @@ export default function MapEditor({ data, onChange }: MapEditorProps) {
       <CardContent className="space-y-4">
         {/* Heading */}
         <div className="space-y-2">
-          <Label>Heading</Label>
-          <Input
-            value={mapData.heading}
-            onChange={(e) => updateField('heading', e.target.value)}
-            placeholder="BẢN ĐỒ KHU DU LỊCH"
-          />
+          {renderVisibilityToggle('heading', 'Hiển thị Heading')}
+          <div className="space-y-2">
+            <Label>Heading</Label>
+            <Input
+              value={mapData.heading}
+              onChange={(e) => updateField('heading', e.target.value)}
+              placeholder="BẢN ĐỒ KHU DU LỊCH"
+              disabled={!isFieldVisible('heading')}
+            />
+          </div>
         </div>
 
         {/* Description */}
         <div className="space-y-2">
-          <Label>Description</Label>
-          <Textarea
-            value={mapData.description || ''}
-            onChange={(e) => updateField('description', e.target.value)}
-            placeholder="Hướng dẫn đường đi..."
-            rows={2}
-          />
+          {renderVisibilityToggle('description', 'Hiển thị Description')}
+          <div className="space-y-2">
+            <Label>Description</Label>
+            <Textarea
+              value={mapData.description || ''}
+              onChange={(e) => updateField('description', e.target.value)}
+              placeholder="Hướng dẫn đường đi..."
+              rows={2}
+              disabled={!isFieldVisible('description')}
+            />
+          </div>
         </div>
 
         {/* Address */}
         <div className="space-y-2">
-          <Label>📍 Address</Label>
-          <Input
-            value={mapData.address}
-            onChange={(e) => updateField('address', e.target.value)}
-            placeholder="Cồn Phụng, Bến Tre"
-          />
+          {renderVisibilityToggle('address', 'Hiển thị Address')}
+          <div className="space-y-2">
+            <Label>📍 Address</Label>
+            <Input
+              value={mapData.address}
+              onChange={(e) => updateField('address', e.target.value)}
+              placeholder="Cồn Phụng, Bến Tre"
+              disabled={!isFieldVisible('address')}
+            />
+          </div>
         </div>
 
         {/* Coordinates */}
@@ -103,34 +152,40 @@ export default function MapEditor({ data, onChange }: MapEditorProps) {
 
         {/* Google Maps Embed URL */}
         <div className="space-y-2">
-          <Label>🗺️ Google Maps Embed URL</Label>
-          <Textarea
-            value={mapData.embedUrl}
-            onChange={(e) => updateField('embedUrl', e.target.value)}
-            placeholder="https://www.google.com/maps/embed?pb=!1m18..."
-            rows={3}
-          />
-          <p className="text-xs text-muted-foreground">
-            Lấy từ Google Maps → Share → Embed a map → Copy HTML (chỉ lấy URL trong src=&quot;...&quot;)
-          </p>
+          {renderVisibilityToggle('map', 'Hiển thị Map')}
+          <div className={`space-y-2 ${!isFieldVisible('map') ? 'opacity-50 pointer-events-none' : ''}`}>
+            <Label>🗺️ Google Maps Embed URL</Label>
+            <Textarea
+              value={mapData.embedUrl}
+              onChange={(e) => updateField('embedUrl', e.target.value)}
+              placeholder="https://www.google.com/maps/embed?pb=!1m18..."
+              rows={3}
+              disabled={!isFieldVisible('map')}
+            />
+            <p className="text-xs text-muted-foreground">
+              Lấy từ Google Maps → Share → Embed a map → Copy HTML (chỉ lấy URL trong src=&quot;...&quot;)
+            </p>
+          </div>
         </div>
 
         {/* Preview */}
-        <div className="space-y-2">
-          <Label>Preview</Label>
-          <div className="border-2 rounded-lg overflow-hidden">
-            <iframe
-              src={mapData.embedUrl}
-              width="100%"
-              height="400"
-              style={{ border: 0 }}
-              allowFullScreen
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              title="Map Preview"
-            />
+        {isFieldVisible('map') && (
+          <div className="space-y-2">
+            <Label>Preview</Label>
+            <div className="border-2 rounded-lg overflow-hidden">
+              <iframe
+                src={mapData.embedUrl}
+                width="100%"
+                height="400"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="Map Preview"
+              />
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Info */}
         <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
