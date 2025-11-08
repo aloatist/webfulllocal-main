@@ -21,6 +21,7 @@ import { MobileStickyCTA } from '@/components/home/mobile-sticky-cta';
 import { LatestPostsSection } from '@/components/blocks/LatestPostsBlock';
 import { ModernFooter } from '@/components/footer/modern-footer';
 import { getHomepageConfig } from '@/lib/homepage/sections';
+import type { HomepageConfig } from '@/lib/homepage/schema';
 
 interface HomepageBlock {
   id: string;
@@ -35,11 +36,40 @@ interface HomepageBlock {
 interface BlocksRendererProps {
   blocks: HomepageBlock[];
   posts?: any[];
+  homepageConfig?: HomepageConfig; // Dữ liệu từ PUBLISHED settings (nếu có)
 }
 
-export async function BlocksRenderer({ blocks, posts = [] }: BlocksRendererProps) {
-  // Get footer data for footer block
-  const homepageConfig = await getHomepageConfig();
+// Mapping block types to section keys in HomepageConfig
+const blockToSectionMap: Record<string, keyof HomepageConfig> = {
+  hero: 'hero',
+  about: 'about',
+  feature: 'features',
+  promotion: 'promotion',
+  ticket: 'ticket',
+  tourList: 'tourPricing',
+  homestay: 'homestay',
+  testimonial: 'socialProof',
+  socialProof: 'socialProof',
+  gallery: 'gallery',
+  videoGuide: 'videoGuide',
+  faq: 'faq',
+  restaurant: 'restaurant',
+  certificates: 'certificates',
+  latestPosts: 'latestPosts',
+  map: 'map',
+  cta: 'ctaBooking',
+  ctaBooking: 'ctaBooking',
+  pricingSnapshot: 'pricingSnapshot',
+  policyLinks: 'policyLinks',
+  footer: 'footer',
+};
+
+export async function BlocksRenderer({ blocks, posts = [], homepageConfig: settingsConfig }: BlocksRendererProps) {
+  // Get footer data for footer block (fallback nếu không có trong settings)
+  const defaultConfig = await getHomepageConfig();
+  // Ưu tiên settingsConfig nếu có (PUBLISHED settings), nếu không thì dùng defaultConfig
+  const homepageConfig = settingsConfig || defaultConfig;
+  
   // Helper to convert block fields to section data format
   const convertBlockToSection = (block: HomepageBlock): any => {
     switch (block.type) {
@@ -223,11 +253,28 @@ export async function BlocksRenderer({ blocks, posts = [] }: BlocksRendererProps
     }
   };
 
-  // Get config for sections that need multiple data sources
-  const getHomepageConfigForBlocks = async (): Promise<Partial<HomepageConfig>> => {
-    // This will be called server-side, but since we're in client component,
-    // we'll need to pass it as props or fetch it
-    return {};
+  // Helper to merge block fields with settings data
+  // Priority: Settings data (nếu có) > Block fields
+  // Blocks định nghĩa thứ tự hiển thị (sortOrder), nhưng dữ liệu có thể lấy từ PUBLISHED settings
+  const mergeBlockWithSettings = (block: HomepageBlock): any => {
+    const sectionKey = blockToSectionMap[block.type];
+    const settingsData = sectionKey && homepageConfig?.[sectionKey];
+    
+    // Nếu có dữ liệu từ PUBLISHED settings, merge với block fields (settings ưu tiên)
+    if (settingsData && typeof settingsData === 'object') {
+      // Merge: settings data làm base, block fields làm fallback cho các field không có trong settings
+      const blockData = convertBlockToSection(block);
+      return {
+        ...blockData, // Block fields làm fallback
+        ...settingsData, // Settings data ưu tiên (ghi đè block fields)
+        // Giữ lại một số field quan trọng từ block nếu settings không có
+        isVisible: settingsData.isVisible !== undefined ? settingsData.isVisible : (blockData.isVisible ?? true),
+        isActive: settingsData.isActive !== undefined ? settingsData.isActive : (blockData.isActive ?? block.fields.isActive ?? true),
+      };
+    }
+    
+    // Nếu không có settings data, dùng block fields
+    return convertBlockToSection(block);
   };
 
   // Ensure blocks are sorted by sortOrder (should already be sorted from query, but double-check)
@@ -239,7 +286,8 @@ export async function BlocksRenderer({ blocks, posts = [] }: BlocksRendererProps
         <OrganizationSchema />
         
         {sortedBlocks.map((block) => {
-          const sectionData = convertBlockToSection(block);
+          // Merge block data with settings data (settings có ưu tiên cao hơn)
+          const sectionData = mergeBlockWithSettings(block);
           
           switch (block.type) {
             case 'hero':
@@ -259,8 +307,18 @@ export async function BlocksRenderer({ blocks, posts = [] }: BlocksRendererProps
                 <PricingSnapshotModern
                   key={block.id}
                   pricingSnapshotData={sectionData}
-                  ticketData={blocks.find(b => b.type === 'ticket')?.fields}
-                  tourData={blocks.find(b => b.type === 'tourList')?.fields}
+                  ticketData={(() => {
+                    const ticketBlock = sortedBlocks.find(b => b.type === 'ticket');
+                    return ticketBlock ? mergeBlockWithSettings(ticketBlock) : undefined;
+                  })()}
+                  tourData={(() => {
+                    const tourBlock = sortedBlocks.find(b => b.type === 'tourList' || b.type === 'tourPricing');
+                    return tourBlock ? mergeBlockWithSettings(tourBlock) : undefined;
+                  })()}
+                  homestayData={(() => {
+                    const homestayBlock = sortedBlocks.find(b => b.type === 'homestay');
+                    return homestayBlock ? mergeBlockWithSettings(homestayBlock) : undefined;
+                  })()}
                 />
               ) : null;
             case 'tourList':

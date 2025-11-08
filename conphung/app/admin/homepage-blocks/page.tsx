@@ -181,6 +181,8 @@ export default function HomepageBlocksPage() {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [newBlockType, setNewBlockType] = useState('');
   const [hasPublishedSettings, setHasPublishedSettings] = useState(false);
+  const [autoSyncEnabled, setAutoSyncEnabled] = useState(true); // Auto-sync khi sắp xếp
+  const [lastSyncResult, setLastSyncResult] = useState<{ success: boolean; blocksCount?: number; error?: string } | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -217,6 +219,8 @@ export default function HomepageBlocksPage() {
       
       const data = await response.json();
       setBlocks(data.blocks || []);
+      // Reset sync result khi load lại blocks
+      setLastSyncResult(null);
     } catch (error) {
       console.error('Error loading blocks:', error);
       setStatus('error');
@@ -239,7 +243,9 @@ export default function HomepageBlocksPage() {
     const newBlocks = arrayMove(blocks, oldIndex, newIndex);
     setBlocks(newBlocks);
 
-    // Update sortOrder in database
+    // IMPORTANT: Chỉ update sortOrder, KHÔNG sync về settings
+    // Homepage-blocks và homepage-settings là 2 hệ thống độc lập
+    // Kéo thả chỉ sắp xếp blocks, không ảnh hưởng đến dữ liệu trong settings
     try {
       const updates = newBlocks.map((block, index) => ({
         id: block.id,
@@ -255,6 +261,53 @@ export default function HomepageBlocksPage() {
       if (!response.ok) {
         throw new Error('Failed to update sort order');
       }
+
+      // Auto-sync dữ liệu blocks sang Home Settings (nếu bật)
+      // Điều này đảm bảo dữ liệu fields và thứ tự sắp xếp của blocks được sync sang Home Settings
+      // Reset sync result trước khi sync
+      setLastSyncResult(null);
+      if (autoSyncEnabled) {
+        try {
+          console.log("🔄 Đang tự động đồng bộ dữ liệu blocks sang Home Settings...");
+          const syncResponse = await fetch('/api/admin/homepage-blocks/sync-to-settings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              status: 'DRAFT', // Luôn sync sang DRAFT để không ảnh hưởng PUBLISHED settings
+            }),
+          });
+
+          if (syncResponse.ok) {
+            const syncResult = await syncResponse.json();
+            const blocksCount = syncResult.blocksCount || newBlocks.length;
+            console.log(`✅ Đã tự động đồng bộ ${blocksCount} blocks sang Home Settings (DRAFT)`);
+            // Lưu kết quả sync để hiển thị trong message
+            setLastSyncResult({ success: true, blocksCount });
+            // Check lại published settings
+            await checkPublishedSettings();
+          } else {
+            const errorData = await syncResponse.json().catch(() => ({}));
+            const errorMsg = errorData.error || 'Unknown error';
+            console.warn("⚠️ Không thể tự động đồng bộ:", errorMsg);
+            console.log("💡 Thứ tự blocks đã được cập nhật, nhưng dữ liệu chưa được sync. Bạn có thể sync thủ công bằng button 'Đồng bộ về Home Settings'");
+            // Lưu kết quả lỗi
+            setLastSyncResult({ success: false, error: errorMsg });
+          }
+        } catch (syncError) {
+          // Không fail cả process nếu sync lỗi, chỉ log warning
+          const errorMsg = syncError instanceof Error ? syncError.message : 'Unknown error';
+          console.warn('Auto-sync failed (non-critical):', syncError);
+          console.log("💡 Thứ tự blocks đã được cập nhật, nhưng dữ liệu chưa được sync. Bạn có thể sync thủ công bằng button 'Đồng bộ về Home Settings'");
+          // Lưu kết quả lỗi
+          setLastSyncResult({ success: false, error: errorMsg });
+        }
+      }
+
+      // Show success message
+      setStatus('success');
+      setErrorMessage('');
+      // Message sẽ hiển thị thông tin về auto-sync trong component Alert
+      setTimeout(() => setStatus('idle'), 5000); // Tăng thời gian hiển thị để user đọc thông tin sync
     } catch (error) {
       console.error('Error updating sort order:', error);
       // Revert on error
@@ -278,6 +331,28 @@ export default function HomepageBlocksPage() {
       }
 
       await loadBlocks();
+      
+      // Auto-sync sau khi save block (nếu bật)
+      if (autoSyncEnabled) {
+        try {
+          const syncResponse = await fetch('/api/admin/homepage-blocks/sync-to-settings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              status: 'DRAFT',
+            }),
+          });
+
+          if (syncResponse.ok) {
+            const syncResult = await syncResponse.json();
+            setLastSyncResult({ success: true, blocksCount: syncResult.blocksCount });
+            console.log(`✅ Đã tự động đồng bộ sau khi lưu block: ${syncResult.blocksCount} blocks`);
+          }
+        } catch (syncError) {
+          console.warn('Auto-sync after save failed (non-critical):', syncError);
+        }
+      }
+      
       setStatus('success');
       setTimeout(() => setStatus('idle'), 3000);
     } catch (error) {
@@ -383,7 +458,20 @@ export default function HomepageBlocksPage() {
   }
 
   async function handleSyncToSettings() {
-    if (!confirm('Bạn có chắc muốn đồng bộ blocks về Home Settings? Điều này sẽ ghi đè dữ liệu hiện tại trong Home Settings.')) {
+    // Cảnh báo rõ ràng về việc sync
+    const warningMessage = hasPublishedSettings
+      ? '⚠️ CẢNH BÁO: Hiện có Home Settings đã được PUBLISHED.\n\n' +
+        'Bạn có chắc muốn đồng bộ blocks về Home Settings?\n\n' +
+        '⚠️ Điều này sẽ GHI ĐÈ dữ liệu hiện tại trong Home Settings.\n' +
+        '📌 Dữ liệu trong PUBLISHED settings sẽ bị thay thế bởi dữ liệu từ blocks.\n' +
+        '✅ Blocks sẽ được lưu dưới dạng DRAFT, không ảnh hưởng đến PUBLISHED settings hiện tại.\n\n' +
+        'Bạn có muốn tiếp tục?'
+      : 'Bạn có chắc muốn đồng bộ blocks về Home Settings?\n\n' +
+        '⚠️ Điều này sẽ ghi đè dữ liệu hiện tại trong Home Settings (nếu có).\n' +
+        '✅ Blocks sẽ được lưu dưới dạng DRAFT.\n\n' +
+        'Bạn có muốn tiếp tục?';
+
+    if (!confirm(warningMessage)) {
       return;
     }
 
@@ -393,7 +481,7 @@ export default function HomepageBlocksPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          status: 'DRAFT', // Save as draft first
+          status: 'DRAFT', // Save as draft first - KHÔNG ghi đè PUBLISHED settings
         }),
       });
 
@@ -405,10 +493,23 @@ export default function HomepageBlocksPage() {
       const result = await response.json();
       setStatus('success');
       setErrorMessage('');
-      setTimeout(() => setStatus('idle'), 5000);
+      // Lưu kết quả sync
+      setLastSyncResult({ success: true, blocksCount: result.blocksCount });
+      
+      // Show success message
+      if (hasPublishedSettings) {
+        // Nếu có PUBLISHED settings, cảnh báo rằng DRAFT settings mới sẽ không được hiển thị
+        setTimeout(() => {
+          setStatus('idle');
+        }, 7000);
+      } else {
+        setTimeout(() => setStatus('idle'), 5000);
+      }
       
       // Check again for published settings
       await checkPublishedSettings();
+      
+      // NOTE: Không cần reload blocks vì sync chỉ update settings, không thay đổi blocks
     } catch (error) {
       console.error('Error syncing to settings:', error);
       setStatus('error');
@@ -428,14 +529,42 @@ export default function HomepageBlocksPage() {
 
   return (
     <div className="space-y-8">
-      {/* Warning Alert */}
+      {/* Info Alert - Blocks luôn được hiển thị */}
       {hasPublishedSettings && (
-        <Alert variant="destructive" className="mb-6">
-          <AlertCircle className="h-4 w-4" />
+        <Alert className="mb-6 border-blue-200 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-800">
+          <AlertCircle className="h-4 w-4 text-blue-600 dark:text-blue-400" />
           <AlertDescription>
-            <strong>Cảnh báo:</strong> Hiện có Home Settings đã được PUBLISHED. 
-            Blocks sẽ không được hiển thị trên homepage khi có PUBLISHED settings. 
-            Nếu muốn sử dụng blocks, hãy chuyển Home Settings về DRAFT hoặc xóa PUBLISHED settings.
+            <div className="space-y-2">
+              <p>
+                <strong>ℹ️ Thông tin:</strong> Hiện có Home Settings đã được PUBLISHED.
+              </p>
+              <p>
+                <strong>📌 Quan trọng:</strong>
+              </p>
+              <ul className="list-disc list-inside space-y-1 ml-4">
+                <li>
+                  <strong className="text-green-600">Blocks LUÔN được hiển thị trên homepage</strong> để sắp xếp thứ tự các section.
+                </li>
+                <li>
+                  <strong>Blocks và Settings là 2 hệ thống độc lập.</strong> Kéo thả blocks chỉ sắp xếp thứ tự, 
+                  <strong className="text-green-600"> KHÔNG ảnh hưởng đến dữ liệu trong Home Settings.</strong>
+                </li>
+                <li>
+                  <strong>Homepage sẽ ưu tiên hiển thị Blocks</strong> (nếu có blocks) để quản lý thứ tự hiển thị.
+                </li>
+                <li>
+                  PUBLISHED Settings chỉ để <strong>lưu dữ liệu</strong>, nhưng Blocks mới quyết định <strong>hiển thị và sắp xếp</strong>.
+                </li>
+              </ul>
+              <p className="text-sm mt-2 text-green-600">
+                ✅ <strong>Dữ liệu trong Home Settings được bảo vệ:</strong> Kéo thả blocks không làm mất dữ liệu đã sửa trong Home Settings.
+              </p>
+              {autoSyncEnabled && (
+                <p className="text-sm mt-2 text-blue-600">
+                  🔄 <strong>Tự động đồng bộ đã bật:</strong> Khi sắp xếp blocks, dữ liệu sẽ tự động sync sang Home Settings (DRAFT).
+                </p>
+              )}
+            </div>
           </AlertDescription>
         </Alert>
       )}
@@ -447,6 +576,26 @@ export default function HomepageBlocksPage() {
           <p className="text-gray-500 mt-2">
             Quản lý các block hiển thị trên trang chủ. Kéo thả để sắp xếp thứ tự.
           </p>
+          <div className="flex items-center gap-2 mt-2">
+            <label className="flex items-center gap-2 text-sm cursor-pointer">
+              <input
+                type="checkbox"
+                checked={autoSyncEnabled}
+                onChange={(e) => setAutoSyncEnabled(e.target.checked)}
+                className="w-4 h-4 rounded border-gray-300"
+              />
+              <span className="text-gray-600">
+                {autoSyncEnabled ? (
+                  <span className="text-green-600 font-medium">✓ Tự động đồng bộ dữ liệu khi sắp xếp</span>
+                ) : (
+                  <span>⨯ Tắt tự động đồng bộ</span>
+                )}
+              </span>
+            </label>
+            <span className="text-xs text-gray-400">
+              (Khi bật: Dữ liệu blocks sẽ tự động sync sang Home Settings khi kéo thả)
+            </span>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <Button
@@ -648,7 +797,84 @@ export default function HomepageBlocksPage() {
       {status === 'success' && (
         <Alert>
           <CheckCircle2 className="h-4 w-4" />
-          <AlertDescription>Thao tác thành công!</AlertDescription>
+          <AlertDescription>
+            {hasPublishedSettings ? (
+              <div>
+                <p className="font-semibold">✅ Đã sắp xếp blocks thành công!</p>
+                {autoSyncEnabled && lastSyncResult?.success ? (
+                  <>
+                    <p className="text-sm mt-1 text-green-600">
+                      ✅ Đã tự động đồng bộ {lastSyncResult.blocksCount || blocks.length} blocks sang Home Settings (DRAFT).
+                    </p>
+                    <p className="text-sm mt-1 text-gray-600">
+                      💡 Dữ liệu fields và thứ tự sắp xếp đã được cập nhật. Blocks sẽ được hiển thị trên homepage.
+                    </p>
+                  </>
+                ) : autoSyncEnabled && lastSyncResult && !lastSyncResult.success ? (
+                  <>
+                    <p className="text-sm mt-1 text-yellow-600">
+                      ⚠️ Thứ tự đã được cập nhật, nhưng đồng bộ dữ liệu thất bại: {lastSyncResult.error || 'Unknown error'}
+                    </p>
+                    <p className="text-sm mt-1 text-gray-600">
+                      💡 Vui lòng click "Đồng bộ về Home Settings" để sync thủ công.
+                    </p>
+                  </>
+                ) : autoSyncEnabled ? (
+                  <>
+                    <p className="text-sm mt-1 text-blue-600">
+                      🔄 Đang đồng bộ dữ liệu sang Home Settings...
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-sm mt-1 text-yellow-600">
+                      ⚠️ Dữ liệu chưa được đồng bộ. Bật "Tự động đồng bộ" hoặc click "Đồng bộ về Home Settings" để sync.
+                    </p>
+                    <p className="text-sm mt-1 text-green-600">
+                      💡 Blocks sẽ được hiển thị trên homepage để sắp xếp thứ tự các section.
+                    </p>
+                  </>
+                )}
+                <p className="text-sm mt-1 text-green-600">
+                  ✅ PUBLISHED Settings được bảo vệ, không bị ảnh hưởng.
+                </p>
+              </div>
+            ) : autoSyncEnabled && lastSyncResult?.success ? (
+              <div>
+                <p className="font-semibold">✅ Đã sắp xếp và đồng bộ blocks thành công!</p>
+                <p className="text-sm mt-1 text-green-600">
+                  ✅ Đã tự động đồng bộ {lastSyncResult.blocksCount || blocks.length} blocks sang Home Settings (DRAFT).
+                </p>
+                <p className="text-sm mt-1 text-gray-600">
+                  💡 Dữ liệu fields và thứ tự sắp xếp đã được cập nhật trong Home Settings.
+                </p>
+              </div>
+            ) : autoSyncEnabled && lastSyncResult && !lastSyncResult.success ? (
+              <div>
+                <p className="font-semibold">✅ Đã sắp xếp blocks thành công!</p>
+                <p className="text-sm mt-1 text-yellow-600">
+                  ⚠️ Thứ tự đã được cập nhật, nhưng đồng bộ dữ liệu thất bại: {lastSyncResult.error || 'Unknown error'}
+                </p>
+                <p className="text-sm mt-1 text-gray-600">
+                  💡 Vui lòng click "Đồng bộ về Home Settings" để sync thủ công.
+                </p>
+              </div>
+            ) : autoSyncEnabled ? (
+              <div>
+                <p className="font-semibold">✅ Đã sắp xếp blocks thành công!</p>
+                <p className="text-sm mt-1 text-blue-600">
+                  🔄 Đang đồng bộ dữ liệu sang Home Settings...
+                </p>
+              </div>
+            ) : (
+              <div>
+                <p className="font-semibold">✅ Đã sắp xếp blocks thành công!</p>
+                <p className="text-sm mt-1 text-yellow-600">
+                  ⚠️ Dữ liệu chưa được đồng bộ. Bật "Tự động đồng bộ" hoặc click "Đồng bộ về Home Settings" để sync.
+                </p>
+              </div>
+            )}
+          </AlertDescription>
         </Alert>
       )}
       {status === 'error' && (

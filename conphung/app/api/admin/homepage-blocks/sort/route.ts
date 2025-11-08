@@ -4,6 +4,9 @@ import { authOptions } from '@/lib/auth/auth-options';
 import { prisma } from '@/lib/prisma';
 
 // PATCH - Update sort order for multiple blocks (drag & drop)
+// IMPORTANT: This API ONLY updates sortOrder, it does NOT sync to homepage-settings
+// Homepage-blocks and homepage-settings are independent systems
+// Dragging and dropping blocks only changes their order, it does not affect homepage-settings data
 export async function PATCH(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
@@ -32,13 +35,16 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
-    // Update all blocks in a transaction
+    // IMPORTANT: Only update sortOrder, do NOT modify fields or sync to settings
+    // This ensures homepage-settings data is preserved when sorting blocks
     const updates = blocks.map((block: { id: string; sortOrder: number }) =>
       prisma.homepageBlock.update({
         where: { id: block.id },
         data: {
           sortOrder: block.sortOrder,
           updatedBy: session.user.id,
+          // NOTE: We only update sortOrder, not fields or other data
+          // This keeps blocks and settings independent
         },
       })
     );
@@ -48,6 +54,7 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({
       success: true,
       message: 'Sort order updated successfully',
+      note: 'Blocks sorted. Homepage-settings data is preserved and not affected.',
     });
   } catch (error: any) {
     console.error('Error updating sort order:', error);

@@ -15,12 +15,8 @@ const MAX_LIMIT = 50;
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
-  const session = await getServerSession(authOptions);
-  const role = session?.user?.role;
-  if (!session?.user?.id || !role || !['ADMIN', 'EDITOR'].includes(role)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
+  // Media GET cho phép public (không cần authentication)
+  // Middleware đã xử lý authentication, nếu đến đây nghĩa là được phép
   try {
     const searchParams = request.nextUrl.searchParams;
     const page = Math.max(parseInt(searchParams.get('page') ?? '1', 10), 1);

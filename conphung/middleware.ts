@@ -8,8 +8,35 @@ export async function middleware(request: NextRequest) {
   // Protect API routes
   if (request.nextUrl.pathname.startsWith('/api/')) {
     // Public routes that don't require authentication
-    const publicRoutes = ['/api/auth']
+    const publicRoutes = [
+      '/api/auth',
+      '/api/public',
+      '/api/health',
+      '/api/analytics',
+      '/api/search',
+      '/api/tours',
+      '/api/homestays',
+      '/api/bookings',
+      '/api/promotions',
+      '/api/contact',
+      '/api/payment',
+    ]
+    
+    // GET requests cho một số routes public (read-only, không cần authentication)
+    const publicGetRoutes = [
+      '/api/categories',
+      '/api/tags',
+      '/api/posts',
+      '/api/media', // Media GET cho phép public (listing only)
+    ]
+    
+    // Check if it's a public route
     if (publicRoutes.some(route => request.nextUrl.pathname.startsWith(route))) {
+      return NextResponse.next()
+    }
+    
+    // Check if it's a public GET route
+    if (request.method === 'GET' && publicGetRoutes.some(route => request.nextUrl.pathname.startsWith(route))) {
       return NextResponse.next()
     }
 

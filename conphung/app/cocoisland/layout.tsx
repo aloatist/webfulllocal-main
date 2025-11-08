@@ -16,6 +16,15 @@ export async function generateMetadata(): Promise<Metadata> {
     title: "Homestay Coco Island - Khu du lịch Cồn Phụng Bến Tre",
     description:
       "Homestay Coco Island chính chủ tại Cồn Phụng Bến Tre với 30 phòng lưu trú sát sông, cầu dừa 300m, dịch vụ tour - ăn uống chuẩn miền Tây.",
+    // Không index trang cocoisland
+    robots: {
+      index: false,
+      follow: false,
+      googleBot: {
+        index: false,
+        follow: false,
+      },
+    },
     openGraph: {
       title: "Homestay Coco Island - Khu du lịch Cồn Phụng Bến Tre",
       description:

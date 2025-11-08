@@ -42,3 +42,6 @@ dev.log
 dev-frontend.log
 .backend.pid
 .frontend.pid
+*.log
+*.pid
+logs/

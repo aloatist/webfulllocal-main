@@ -1,7 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter as FontSans } from "next/font/google";
 import { ThemeProvider } from "@/components/theme/theme-provider";
-import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 import { Button } from "@/components/ui/button";
 import { MobileNav } from "@/components/nav/mobile-nav";
@@ -18,7 +16,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { teamMembers } from '../components/teamMembers';
-import { SpeedInsights } from "@vercel/speed-insights/next"
 import { SessionProviderWrapper } from "@/components/providers/session-provider";
 import { getDefaultMenuItems } from "@/lib/navigation/server";
 import type { NavigationMenuItem } from "@/lib/navigation/types";
@@ -26,15 +23,10 @@ import { PWARegister } from "@/components/pwa/pwa-register";
 import { MobileBottomNav } from "@/components/mobile/bottom-nav";
 import { DefaultChatProvider } from "@/components/chat/chat-provider";
 import { FooterWrapper } from "@/components/footer/footer-wrapper";
-
-
-
-
-const fontSans = FontSans({
-  subsets: ["latin"],
-  variable: "--font-sans",
-  display: "swap",
-});
+// Tạm thời disable Google Fonts vì không kết nối được trong build
+// Sử dụng system fonts thay thế với font tiếng Việt tốt
+// CSS variables được set trong globals.css
+// import { Be_Vietnam_Pro, Inter } from "next/font/google";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -130,9 +122,8 @@ export default async function RootLayout({
 
   return (
     <html lang="vi" suppressHydrationWarning>
-      <head />
       <body
-        className={cn("min-h-screen font-sans antialiased", fontSans.variable)}
+        className={cn("min-h-screen font-sans antialiased")}
       >
         <SessionProviderWrapper>
           <ThemeProvider
@@ -158,9 +149,6 @@ export default async function RootLayout({
 
          </ThemeProvider>
         </SessionProviderWrapper>
-        
-        {/* <Analytics /> */}
-        {/* <SpeedInsights /> */}
 
         {/* Register Service Worker */}
         <script
@@ -234,9 +222,10 @@ const Nav = ({ className, children, id, items }: NavProps) => {
               </Button>
             ))}
           </div>
-        <Link className="mx-2 hidden md:flex" href={"https://cocoisland.vn"}>
+        {/* Link cocoisland.vn đã bị xóa - không sử dụng */}
+        {/* <Link className="mx-2 hidden md:flex" href={"https://cocoisland.vn"}>
      Đặt phòng Coco Island
-     </Link>
+     </Link> */}
  
         <Button asChild className="hidden sm:flex">
           <Link href="tel:+84917645039">Đặt tour ngay</Link>

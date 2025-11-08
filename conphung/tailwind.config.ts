@@ -38,7 +38,14 @@ const config = {
     },
     extend: {
       fontFamily: {
-        sans: ["var(--font-sans)", ...fontFamily.sans],
+        sans: [
+          "var(--font-be-vietnam-pro, Arial)",
+          "var(--font-inter, Arial)",
+          "Arial",
+          '"Helvetica Neue"',
+          "Helvetica",
+          "sans-serif",
+        ],
       },
       colors: {
         border: "hsl(var(--border))",

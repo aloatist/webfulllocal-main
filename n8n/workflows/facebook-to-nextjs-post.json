@@ -1,0 +1,469 @@
+{
+  "name": "Facebook to Next.js Post Import",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 15
+            }
+          ]
+        }
+      },
+      "id": "cron-trigger",
+      "name": "Cron Trigger - Every 15 Minutes",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "webhookId": ""
+    },
+    {
+      "parameters": {
+        "resource": "pagePosts",
+        "operation": "getAll",
+        "pageId": "={{ $env.FACEBOOK_PAGE_ID }}",
+        "fields": "id,message,created_time,full_picture,attachments{media{image{src}},subattachments{media{image{src}}}},permalink_url,story",
+        "returnAll": false,
+        "limit": "={{ $env.FACEBOOK_POSTS_LIMIT || 10 }}",
+        "additionalFields": {
+          "since": "={{ $env.FACEBOOK_FETCH_SINCE || '' }}"
+        }
+      },
+      "id": "facebook-graph-api",
+      "name": "Get Facebook Posts",
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [450, 300],
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "1",
+          "name": "Facebook Page API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Split items to process each post individually\nconst items = $input.all();\nreturn items.map(item => item.json);"
+      },
+      "id": "split-posts",
+      "name": "Split Posts",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "has-message",
+              "leftValue": "={{ $json.message || $json.story }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "filter-empty",
+      "name": "Filter Empty Posts",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [850, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.NEXTJS_API_URL || 'http://localhost:3000' }}/api/integrations/facebook/check-duplicate",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "X-API-Key",
+              "value": "={{ $env.NEXTJS_API_KEY || $env.N8N_WEBHOOK_SECRET }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "facebookPostId",
+              "value": "={{ $json.id }}"
+            },
+            {
+              "name": "permalink",
+              "value": "={{ $json.permalink_url }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "check-duplicate",
+      "name": "Check Duplicate",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1050, 300],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "2",
+          "name": "Next.js API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "is-duplicate",
+              "leftValue": "={{ $json.duplicate }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "is-duplicate-check",
+      "name": "Is Duplicate?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1250, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Process images from Facebook post\nconst post = $input.first().json;\nconst imageUrls = [];\n\n// Add main image if exists\nif (post.full_picture) {\n  imageUrls.push(post.full_picture);\n}\n\n// Add images from attachments\nif (post.attachments && post.attachments.data) {\n  for (const attachment of post.attachments.data) {\n    if (attachment.media && attachment.media.image && attachment.media.image.src) {\n      imageUrls.push(attachment.media.image.src);\n    }\n    // Handle subattachments\n    if (attachment.subattachments && attachment.subattachments.data) {\n      for (const sub of attachment.subattachments.data) {\n        if (sub.media && sub.media.image && sub.media.image.src) {\n          imageUrls.push(sub.media.image.src);\n        }\n      }\n    }\n  }\n}\n\n// Limit to 10 images to avoid timeout\nconst limitedImages = imageUrls.slice(0, 10);\n\nreturn [{\n  json: {\n    ...post,\n    imageUrls: limitedImages,\n    imageCount: limitedImages.length\n  }\n}];"
+      },
+      "id": "process-images",
+      "name": "Process Images",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1450, 200]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Convert text to markdown and extract hashtags\nconst post = $input.first().json;\nconst originalText = post.message || post.story || '';\n\n// Text to Markdown conversion\nfunction textToMarkdown(text) {\n  if (!text) return '';\n  \n  let markdown = text\n    .replace(/\\n{3,}/g, '\\n\\n') // Multiple line breaks → double line break\n    .trim();\n  \n  // Preserve paragraphs\n  const paragraphs = markdown.split('\\n\\n').map(p => p.trim()).filter(p => p);\n  markdown = paragraphs.join('\\n\\n');\n  \n  return markdown;\n}\n\n// Extract hashtags\nfunction extractHashtags(text) {\n  if (!text) return [];\n  const hashtagRegex = /#([\\w\\u00C0-\\u1EF9]+)/g;\n  const matches = text.match(hashtagRegex) || [];\n  const tags = matches\n    .map(tag => tag.replace('#', '').toLowerCase().trim())\n    .filter((tag, index, self) => tag && self.indexOf(tag) === index);\n  return tags;\n}\n\nconst markdown = textToMarkdown(originalText);\nconst hashtags = extractHashtags(originalText);\n\nreturn [{\n  json: {\n    ...post,\n    markdown,\n    hashtags,\n    originalText\n  }\n}];"
+      },
+      "id": "text-to-markdown",
+      "name": "Text to Markdown",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1650, 200]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.NEXTJS_API_URL || 'http://localhost:3000' }}/api/integrations/facebook/import",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "X-API-Key",
+              "value": "={{ $env.NEXTJS_API_KEY || $env.N8N_WEBHOOK_SECRET }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyContentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"facebookPost\": {\n    \"id\": \"{{ $json.id }}\",\n    \"message\": \"{{ $json.message }}\",\n    \"story\": \"{{ $json.story }}\",\n    \"created_time\": \"{{ $json.created_time }}\",\n    \"full_picture\": \"{{ $json.full_picture }}\",\n    \"permalink_url\": \"{{ $json.permalink_url }}\",\n    \"attachments\": {{ $json.attachments || {} }}\n  },\n  \"status\": \"DRAFT\",\n  \"skipDuplicateCheck\": false\n}",
+        "options": {}
+      },
+      "id": "create-post",
+      "name": "Create Post in Next.js",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1850, 200],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "2",
+          "name": "Next.js API"
+        }
+      },
+      "notes": "This node calls the Next.js API to import the Facebook post. The API will handle image uploads, tag creation, and post creation."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "is-success",
+              "leftValue": "={{ $json.success }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "check-success",
+      "name": "Check Success",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [2050, 200]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.NEXTJS_API_URL || 'http://localhost:3000' }}/api/integrations/n8n",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "X-N8N-Secret",
+              "value": "={{ $env.N8N_WEBHOOK_SECRET }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyContentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"operation\": \"facebook.import.success\",\n  \"message\": \"Successfully imported Facebook post\",\n  \"payload\": {\n    \"postId\": \"{{ $json.post.id }}\",\n    \"title\": \"{{ $json.post.title }}\",\n    \"uploadedImages\": \"{{ $json.uploadedImages }}\",\n    \"tagsCreated\": \"{{ $json.tagsCreated }}\",\n    \"facebookPostId\": \"{{ $('Get Facebook Posts').item.json.id }}\"\n  }\n}",
+        "options": {}
+      },
+      "id": "log-success",
+      "name": "Log Success",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2250, 100],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "2",
+          "name": "Next.js API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.NEXTJS_API_URL || 'http://localhost:3000' }}/api/integrations/n8n",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "X-N8N-Secret",
+              "value": "={{ $env.N8N_WEBHOOK_SECRET }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyContentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"operation\": \"facebook.import.error\",\n  \"message\": \"Failed to import Facebook post\",\n  \"payload\": {\n    \"error\": \"{{ $json.error }}\",\n    \"details\": \"{{ $json.details }}\",\n    \"facebookPostId\": \"{{ $('Get Facebook Posts').item.json.id }}\"\n  }\n}",
+        "options": {}
+      },
+      "id": "log-error",
+      "name": "Log Error",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2250, 300],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "2",
+          "name": "Next.js API"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Cron Trigger - Every 15 Minutes": {
+      "main": [
+        [
+          {
+            "node": "Get Facebook Posts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Facebook Posts": {
+      "main": [
+        [
+          {
+            "node": "Split Posts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Posts": {
+      "main": [
+        [
+          {
+            "node": "Filter Empty Posts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Empty Posts": {
+      "main": [
+        [
+          {
+            "node": "Check Duplicate",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Check Duplicate": {
+      "main": [
+        [
+          {
+            "node": "Is Duplicate?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Duplicate?": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Process Images",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Images": {
+      "main": [
+        [
+          {
+            "node": "Text to Markdown",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text to Markdown": {
+      "main": [
+        [
+          {
+            "node": "Create Post in Next.js",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Post in Next.js": {
+      "main": [
+        [
+          {
+            "node": "Check Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Success": {
+      "main": [
+        [
+          {
+            "node": "Log Success",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Log Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "createdAt": "2025-01-27T00:00:00.000Z",
+      "updatedAt": "2025-01-27T00:00:00.000Z",
+      "id": "facebook-import",
+      "name": "facebook-import"
+    },
+    {
+      "createdAt": "2025-01-27T00:00:00.000Z",
+      "updatedAt": "2025-01-27T00:00:00.000Z",
+      "id": "nextjs",
+      "name": "nextjs"
+    },
+    {
+      "createdAt": "2025-01-27T00:00:00.000Z",
+      "name": "automation"
+    }
+  ],
+  "triggerCount": 0,
+  "updatedAt": "2025-01-27T00:0000.000Z",
+  "versionId": "1.0.0"
+}

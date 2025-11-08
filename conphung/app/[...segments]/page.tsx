@@ -9,6 +9,10 @@ import { loadThemePage } from '@/lib/theme/loader';
 import { convertPageComponent } from '@/lib/theme/pages-router-adapter';
 import { notFound } from 'next/navigation';
 
+// Force dynamic rendering since we use cookies for theme preview
+export const dynamic = 'force-dynamic';
+export const dynamicParams = true;
+
 interface PageProps {
   params: {
     segments?: string[];

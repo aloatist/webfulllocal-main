@@ -2,7 +2,27 @@
 
 ## 📋 Overview
 
-These n8n workflows handle automated posting to social media platforms.
+These n8n workflows handle automated posting to social media platforms and importing content from social media to the website.
+
+## 📁 Available Workflows
+
+### 1. Facebook to Next.js Post Import
+**File**: `facebook-to-nextjs-post.json`  
+**Documentation**: `FACEBOOK_IMPORT_SETUP.md`
+
+Workflow tự động import bài viết từ Facebook Page về website Next.js:
+- Lấy bài viết từ Facebook (chạy định kỳ mỗi 15 phút)
+- Upload ảnh lên Cloudinary
+- Chuyển đổi text → Markdown
+- Extract hashtags → Tags
+- Tạo post trong Next.js với status DRAFT
+
+Xem chi tiết trong [FACEBOOK_IMPORT_SETUP.md](./FACEBOOK_IMPORT_SETUP.md)
+
+### 2. Social Media Auto-Post
+**File**: `social-media-auto-post.json`
+
+Workflow tự động đăng bài từ website lên các platform social media.
 
 ## 🚀 Setup Instructions
 

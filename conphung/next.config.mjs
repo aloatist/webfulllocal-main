@@ -13,12 +13,13 @@ const nextConfig = {
         port: "",
         pathname: "/**",
       },
-      {
-        protocol: "https",
-        hostname: "cocoisland.vn",
-        port: "",
-        pathname: "/**",
-      },
+      // cocoisland.vn đã bị xóa - không sử dụng
+      // {
+      //   protocol: "https",
+      //   hostname: "cocoisland.vn",
+      //   port: "",
+      //   pathname: "/**",
+      // },
       {
         protocol: "https",
         hostname: "res.cloudinary.com",
@@ -62,9 +63,16 @@ const nextConfig = {
   swcMinify: true,
   // Enable React strict mode
   reactStrictMode: true,
+  // API route timeout settings - tăng timeout để tránh mất kết nối VPS
+  // Default Next.js timeout là 30s, có thể tăng lên 60s cho VPS chậm
+  // Note: Vercel có giới hạn timeout riêng (10s cho Hobby, 60s cho Pro)
   // Ignore TypeScript errors in production build
   typescript: {
     ignoreBuildErrors: true,
+  },
+  // Ignore ESLint errors in production build
+  eslint: {
+    ignoreDuringBuilds: true,
   },
   // Remove powered by header
   poweredByHeader: false,

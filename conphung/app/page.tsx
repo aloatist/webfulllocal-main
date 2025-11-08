@@ -86,18 +86,20 @@ export default async function Home() {
   // Load active template
   const activeTemplate = await getActiveTemplateServer();
   
-  // Priority 1: Load homepage config (already includes HomepageSettings.sections priority)
-  // getHomepageConfig() now checks HomepageSettings.sections (PUBLISHED) first, then HomepageSection
+  // Priority 1: Load blocks (blocks system) - Blocks luôn được ưu tiên để sắp xếp thứ tự hiển thị
+  // Blocks được sử dụng để quản lý thứ tự và hiển thị các section trên homepage
+  
+  // Priority 2: Load homepage config (fallback nếu không có blocks)
+  // getHomepageConfig() checks HomepageSettings.sections (PUBLISHED) first, then HomepageSection
   const homepageConfig = await getHomepageConfig();
 
-  // Priority 2: Try to load blocks (blocks system) - only use if no PUBLISHED settings
-  // IMPORTANT: Only check PUBLISHED, not DRAFT - DRAFT should not block blocks from being used
+  // Check PUBLISHED settings để hiển thị cảnh báo (nếu cần)
   const publishedSettings = await prisma.homepageSettings.findFirst({
     where: { status: 'PUBLISHED' },
     orderBy: { updatedAt: 'desc' },
   });
 
-  // Check if PUBLISHED settings exist and have sections
+  // Check if PUBLISHED settings exist and have sections (chỉ để thông tin)
   const hasPublishedSettings = publishedSettings?.sections && typeof publishedSettings.sections === 'object';
 
   const blocks = await prisma.homepageBlock.findMany({
@@ -118,22 +120,24 @@ export default async function Home() {
   });
 
   // Determine which data source to use
-  // Priority: HomepageSettings.sections (PUBLISHED) > HomepageBlock > HomepageSection > DEFAULT_CONFIG
-  // IMPORTANT: Only PUBLISHED settings block blocks. DRAFT settings do NOT block blocks.
-  // This allows users to use blocks system even when there are DRAFT settings.
-  const useBlocks = !hasPublishedSettings && blocks.length > 0;
+  // LOGIC MỚI: Blocks định nghĩa thứ tự hiển thị (sortOrder), Settings cung cấp dữ liệu
+  // - Nếu có PUBLISHED settings: Blocks sẽ merge dữ liệu từ settings (settings ưu tiên)
+  // - Nếu không có PUBLISHED settings: Blocks dùng dữ liệu từ chính nó
+  // - Blocks luôn quyết định thứ tự và loại section được hiển thị
+  const useBlocks = blocks.length > 0;
 
   // Debug: Log which data source is being used (only in development)
   if (process.env.NODE_ENV === 'development') {
     console.log('[Homepage Data Source]', {
-      usePublishedSettings: hasPublishedSettings,
       useBlocks,
-      hasPublishedSettings,
       blocksCount: blocks.length,
+      hasPublishedSettings,
       hasHomepageConfig: !!homepageConfig,
       settingsStatus: publishedSettings?.status || 'none',
       hasPublished: !!publishedSettings,
       blocksSortOrder: blocks.map(b => ({ id: b.id, type: b.type, sortOrder: b.sortOrder })),
+      note: 'Blocks định nghĩa thứ tự, PUBLISHED Settings cung cấp dữ liệu (nếu có)',
+      dataSource: hasPublishedSettings ? 'PUBLISHED Settings + Blocks (sortOrder)' : 'Blocks (fields)',
     });
   }
 
@@ -144,7 +148,11 @@ export default async function Home() {
       <Section >
         <Container >
           {useBlocks ? (
-            <BlocksRenderer blocks={blocks} posts={latestPosts} />
+            <BlocksRenderer 
+              blocks={blocks} 
+              posts={latestPosts}
+              homepageConfig={hasPublishedSettings && publishedSettings?.sections ? (publishedSettings.sections as HomepageConfig) : undefined}
+            />
           ) : (
             <ExampleJsx 
               posts={latestPosts} 

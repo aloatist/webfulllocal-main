@@ -75,19 +75,50 @@ export async function POST(request: NextRequest) {
     // Validate config with schema
     const validatedConfig = homepageConfigSchema.parse(config);
 
-    // Get or create HomepageSettings
+    // Get existing settings
     const existing = await prisma.homepageSettings.findFirst({
       orderBy: { createdAt: 'desc' },
     });
 
+    // Get existing PUBLISHED settings (if any)
+    const publishedSettings = await prisma.homepageSettings.findFirst({
+      where: { status: 'PUBLISHED' },
+      orderBy: { updatedAt: 'desc' },
+    });
+
+    // Set status
+    const finalStatus = targetStatus || 'DRAFT';
+
+    // IMPORTANT: Nếu có PUBLISHED settings và đang lưu DRAFT, tạo record mới thay vì update
+    // Điều này đảm bảo PUBLISHED settings không bị ghi đè
+    if (finalStatus === 'DRAFT' && publishedSettings && existing?.id === publishedSettings.id) {
+      // Nếu existing record là PUBLISHED, tạo DRAFT record mới
+      // Điều này đảm bảo PUBLISHED settings được giữ nguyên
+      const savedSettings = await prisma.homepageSettings.create({
+        data: {
+          sections: validatedConfig,
+          status: 'DRAFT',
+          updatedBy: session.user.id,
+          version: (publishedSettings.version || 0) + 1,
+        },
+      });
+
+      return NextResponse.json({
+        success: true,
+        message: `Đã đồng bộ ${blocks.length} blocks về homepage settings (DRAFT). PUBLISHED settings được giữ nguyên.`,
+        settings: savedSettings,
+        blocksCount: blocks.length,
+        publishedSettingsPreserved: true,
+      });
+    }
+
+    // Nếu không có PUBLISHED settings hoặc đang update PUBLISHED, update như bình thường
     const updateData: any = {
       sections: validatedConfig,
       updatedBy: session.user.id,
       version: existing ? existing.version + 1 : 1,
     };
 
-    // Set status
-    const finalStatus = targetStatus || 'DRAFT';
     if (finalStatus === 'PUBLISHED') {
       updateData.status = 'PUBLISHED';
       updateData.publishedAt = new Date();
@@ -96,12 +127,14 @@ export async function POST(request: NextRequest) {
     }
 
     let savedSettings;
-    if (existing) {
+    if (existing && (!publishedSettings || existing.id !== publishedSettings.id)) {
+      // Update existing DRAFT record (không phải PUBLISHED)
       savedSettings = await prisma.homepageSettings.update({
         where: { id: existing.id },
         data: updateData,
       });
     } else {
+      // Create new record
       savedSettings = await prisma.homepageSettings.create({
         data: {
           ...updateData,

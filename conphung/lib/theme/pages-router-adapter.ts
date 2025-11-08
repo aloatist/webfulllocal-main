@@ -66,7 +66,7 @@ export function adaptStaticProps<T>(
  */
 export function convertPageComponent(pageModule: ThemeComponent): {
   Component: React.ComponentType<any>;
-  getProps?: () => Promise<any>;
+  getProps?: (props: { params: Record<string, string | string[]> }) => Promise<any>;
 } {
   const Component = pageModule.default;
   
