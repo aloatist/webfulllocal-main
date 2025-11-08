@@ -1,5 +1,6 @@
 // Service Worker for Cồn Phụng PWA
-const CACHE_VERSION = 'v1.1.0';
+// Updated version to force cache clear
+const CACHE_VERSION = 'v1.2.0';
 const CACHE_NAME = `conphung-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `conphung-runtime-${CACHE_VERSION}`;
 const IMAGE_CACHE = `conphung-images-${CACHE_VERSION}`;
@@ -38,14 +39,28 @@ self.addEventListener('install', event => {
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(cacheNames => {
+      // Delete ALL old caches to force fresh load
       return Promise.all(
         cacheNames.map(cacheName => {
+          // Delete all old conphung caches
           if (cacheName.startsWith('conphung-') && cacheName !== CACHE_NAME && cacheName !== RUNTIME_CACHE && cacheName !== IMAGE_CACHE) {
             console.log('Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
+          // Also delete any Next.js related caches
+          if (cacheName.includes('next') || cacheName.includes('static') || cacheName.includes('workbox')) {
+            console.log('Deleting Next.js cache:', cacheName);
+            return caches.delete(cacheName);
+          }
         })
       );
+    }).then(() => {
+      // Force all clients to reload
+      return self.clients.matchAll().then(clients => {
+        clients.forEach(client => {
+          client.postMessage({ type: 'SKIP_WAITING' });
+        });
+      });
     }).then(() => self.clients.claim())
   );
 });
@@ -64,13 +79,14 @@ function getCacheStrategy(request) {
     return { strategy: CACHE_STRATEGIES.NETWORK_FIRST, cacheName: RUNTIME_CACHE };
   }
   
-  // Static assets: Cache first
-  if (url.pathname.match(/\.(js|css|woff2?|ttf|eot)$/)) {
-    return { strategy: CACHE_STRATEGIES.CACHE_FIRST, cacheName: CACHE_NAME };
+  // Static assets: Network first (don't cache old files)
+  // Always fetch from network to get latest files
+  if (url.pathname.match(/\.(js|css|woff2?|ttf|eot)$/) || url.pathname.startsWith('/_next/static/')) {
+    return { strategy: CACHE_STRATEGIES.NETWORK_FIRST, cacheName: RUNTIME_CACHE };
   }
   
-  // Pages: Stale while revalidate
-  return { strategy: CACHE_STRATEGIES.STALE_WHILE_REVALIDATE, cacheName: RUNTIME_CACHE };
+  // Pages: Network first (always get fresh HTML)
+  return { strategy: CACHE_STRATEGIES.NETWORK_FIRST, cacheName: RUNTIME_CACHE };
 }
 
 // Fetch event - smart caching strategy

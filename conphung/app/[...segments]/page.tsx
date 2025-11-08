@@ -24,6 +24,20 @@ export default async function DynamicThemePage({ params }: PageProps) {
   const segments = params.segments || [];
   const pagePath = segments.length > 0 ? `/${segments.join('/')}` : '/';
   
+  // IMPORTANT: Skip Next.js internal paths - these should NEVER reach this route
+  // Next.js should handle these before reaching this catch-all route
+  // This is a safety check in case routing is misconfigured
+  if (
+    pagePath.startsWith('/_next/') || 
+    pagePath.startsWith('/api/') || 
+    pagePath.startsWith('/admin/') ||
+    pagePath.startsWith('/static/') ||
+    pagePath.match(/\.(css|js|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot)$/i)
+  ) {
+    // Return 404 for internal/static paths that shouldn't be here
+    notFound();
+  }
+  
   try {
     // Load page from active theme
     const pageData = await loadThemePage(pagePath);

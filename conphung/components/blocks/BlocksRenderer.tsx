@@ -260,21 +260,70 @@ export async function BlocksRenderer({ blocks, posts = [], homepageConfig: setti
     const sectionKey = blockToSectionMap[block.type];
     const settingsData = sectionKey && homepageConfig?.[sectionKey];
     
+    // Luôn bắt đầu với block data
+    const blockData = convertBlockToSection(block);
+    const blockDataAny = blockData as any;
+    
     // Nếu có dữ liệu từ PUBLISHED settings, merge với block fields (settings ưu tiên)
     if (settingsData && typeof settingsData === 'object') {
-      // Merge: settings data làm base, block fields làm fallback cho các field không có trong settings
-      const blockData = convertBlockToSection(block);
-      return {
-        ...blockData, // Block fields làm fallback
-        ...settingsData, // Settings data ưu tiên (ghi đè block fields)
-        // Giữ lại một số field quan trọng từ block nếu settings không có
-        isVisible: settingsData.isVisible !== undefined ? settingsData.isVisible : (blockData.isVisible ?? true),
-        isActive: settingsData.isActive !== undefined ? settingsData.isActive : (blockData.isActive ?? block.fields.isActive ?? true),
-      };
+      const settingsDataAny = settingsData as any;
+      
+      // Check if blockData has isActive and isVisible properties (some block types don't have them)
+      const blockIsActive = 'isActive' in blockDataAny ? blockDataAny.isActive : (block.fields.isActive ?? true);
+      const blockIsVisible = 'isVisible' in blockDataAny ? blockDataAny.isVisible : true;
+      
+      // Đơn giản hóa: Merge settings vào block data, nhưng giữ lại block data cho arrays nếu settings rỗng
+      const mergedData: any = { ...blockData };
+      
+      // Các field array quan trọng cần được xử lý đặc biệt
+      const importantArrayFields = ['items', 'tours', 'images', 'videos', 'features', 'testimonials', 'trustStats', 'amenities', 'highlights', 'specialties', 'certificates', 'usps', 'includedItems'];
+      
+      // Merge từng field từ settings
+      for (const key in settingsDataAny) {
+        if (settingsDataAny.hasOwnProperty(key)) {
+          const settingsValue = settingsDataAny[key];
+          
+          // Skip undefined và null
+          if (settingsValue === undefined || settingsValue === null) {
+            continue;
+          }
+          
+          // Xử lý đặc biệt cho array fields quan trọng
+          if (importantArrayFields.includes(key)) {
+            if (Array.isArray(settingsValue)) {
+              // Nếu settings có array không rỗng, dùng nó
+              if (settingsValue.length > 0) {
+                mergedData[key] = settingsValue;
+              }
+              // Nếu settings có array rỗng nhưng block có data, giữ block data
+              // (không làm gì cả, mergedData[key] vẫn giữ giá trị từ blockData)
+            }
+            // Nếu settings không phải array, không merge (giữ block data)
+          }
+          // Xử lý objects - merge sâu
+          else if (typeof settingsValue === 'object' && !Array.isArray(settingsValue)) {
+            if (mergedData[key] && typeof mergedData[key] === 'object' && !Array.isArray(mergedData[key])) {
+              mergedData[key] = { ...mergedData[key], ...settingsValue };
+            } else {
+              mergedData[key] = settingsValue;
+            }
+          }
+          // Các field khác (primitives) - ghi đè
+          else {
+            mergedData[key] = settingsValue;
+          }
+        }
+      }
+      
+      // Đảm bảo isVisible và isActive được set đúng
+      mergedData.isVisible = settingsDataAny.isVisible !== undefined ? settingsDataAny.isVisible : blockIsVisible;
+      mergedData.isActive = settingsDataAny.isActive !== undefined ? settingsDataAny.isActive : blockIsActive;
+      
+      return mergedData;
     }
     
     // Nếu không có settings data, dùng block fields
-    return convertBlockToSection(block);
+    return blockData;
   };
 
   // Ensure blocks are sorted by sortOrder (should already be sorted from query, but double-check)
@@ -356,11 +405,15 @@ export async function BlocksRenderer({ blocks, posts = [], homepageConfig: setti
                 </LazySectionWrapper>
               );
             case 'faq':
-              return sectionData.isActive && sectionData.items?.length > 0 ? (
-                <div key={block.id} className="my-20 md:my-24">
-                  <FAQ items={sectionData.items} />
-                </div>
-              ) : null;
+              // Ensure items exists and is an array with data
+              if (sectionData.isActive && Array.isArray(sectionData.items) && sectionData.items.length > 0) {
+                return (
+                  <div key={block.id} className="container mx-auto max-w-4xl px-4 my-20 md:my-24">
+                    <FAQ items={sectionData.items} heading={sectionData.heading} />
+                  </div>
+                );
+              }
+              return null;
             case 'restaurant':
               return sectionData.isActive ? (
                 <RestaurantSection key={block.id} data={sectionData} />

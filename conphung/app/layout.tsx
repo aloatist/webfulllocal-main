@@ -22,7 +22,7 @@ import type { NavigationMenuItem } from "@/lib/navigation/types";
 import { PWARegister } from "@/components/pwa/pwa-register";
 import { MobileBottomNav } from "@/components/mobile/bottom-nav";
 import { DefaultChatProvider } from "@/components/chat/chat-provider";
-import { FooterWrapper } from "@/components/footer/footer-wrapper";
+import { ConditionalFooter } from "@/components/footer/conditional-footer";
 // Tạm thời disable Google Fonts vì không kết nối được trong build
 // Sử dụng system fonts thay thế với font tiếng Việt tốt
 // CSS variables được set trong globals.css
@@ -138,7 +138,7 @@ export default async function RootLayout({
             </HideOnAdmin>
             <Main className="pb-20 md:pb-0">{children}</Main>
             <HideOnAdmin>
-              <FooterWrapper />
+              <ConditionalFooter />
               <StickyNotification/>
               <StickyNotificationbutom/>
               <Chatbot/>

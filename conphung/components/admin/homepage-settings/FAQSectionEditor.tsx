@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -16,33 +17,63 @@ interface FAQSectionEditorProps {
 }
 
 export function FAQSectionEditor({ data, onChange }: FAQSectionEditorProps) {
+  // Initialize default data structure - use useMemo to ensure it updates when data changes
+  const currentData: FAQSection = useMemo(() => {
+    return data || {
+      items: [],
+      isActive: true,
+      isVisible: true,
+    };
+  }, [data]);
+
   const updateField = (field: keyof FAQSection, value: any) => {
-    onChange({
-      ...data,
+    // Always use the latest data from props to ensure we have the most current state
+    const baseData: FAQSection = data || {
+      items: [],
+      isActive: true,
+      isVisible: true,
+    };
+    
+    const updatedData: FAQSection = {
+      ...baseData,
       [field]: value,
-      items: data?.items || [],
-      isActive: data?.isActive !== false,
-    } as FAQSection);
+      // Preserve items if not updating items field
+      items: field === 'items' ? value : (baseData.items || []),
+      // Preserve isActive if not updating isActive field  
+      isActive: field === 'isActive' ? value : (baseData.isActive !== false),
+      // Preserve isVisible
+      isVisible: baseData.isVisible !== false,
+    };
+    
+    onChange(updatedData);
   };
 
   const addFAQ = () => {
-    const items = data?.items || [];
-    updateField('items', [...items, { question: '', answer: '' }]);
+    const baseData: FAQSection = data || { items: [], isActive: true, isVisible: true };
+    const items = baseData.items || [];
+    const newItems = [...items, { question: '', answer: '' }];
+    updateField('items', newItems);
   };
 
   const updateFAQ = (index: number, field: 'question' | 'answer', value: string) => {
-    const items = [...(data?.items || [])];
-    items[index] = {
-      ...items[index],
-      [field]: value,
-    };
-    updateField('items', items);
+    const baseData: FAQSection = data || { items: [], isActive: true, isVisible: true };
+    const items = [...(baseData.items || [])];
+    if (items[index]) {
+      items[index] = {
+        ...items[index],
+        [field]: value,
+      };
+      updateField('items', items);
+    }
   };
 
   const removeFAQ = (index: number) => {
-    const items = [...(data?.items || [])];
-    items.splice(index, 1);
-    updateField('items', items);
+    const baseData: FAQSection = data || { items: [], isActive: true, isVisible: true };
+    const items = [...(baseData.items || [])];
+    if (index >= 0 && index < items.length) {
+      items.splice(index, 1);
+      updateField('items', items);
+    }
   };
 
   return (
@@ -62,7 +93,7 @@ export function FAQSectionEditor({ data, onChange }: FAQSectionEditorProps) {
           <Label htmlFor="faqHeading">Heading (Optional)</Label>
           <Input
             id="faqHeading"
-            value={data?.heading || ''}
+            value={currentData.heading || ''}
             onChange={(e) => updateField('heading', e.target.value)}
             placeholder="Câu hỏi thường gặp"
           />
@@ -77,9 +108,20 @@ export function FAQSectionEditor({ data, onChange }: FAQSectionEditorProps) {
         >
           <div className="pt-2">
             <StyleEditor
-              style={data?.styles?.heading}
+              style={currentData.styles?.heading}
               onChange={(style) => {
-                onChange({ ...data, styles: { ...data?.styles, heading: style } } as FAQSection);
+                const baseData: FAQSection = data || {
+                  items: [],
+                  isActive: true,
+                  isVisible: true,
+                };
+                onChange({ 
+                  ...baseData, 
+                  styles: { 
+                    ...baseData.styles, 
+                    heading: style 
+                  } 
+                });
               }}
               title="Heading Styling"
             />
@@ -102,8 +144,8 @@ export function FAQSectionEditor({ data, onChange }: FAQSectionEditorProps) {
           </div>
 
           <div className="space-y-4">
-            {(data?.items || []).map((faq, index) => (
-              <Card key={index} className="bg-muted/50">
+            {(currentData.items || []).map((faq, index) => (
+              <Card key={`faq-${index}-${faq.question?.substring(0, 10) || index}`} className="bg-muted/50">
                 <CardContent className="pt-6 space-y-3">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm font-medium text-muted-foreground">
@@ -114,6 +156,7 @@ export function FAQSectionEditor({ data, onChange }: FAQSectionEditorProps) {
                       variant="ghost"
                       size="sm"
                       onClick={() => removeFAQ(index)}
+                      aria-label={`Xóa FAQ #${index + 1}`}
                     >
                       <X className="h-4 w-4" />
                     </Button>
@@ -121,7 +164,7 @@ export function FAQSectionEditor({ data, onChange }: FAQSectionEditorProps) {
                   <div className="space-y-2">
                     <Label>Question</Label>
                     <Input
-                      value={faq.question}
+                      value={faq.question || ''}
                       onChange={(e) => updateFAQ(index, 'question', e.target.value)}
                       placeholder="Câu hỏi?"
                     />
@@ -129,7 +172,7 @@ export function FAQSectionEditor({ data, onChange }: FAQSectionEditorProps) {
                   <div className="space-y-2">
                     <Label>Answer</Label>
                     <Textarea
-                      value={faq.answer}
+                      value={faq.answer || ''}
                       onChange={(e) => updateFAQ(index, 'answer', e.target.value)}
                       placeholder="Câu trả lời..."
                       rows={3}
@@ -138,7 +181,7 @@ export function FAQSectionEditor({ data, onChange }: FAQSectionEditorProps) {
                 </CardContent>
               </Card>
             ))}
-            {(!data?.items || data.items.length === 0) && (
+            {(!currentData.items || currentData.items.length === 0) && (
               <p className="text-sm text-muted-foreground text-center py-8">
                 Chưa có FAQ nào. Click &ldquo;Thêm FAQ&rdquo; để thêm.
               </p>
@@ -151,7 +194,7 @@ export function FAQSectionEditor({ data, onChange }: FAQSectionEditorProps) {
           <input
             type="checkbox"
             id="faqIsActive"
-            checked={data?.isActive !== false}
+            checked={currentData.isActive !== false}
             onChange={(e) => updateField('isActive', e.target.checked)}
             className="h-4 w-4"
           />
@@ -168,9 +211,20 @@ export function FAQSectionEditor({ data, onChange }: FAQSectionEditorProps) {
         >
           <div className="pt-2">
             <StyleEditor
-              style={data?.styles?.container}
+              style={currentData.styles?.container}
               onChange={(style) => {
-                onChange({ ...data, styles: { ...data?.styles, container: style } } as FAQSection);
+                const baseData: FAQSection = data || {
+                  items: [],
+                  isActive: true,
+                  isVisible: true,
+                };
+                onChange({ 
+                  ...baseData, 
+                  styles: { 
+                    ...baseData.styles, 
+                    container: style 
+                  } 
+                });
               }}
               title="Container Styling"
             />

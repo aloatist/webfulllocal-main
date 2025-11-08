@@ -3,6 +3,17 @@ import type { NextRequest } from 'next/server'
 import { getToken } from 'next-auth/jwt'
 
 export async function middleware(request: NextRequest) {
+  // Skip middleware for Next.js static files and internal routes
+  // These should be served directly by Next.js
+  const pathname = request.nextUrl.pathname;
+  if (
+    pathname.startsWith('/_next/') ||
+    pathname.startsWith('/static/') ||
+    pathname.includes('.') // Skip files with extensions (images, fonts, etc.)
+  ) {
+    return NextResponse.next();
+  }
+
   const token = await getToken({ req: request })
   
   // Protect API routes
@@ -65,5 +76,17 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/api/:path*', '/admin/:path*']
+  // Explicitly exclude Next.js static files and internal routes
+  matcher: [
+    /*
+     * Match all request paths except:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - public files (files in public folder)
+     */
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js)$).*)',
+    '/api/:path*',
+    '/admin/:path*'
+  ]
 }

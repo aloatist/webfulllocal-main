@@ -298,8 +298,8 @@ const ExampleJsx = ({
       
       {/* 10. FAQ - Answer common questions */}
       {homepageConfig?.faq?.isVisible !== false && homepageConfig?.faq?.isActive && homepageConfig.faq.items && homepageConfig.faq.items.length > 0 ? (
-        <div className="my-20 md:my-24">
-          <FAQ items={homepageConfig.faq.items} />
+        <div className="container mx-auto max-w-4xl px-4 my-20 md:my-24">
+          <FAQ items={homepageConfig.faq.items} heading={homepageConfig.faq.heading} />
         </div>
       ) : null}
 
