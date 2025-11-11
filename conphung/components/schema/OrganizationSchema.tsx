@@ -11,12 +11,12 @@ export function OrganizationSchema() {
     "alternateName": "Cồn Phụng Tourist",
     "url": "https://conphungtourist.com",
     "logo": "https://conphungtourist.com/logo.webp",
-    "description": "Khu du lịch sinh thái Cồn Phụng - Điểm đến văn hóa Đạo Dừa độc đáo tại Bến Tre",
+    "description": "Khu du lịch sinh thái Cồn Phụng - Điểm đến văn hóa Đạo Dừa độc đáo tại Vĩnh Long",
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": "Cồn Phụng, xã Phú Nhuận",
-      "addressLocality": "Bến Tre",
-      "addressRegion": "Bến Tre",
+      "streetAddress": "Tờ bản đồ số 3, thửa đất số 32, ấp 10 (ấp Tân Vinh), xã Phú Túc",
+      "addressLocality": "Vĩnh Long",
+      "addressRegion": "Vĩnh Long",
       "postalCode": "86000",
       "addressCountry": "VN"
     },
@@ -26,7 +26,7 @@ export function OrganizationSchema() {
       "longitude": 106.4167
     },
     "telephone": "+84917645039",
-    "email": "conphung87@yahoo.com.vn",
+    "email": "conphungtourist87@gmail.com",
     "priceRange": "₫₫",
     "openingHoursSpecification": [
       {
@@ -37,8 +37,9 @@ export function OrganizationSchema() {
       }
     ],
     "sameAs": [
-      "https://www.facebook.com/conphungtourist",
-      "https://www.youtube.com/@conphungtourist"
+      "https://www.facebook.com/dulichconphungbentre",
+      "https://www.instagram.com/dulichconphungbentre",
+      "https://www.youtube.com/@ConPhungTouristBenTre"
     ],
     "areaServed": {
       "@type": "GeoCircle",

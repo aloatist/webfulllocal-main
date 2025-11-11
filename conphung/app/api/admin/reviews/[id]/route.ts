@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth/auth-options';
 import { prisma } from '@/lib/prisma';
+import { sanitizeReviewContent } from '@/lib/utils/sanitize';
 
 export async function PATCH(
   request: NextRequest,
@@ -19,6 +20,11 @@ export async function PATCH(
 
     console.log('[PATCH Review] ID:', params.id, 'Status:', status, 'Response:', adminResponse);
 
+    // Sanitize admin response to prevent XSS (even from trusted admins)
+    const sanitizedResponse = adminResponse !== undefined && adminResponse !== null
+      ? sanitizeReviewContent(adminResponse, 2000)
+      : undefined;
+
     // Try to update as homestay review first
     const homestayReview = await prisma.homestayReview.findUnique({
       where: { id: params.id },
@@ -31,7 +37,7 @@ export async function PATCH(
         where: { id: params.id },
         data: {
           ...(status && { status: status }),
-          ...(adminResponse !== undefined && { hostResponse: adminResponse }),
+          ...(sanitizedResponse !== undefined && { hostResponse: sanitizedResponse || null }),
           updatedAt: new Date(),
         },
       });
@@ -64,9 +70,9 @@ export async function PATCH(
             status: status,
             isPublished: status === 'APPROVED' 
           }),
-          ...(adminResponse !== undefined && { 
-            adminResponse: adminResponse,
-            respondedAt: adminResponse ? new Date() : null
+          ...(sanitizedResponse !== undefined && { 
+            adminResponse: sanitizedResponse || null,
+            respondedAt: sanitizedResponse ? new Date() : null
           }),
           updatedAt: new Date(),
         },

@@ -91,6 +91,8 @@ export default async function Home() {
   
   // Priority 2: Load homepage config (fallback nếu không có blocks)
   // getHomepageConfig() checks HomepageSettings.sections (PUBLISHED) first, then HomepageSection
+  // IMPORTANT: getHomepageConfig() also merges system settings into config
+  // This ensures system settings (contact info, social links) are always up-to-date
   const homepageConfig = await getHomepageConfig();
 
   // Check PUBLISHED settings để hiển thị cảnh báo (nếu cần)
@@ -124,6 +126,7 @@ export default async function Home() {
   // - Nếu có PUBLISHED settings: Blocks sẽ merge dữ liệu từ settings (settings ưu tiên)
   // - Nếu không có PUBLISHED settings: Blocks dùng dữ liệu từ chính nó
   // - Blocks luôn quyết định thứ tự và loại section được hiển thị
+  // - System settings được tự động merge vào homepageConfig (contact info, social links)
   const useBlocks = blocks.length > 0;
 
   // Debug: Log which data source is being used (only in development)
@@ -136,8 +139,8 @@ export default async function Home() {
       settingsStatus: publishedSettings?.status || 'none',
       hasPublished: !!publishedSettings,
       blocksSortOrder: blocks.map(b => ({ id: b.id, type: b.type, sortOrder: b.sortOrder })),
-      note: 'Blocks định nghĩa thứ tự, PUBLISHED Settings cung cấp dữ liệu (nếu có)',
-      dataSource: hasPublishedSettings ? 'PUBLISHED Settings + Blocks (sortOrder)' : 'Blocks (fields)',
+      note: 'Blocks định nghĩa thứ tự, PUBLISHED Settings cung cấp dữ liệu (nếu có), System Settings được merge tự động',
+      dataSource: hasPublishedSettings ? 'PUBLISHED Settings + Blocks (sortOrder) + System Settings' : 'Blocks (fields) + System Settings',
     });
   }
 
@@ -151,7 +154,9 @@ export default async function Home() {
             <BlocksRenderer 
               blocks={blocks} 
               posts={latestPosts}
-              homepageConfig={hasPublishedSettings && publishedSettings?.sections ? (publishedSettings.sections as HomepageConfig) : undefined}
+              // Use homepageConfig from getHomepageConfig() which includes merged system settings
+              // If hasPublishedSettings, homepageConfig already contains the published settings merged with system settings
+              homepageConfig={homepageConfig}
             />
           ) : (
             <ExampleJsx 

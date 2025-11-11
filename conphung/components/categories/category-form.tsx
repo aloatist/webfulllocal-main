@@ -116,11 +116,11 @@ export function CategoryForm({
       <div className="space-y-2">
         <Label>Danh mục cha</Label>
         <Select
-          value={formData.parentId || ''}
+          value={formData.parentId || 'none'}
           onValueChange={(value) =>
             setFormData((prev) => ({
               ...prev,
-              parentId: value || undefined,
+              parentId: value === 'none' ? undefined : value,
             }))
           }
         >
@@ -128,7 +128,7 @@ export function CategoryForm({
             <SelectValue placeholder="Chọn danh mục cha (không bắt buộc)" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">Không có</SelectItem>
+            <SelectItem value="none">Không có</SelectItem>
             {availableParents.map((category) => (
               <SelectItem key={category.id} value={category.id}>
                 {category.name}

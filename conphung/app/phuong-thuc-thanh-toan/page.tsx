@@ -19,10 +19,20 @@ export default function PaymentMethodsPage() {
             thanh toán để tiện đối chiếu khi cần thiết.
           </p>
 
+          <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 mb-6">
+            <p className="font-semibold text-yellow-900 dark:text-yellow-100 mb-2">
+              ⚠️ Lưu ý quan trọng
+            </p>
+            <p className="text-yellow-800 dark:text-yellow-200">
+              Chúng tôi <strong>không hỗ trợ thanh toán trực tuyến</strong> qua website. 
+              Quý khách vui lòng đặt hàng online và thanh toán qua chuyển khoản ngân hàng hoặc tiền mặt tại quầy.
+            </p>
+          </div>
+
           <h2>Chuyển Khoản Ngân Hàng</h2>
           <p>
             Khi thực hiện chuyển khoản, quý khách vui lòng ghi rõ nội dung theo
-            mẫu: <em>&ldquo;Họ tên khách hàng - Số điện thoại - Nội dung dịch vụ&rdquo;</em> để
+            mẫu: <em>&ldquo;Mã đơn hàng (Booking ID)&rdquo;</em> để
             chúng tôi thuận tiện trong việc xác nhận.
           </p>
           <ul>
@@ -30,10 +40,10 @@ export default function PaymentMethodsPage() {
               <strong>Đơn vị thụ hưởng:</strong> CÔNG TY TNHH DU LỊCH DỊCH VỤ THƯƠNG MẠI CỒN PHỤNG
             </li>
             <li>
-              <strong>Số tài khoản:</strong> 72110000783403
+              <strong>Số tài khoản:</strong> 7210783403
             </li>
             <li>
-              <strong>Ngân hàng:</strong> BIDV – Chi nhánh Bến Tre
+              <strong>Ngân hàng:</strong> BIDV chi nhánh Bến Tre
             </li>
           </ul>
 

@@ -33,8 +33,8 @@ interface Category {
   slug: string;
   description?: string;
   parentId?: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: Date | string;
+  updatedAt: Date | string;
 }
 
 export default function CategoriesPage() {
@@ -50,14 +50,21 @@ export default function CategoriesPage() {
 
   const loadCategories = async () => {
     try {
+      setLoading(true);
+      setError(null);
       const response = await fetch('/api/categories?limit=1000');
-      if (!response.ok) throw new Error('Không thể tải danh mục');
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Không thể tải danh mục');
+      }
       
       const data = await response.json();
       // API returns {categories: [], pagination: {}}
-      setCategories(Array.isArray(data) ? data : data.categories || []);
+      const categoriesList = Array.isArray(data) ? data : (data.categories || []);
+      setCategories(categoriesList);
       setError(null);
     } catch (err) {
+      console.error('Error loading categories:', err);
       setError(err instanceof Error ? err.message : 'Không thể tải danh mục');
     } finally {
       setLoading(false);
@@ -161,10 +168,14 @@ export default function CategoriesPage() {
                 <TableCell>{category.slug}</TableCell>
                 <TableCell>{category.description}</TableCell>
                 <TableCell>
-                  {format(new Date(category.createdAt), 'dd/MM/yyyy')}
+                  {category.createdAt 
+                    ? format(new Date(category.createdAt), 'dd/MM/yyyy')
+                    : '-'}
                 </TableCell>
                 <TableCell>
-                  {format(new Date(category.updatedAt), 'dd/MM/yyyy')}
+                  {category.updatedAt 
+                    ? format(new Date(category.updatedAt), 'dd/MM/yyyy')
+                    : '-'}
                 </TableCell>
                 <TableCell>
                   <DropdownMenu>
@@ -205,13 +216,12 @@ export default function CategoriesPage() {
         </Table>
       </div>
 
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogTrigger asChild>
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
-            Danh mục mới
-          </Button>
-        </DialogTrigger>
+      <Dialog open={dialogOpen} onOpenChange={(open) => {
+        setDialogOpen(open);
+        if (!open) {
+          setSelectedCategory(null);
+        }
+      }}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>

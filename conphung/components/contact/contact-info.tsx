@@ -30,7 +30,7 @@ const contactInfo = [
     items: [
       { 
         label: 'Địa chỉ', 
-        value: 'Ấp Cồn Phụng, Xã An Thạnh, Huyện Chợ Lách, Tỉnh Bến Tre',
+        value: 'Tờ bản đồ số 3, thửa đất số 32, ấp 10 (ấp Tân Vinh), xã Phú Túc, tỉnh Vĩnh Long',
         href: 'https://maps.google.com/?q=10.3367211,106.3687357',
       },
     ],

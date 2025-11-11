@@ -21,6 +21,7 @@ export const NAV_GROUPS: NavGroup[] = [
     title: "Nội dung",
     items: [
       { href: "/admin/posts", label: "Bài viết" },
+      { href: "/admin/posts/import-youtube", label: "📹 Import YouTube" },
       { href: "/admin/categories", label: "Danh mục" },
       { href: "/admin/tags", label: "Thẻ" },
       { href: "/admin/media", label: "Thư viện" },
@@ -51,6 +52,7 @@ export const NAV_GROUPS: NavGroup[] = [
       { href: "/admin/navigation", label: "Điều hướng" },
       { href: "/admin/settings", label: "⚙️ Thiết lập" },
       { href: "/admin/settings/env", label: "🔐 Environment Vars" },
+      { href: "/admin/payment-methods", label: "💳 Phương thức thanh toán" },
       { href: "/admin/users-management", label: "Quản lý Users" },
     ],
   },

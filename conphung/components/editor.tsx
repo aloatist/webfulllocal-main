@@ -89,7 +89,9 @@ export default function Editor({ value, onChange }: EditorProps) {
               twitter: true,
               twitch: true,
             },
+            placeholder: 'Dán link YouTube, Vimeo, Facebook, Instagram, Twitter hoặc Twitch...',
           },
+          shortcut: 'CMD+Y',
         },
         image: {
           class: ImageEditorTool,

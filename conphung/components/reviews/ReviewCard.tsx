@@ -79,6 +79,7 @@ export function ReviewCard({ review, type = 'tour' }: ReviewCardProps) {
           </div>
 
           {/* User Info */}
+          {/* Security: User name is sanitized on input (HTML tags removed) and React automatically escapes HTML in JSX */}
           <div>
             <h4 className="font-semibold">{userName}</h4>
             <div className="flex items-center gap-1 text-xs text-muted-foreground">
@@ -98,6 +99,7 @@ export function ReviewCard({ review, type = 'tour' }: ReviewCardProps) {
       </div>
 
       {/* Comment */}
+      {/* Security: Content is sanitized on input (HTML tags removed) and React automatically escapes HTML in JSX */}
       {comment && (
         <div className="mb-4">
           <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap break-words overflow-wrap-anywhere">
@@ -146,6 +148,7 @@ export function ReviewCard({ review, type = 'tour' }: ReviewCardProps) {
                 )}
               </div>
               <div>
+                {/* Security: Response content is sanitized on input (HTML tags removed) and React automatically escapes HTML in JSX */}
                 <p className="text-sm text-blue-900 dark:text-blue-100 leading-relaxed whitespace-pre-wrap break-words overflow-wrap-anywhere">
                   {displayResponse}
                 </p>

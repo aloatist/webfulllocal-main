@@ -7,7 +7,7 @@ echo "🚀 Bắt đầu tích hợp Bản đồ hành chính Việt Nam..."
 
 # Tạo thư mục
 echo "📁 Tạo thư mục..."
-mkdir -p app/ban-do-hanh-chinh-viet-nam
+mkdir -p app/ban-do-hanh-chinh-tinh-vinh-long
 mkdir -p data
 
 # Download ảnh bản đồ
@@ -141,21 +141,21 @@ ENDOFFILE
 
 # Download page từ GitHub
 echo "📄 Tạo page bản đồ..."
-curl -s -o app/ban-do-hanh-chinh-viet-nam/page.tsx https://raw.githubusercontent.com/aloatist/Bandohanhchinhvietnam/master/src/app/page.tsx
+curl -s -o app/ban-do-hanh-chinh-tinh-vinh-long/page.tsx https://raw.githubusercontent.com/aloatist/Bandohanhchinhvietnam/master/src/app/page.tsx
 
 # Sửa imports để phù hợp với project
-sed -i.bak '/SiteHeader/d' app/ban-do-hanh-chinh-viet-nam/page.tsx
-sed -i.bak '/SiteFooter/d' app/ban-do-hanh-chinh-viet-nam/page.tsx
-rm -f app/ban-do-hanh-chinh-viet-nam/page.tsx.bak
+sed -i.bak '/SiteHeader/d' app/ban-do-hanh-chinh-tinh-vinh-long/page.tsx
+sed -i.bak '/SiteFooter/d' app/ban-do-hanh-chinh-tinh-vinh-long/page.tsx
+rm -f app/ban-do-hanh-chinh-tinh-vinh-long/page.tsx.bak
 
 echo ""
 echo "✨ Hoàn thành! Các file đã được tạo:"
-echo "   �� app/ban-do-hanh-chinh-viet-nam/page.tsx"
+echo "   �� app/ban-do-hanh-chinh-tinh-vinh-long/page.tsx"
 echo "   🗺️ components/vinh-long-map.tsx"
 echo "   📊 data/vinhlong-areas.ts"
 echo "   🖼️ public/bando.webp"
 echo ""
-echo "🌐 Truy cập: http://localhost:3000/ban-do-hanh-chinh-viet-nam"
+echo "🌐 Truy cập: http://localhost:3000/ban-do-hanh-chinh-tinh-vinh-long"
 echo ""
 echo "🗑️ Để xóa script này: rm setup-ban-do.sh"
 echo ""

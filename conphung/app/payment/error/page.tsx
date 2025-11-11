@@ -1,119 +1,81 @@
 import { Suspense } from 'react';
 import Link from 'next/link';
-import { XCircle, Home, RefreshCw, Phone, Mail, AlertCircle } from 'lucide-react';
+import { AlertCircle, Home, Building2, Phone, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 export const metadata = {
-  title: 'Thanh toán thất bại | Cồn Phụng',
-  description: 'Giao dịch không thành công',
+  title: 'Thông tin thanh toán | Cồn Phụng',
+  description: 'Hướng dẫn thanh toán cho đơn hàng',
 };
 
 export default function PaymentErrorPage() {
   return (
     <Suspense fallback={<div className="container mx-auto py-16 text-center">Đang tải...</div>}>
-      <PaymentErrorContent />
+      <PaymentInfoContent />
     </Suspense>
   );
 }
 
-function PaymentErrorContent() {
+function PaymentInfoContent() {
   return (
     <div className="container mx-auto py-16 px-4">
       <div className="max-w-2xl mx-auto">
-        {/* Error Icon */}
+        {/* Info Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-red-100 mb-4">
-            <XCircle className="w-12 h-12 text-red-600" />
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-blue-100 mb-4">
+            <Building2 className="w-12 h-12 text-blue-600" />
           </div>
-          <h1 className="text-3xl font-bold text-red-600 mb-2">
-            Thanh toán thất bại
+          <h1 className="text-3xl font-bold mb-2">
+            Thông tin thanh toán
           </h1>
           <p className="text-lg text-muted-foreground">
-            Giao dịch không thành công. Vui lòng thử lại.
+            Hướng dẫn thanh toán cho đơn hàng của bạn
           </p>
         </div>
 
-        {/* Error Alert */}
-        <Alert variant="destructive" className="mb-6">
+        {/* Alert */}
+        <Alert className="mb-6">
           <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Lỗi thanh toán</AlertTitle>
+          <AlertTitle>Lưu ý quan trọng</AlertTitle>
           <AlertDescription>
-            Giao dịch của bạn không được xử lý thành công. Vui lòng kiểm tra thông tin thanh toán và thử lại.
+            Chúng tôi <strong>không hỗ trợ thanh toán trực tuyến</strong> qua website. 
+            Vui lòng thanh toán qua chuyển khoản ngân hàng hoặc tiền mặt tại quầy.
           </AlertDescription>
         </Alert>
 
-        {/* Common Reasons Card */}
+        {/* Bank Transfer Info Card */}
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle>Nguyên nhân thường gặp</CardTitle>
+            <CardTitle>Thông tin chuyển khoản ngân hàng</CardTitle>
             <CardDescription>
-              Một số lý do có thể khiến giao dịch thất bại
+              Vui lòng chuyển khoản theo thông tin sau
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <ul className="space-y-3 text-sm">
-              <li className="flex items-start gap-2">
-                <span className="text-red-500 mt-1">•</span>
-                <span>Số dư tài khoản không đủ</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-red-500 mt-1">•</span>
-                <span>Thông tin thẻ không chính xác</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-red-500 mt-1">•</span>
-                <span>Thẻ đã hết hạn hoặc bị khóa</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-red-500 mt-1">•</span>
-                <span>Vượt quá hạn mức giao dịch trong ngày</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-red-500 mt-1">•</span>
-                <span>Hủy giao dịch trong quá trình thanh toán</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-red-500 mt-1">•</span>
-                <span>Lỗi kết nối mạng</span>
-              </li>
-            </ul>
-          </CardContent>
-        </Card>
-
-        {/* What to do Card */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>Bạn có thể làm gì?</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="flex items-start gap-3">
-              <RefreshCw className="w-5 h-5 text-primary mt-0.5" />
-              <div>
-                <p className="text-sm font-medium">Thử lại thanh toán</p>
-                <p className="text-sm text-muted-foreground">
-                  Kiểm tra thông tin và thử thanh toán lại
-                </p>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 gap-3 text-sm">
+              <div className="flex justify-between">
+                <span className="font-medium">Đơn vị thụ hưởng:</span>
+                <span className="text-right">CÔNG TY TNHH DU LỊCH DỊCH VỤ THƯƠNG MẠI CỒN PHỤNG</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium">Số tài khoản:</span>
+                <span className="font-bold text-primary">7210783403</span>
+            </div>
+              <div className="flex justify-between">
+                <span className="font-medium">Ngân hàng:</span>
+                <span>BIDV chi nhánh Bến Tre</span>
               </div>
             </div>
-            <div className="flex items-start gap-3">
-              <Phone className="w-5 h-5 text-primary mt-0.5" />
-              <div>
-                <p className="text-sm font-medium">Liên hệ ngân hàng</p>
-                <p className="text-sm text-muted-foreground">
-                  Kiểm tra tài khoản và hạn mức giao dịch
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <Mail className="w-5 h-5 text-primary mt-0.5" />
-              <div>
-                <p className="text-sm font-medium">Chọn phương thức khác</p>
-                <p className="text-sm text-muted-foreground">
-                  Thử thanh toán bằng phương thức khác (QR, chuyển khoản...)
-                </p>
-              </div>
+            <div className="pt-4 border-t space-y-2 text-xs text-muted-foreground">
+              <p className="font-medium text-foreground">Hướng dẫn thanh toán:</p>
+              <ul className="list-disc list-inside space-y-1 ml-2">
+                <li>Vui lòng chuyển khoản đúng số tiền theo đơn hàng</li>
+                <li>Ghi rõ mã đơn hàng (Booking ID) trong nội dung chuyển khoản</li>
+                <li>Sau khi chuyển khoản, vui lòng liên hệ hotline <strong>0918.267.715</strong> hoặc gửi ảnh chụp biên lai chuyển khoản đến email <strong>conphungtourist87@gmail.com</strong></li>
+                <li>Đơn hàng sẽ được xác nhận trong vòng 24 giờ sau khi nhận được thanh toán</li>
+              </ul>
             </div>
           </CardContent>
         </Card>
@@ -122,16 +84,12 @@ function PaymentErrorContent() {
         <Card className="mb-6">
           <CardHeader>
             <CardTitle>Cần hỗ trợ?</CardTitle>
-            <CardDescription>
-              Chúng tôi luôn sẵn sàng giúp đỡ bạn
-            </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
-              <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 mb-3">
                 <Phone className="w-5 h-5 text-primary" />
                 <div>
-                  <p className="text-sm font-medium">Hotline hỗ trợ</p>
+                <p className="text-sm font-medium">Hotline</p>
                   <a href="tel:+84918267715" className="text-sm text-primary hover:underline">
                     0918 267 715
                   </a>
@@ -141,27 +99,19 @@ function PaymentErrorContent() {
                 <Mail className="w-5 h-5 text-primary" />
                 <div>
                   <p className="text-sm font-medium">Email</p>
-                  <a href="mailto:info@conphungtourist.com" className="text-sm text-primary hover:underline">
-                    info@conphungtourist.com
+                <a href="mailto:conphungtourist87@gmail.com" className="text-sm text-primary hover:underline">
+                  conphungtourist87@gmail.com
                   </a>
-                </div>
               </div>
             </div>
           </CardContent>
         </Card>
 
         {/* Action Buttons */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Button asChild size="lg" className="w-full">
-            <Link href="/tours">
-              <RefreshCw className="w-4 h-4 mr-2" />
-              Thử lại
-            </Link>
-          </Button>
-          <Button asChild variant="outline" size="lg" className="w-full">
-            <Link href="/lien-he">
-              <Phone className="w-4 h-4 mr-2" />
-              Liên hệ hỗ trợ
+            <Link href="/phuong-thuc-thanh-toan">
+              Xem thông tin thanh toán
             </Link>
           </Button>
           <Button asChild variant="outline" size="lg" className="w-full">
@@ -173,11 +123,10 @@ function PaymentErrorContent() {
         </div>
 
         {/* Additional Info */}
-        <div className="mt-8 p-4 bg-muted rounded-lg text-sm text-muted-foreground">
-          <p className="text-center">
-            <strong>Lưu ý:</strong> Nếu số tiền đã bị trừ khỏi tài khoản nhưng giao dịch thất bại, 
-            số tiền sẽ được hoàn lại trong vòng 1-3 ngày làm việc. 
-            Vui lòng liên hệ với chúng tôi nếu cần hỗ trợ.
+        <div className="mt-8 p-4 bg-muted rounded-lg text-center text-sm text-muted-foreground">
+          <p>
+            Nếu bạn có bất kỳ thắc mắc nào về thanh toán, vui lòng liên hệ với chúng tôi qua hotline hoặc email.
+            Chúng tôi luôn sẵn sàng hỗ trợ bạn!
           </p>
         </div>
       </div>

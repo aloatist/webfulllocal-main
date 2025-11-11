@@ -155,7 +155,7 @@ model HomepageHero {
   ctaText         String   @default("Đặt Tour Ngay")
   ctaLink         String   @default("tel:+84918267715")
   hotline         String   @default("0918 267 715")
-  location        String   @default("Tờ bản đồ số 3, thửa đất số 32, Ấp Tân Vinh, Xã Phú Túc, tỉnh Vĩnh Long")
+  location        String   @default("Tờ bản đồ số 3, thửa đất số 32, ấp 10 (ấp Tân Vinh), xã Phú Túc, tỉnh Vĩnh Long")
   openingHours    String   @default("7:00 - 18:00")
   isActive        Boolean  @default(true)
   createdAt       DateTime @default(now())
@@ -188,20 +188,20 @@ model HomepageRestaurant {
 }
 
 model CocoIslandSettings {
-  id          String   @id @default(cuid())
+  id String @id @default(cuid())
   
   // Unified Content (JSON) - Stores all cocoisland sections
-  sections    Json?   // Complete cocoisland config
+  sections Json? // Complete cocoisland config
   
   // Status & Publishing
   status      HomepageStatus @default(DRAFT)
   publishedAt DateTime?
   
   // Metadata
-  version     Int      @default(1)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  updatedBy   String?
+  version   Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  updatedBy String?
   
   @@index([status])
 }
@@ -226,76 +226,76 @@ model HomepageSection {
 }
 
 model HomepageSettings {
-  id          String   @id @default(cuid())
+  id String @id @default(cuid())
   
   // Unified Sections Data (JSON) - Stores all homepage sections
-  sections    Json?   // Complete homepage config with all sections
+  sections Json? // Complete homepage config with all sections
   
   // Legacy fields (kept for backward compatibility)
-  heroTitle       String?
-  heroSubtitle    String?
-  heroBackgroundImage String?
+  heroTitle             String?
+  heroSubtitle          String?
+  heroBackgroundImage   String?
   heroBackgroundImageId String?
-  aboutTitle      String?
-  aboutContent    String?  @db.Text
-  aboutImage      String?
-  aboutImageId    String?
-  ctaTitle        String?
-  ctaButtonText   String?
-  ctaButtonLink   String?
+  aboutTitle            String?
+  aboutContent          String? @db.Text
+  aboutImage            String?
+  aboutImageId          String?
+  ctaTitle              String?
+  ctaButtonText         String?
+  ctaButtonLink         String?
   
   // Status & Draft
-  status          HomepageStatus @default(DRAFT)
-  publishedAt     DateTime?
+  status      HomepageStatus @default(DRAFT)
+  publishedAt DateTime?
   
   // Metadata
-  version         Int      @default(1)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  updatedBy       String?
+  version   Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  updatedBy String?
   
   @@index([status])
 }
 
 model HomepageSEO {
-  id          String   @id @default(cuid())
+  id String @id @default(cuid())
   
   // Meta tags
   metaTitle       String?
-  metaDescription String? @db.Text
+  metaDescription String?  @db.Text
   metaKeywords    String[] @default([])
   ogImage         String?
   ogImageId       String?
   
   // Additional SEO
-  canonicalUrl    String?
-  robotsMeta      String?  @default("index, follow")
+  canonicalUrl String?
+  robotsMeta   String? @default("index, follow")
   
   // Schema.org JSON-LD
-  structuredData  Json?
+  structuredData Json?
   
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   
   @@unique([id])
 }
 
 model Service {
-  id          String   @id @default(cuid())
+  id          String  @id @default(cuid())
   name        String
-  slug        String   @unique
-  description String?  @db.Text
+  slug        String  @unique
+  description String? @db.Text
   icon        String?
   image       String?
   imageId     String?
   
   // Featured Services Settings
-  isFeatured  Boolean  @default(false)
+  isFeatured    Boolean @default(false)
   featuredOrder Int?
   
-  isActive    Boolean   @default(true)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   
   @@index([isFeatured, featuredOrder])
   @@index([isActive])
@@ -308,27 +308,27 @@ enum HomepageStatus {
 
 // Homepage Blocks - Block-based content management system
 model HomepageBlock {
-  id          String   @id @default(cuid())
+  id String @id @default(cuid())
   
   // Block Identity
-  type        String   // hero | about | feature | tourList | testimonial | cta | footerCta | ...
-  title       String?  // Optional human-readable title for admin UI
+  type  String // hero | about | feature | tourList | testimonial | cta | footerCta | ...
+  title String? // Optional human-readable title for admin UI
   
   // Block Data (JSONB)
-  fields      Json     // Dynamic fields based on block type schema
+  fields Json // Dynamic fields based on block type schema
   
   // Ordering & Visibility
-  sortOrder   Int      @default(0) // For drag & drop sorting
-  status      BlockStatus @default(ACTIVE) // ACTIVE | DISABLED
+  sortOrder Int         @default(0) // For drag & drop sorting
+  status    BlockStatus @default(ACTIVE) // ACTIVE | DISABLED
   
   // Theme Support (optional - for multi-theme)
-  themeId     String?  // If null, applies to all themes
+  themeId String? // If null, applies to all themes
   
   // Metadata
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  createdBy   String?
-  updatedBy   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String?
+  updatedBy String?
   
   @@index([sortOrder])
   @@index([status])
@@ -727,6 +727,25 @@ model Payment {
   @@index([provider, status])
 }
 
+model PaymentMethod {
+  id            String   @id @default(cuid())
+  name          String // Tên phương thức thanh toán (ví dụ: "Chuyển khoản BIDV")
+  type          String // Loại: "bank_transfer", "cash", "e_wallet", etc.
+  bankName      String? // Tên ngân hàng (nếu là chuyển khoản)
+  accountNumber String? // Số tài khoản
+  accountHolder String? // Chủ tài khoản
+  branch        String? // Chi nhánh ngân hàng
+  qrCode        String? // URL hoặc base64 của QR code
+  isActive      Boolean  @default(true)
+  displayOrder  Int      @default(0)
+  description   String? // Mô tả
+  instructions  String? // Hướng dẫn thanh toán
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([type, isActive])
+}
+
 model Post {
   id              String            @id
   title           String
@@ -1115,38 +1134,38 @@ model N8nWebhookLog {
 }
 
 model N8nWorkflowTemplate {
-  id               String   @id @default(cuid())
-  name             String
-  description      String?
-  category         String   // booking, notification, marketing, etc.
-  workflowJson     Json     // Complete n8n workflow JSON
-  thumbnail        String?
-  tags             String[] @default([])
-  isPublic         Boolean  @default(false)
-  usageCount       Int      @default(0)
-  version          String   @default("1.0.0")
-  authorId         String?
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  id           String   @id @default(cuid())
+  name         String
+  description  String?
+  category     String // booking, notification, marketing, etc.
+  workflowJson Json // Complete n8n workflow JSON
+  thumbnail    String?
+  tags         String[] @default([])
+  isPublic     Boolean  @default(false)
+  usageCount   Int      @default(0)
+  version      String   @default("1.0.0")
+  authorId     String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   @@index([category])
   @@index([isPublic])
 }
 
 model AutomationRule {
-  id               String   @id @default(cuid())
-  name             String
-  description      String?
-  eventType        String   // homestay_booking, tour_booking, etc.
-  conditions       Json     // Array of condition rules
-  actions          Json     // Array of actions to execute
-  isActive         Boolean  @default(true)
-  priority         Int      @default(0)  // Higher = executes first
-  executionCount   Int      @default(0)
-  lastExecuted     DateTime?
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-  logs             AutomationRuleLog[]
+  id             String              @id @default(cuid())
+  name           String
+  description    String?
+  eventType      String // homestay_booking, tour_booking, etc.
+  conditions     Json // Array of condition rules
+  actions        Json // Array of actions to execute
+  isActive       Boolean             @default(true)
+  priority       Int                 @default(0) // Higher = executes first
+  executionCount Int                 @default(0)
+  lastExecuted   DateTime?
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+  logs           AutomationRuleLog[]
 
   @@index([eventType])
   @@index([isActive])
@@ -1154,17 +1173,17 @@ model AutomationRule {
 }
 
 model AutomationRuleLog {
-  id               String        @id @default(cuid())
-  ruleId           String
-  ruleName         String
-  eventType        String
-  status           String        // success, failed, skipped
-  conditionsMet    Boolean
-  actionsExecuted  Json?
-  errorMessage     String?
-  duration         Int           // milliseconds
-  timestamp        DateTime      @default(now())
-  rule             AutomationRule @relation(fields: [ruleId], references: [id], onDelete: Cascade)
+  id              String         @id @default(cuid())
+  ruleId          String
+  ruleName        String
+  eventType       String
+  status          String // success, failed, skipped
+  conditionsMet   Boolean
+  actionsExecuted Json?
+  errorMessage    String?
+  duration        Int // milliseconds
+  timestamp       DateTime       @default(now())
+  rule            AutomationRule @relation(fields: [ruleId], references: [id], onDelete: Cascade)
 
   @@index([ruleId])
   @@index([status])
@@ -1172,22 +1191,22 @@ model AutomationRuleLog {
 }
 
 model IntegrationConnection {
-  id               String   @id @default(cuid())
-  name             String
-  provider         String   // n8n, zapier, make, webhook, etc.
-  type             String   // webhook, api, oauth, etc.
-  endpoint         String?
-  credentials      Json?    // Encrypted credentials
-  config           Json?    // Additional configuration
-  status           IntegrationStatus @default(ACTIVE)
-  lastConnected    DateTime?
-  lastSynced       DateTime?
-  errorCount       Int      @default(0)
-  successCount     Int      @default(0)
-  description      String?
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-  syncLogs         IntegrationSyncLog[]
+  id            String               @id @default(cuid())
+  name          String
+  provider      String // n8n, zapier, make, webhook, etc.
+  type          String // webhook, api, oauth, etc.
+  endpoint      String?
+  credentials   Json? // Encrypted credentials
+  config        Json? // Additional configuration
+  status        IntegrationStatus    @default(ACTIVE)
+  lastConnected DateTime?
+  lastSynced    DateTime?
+  errorCount    Int                  @default(0)
+  successCount  Int                  @default(0)
+  description   String?
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+  syncLogs      IntegrationSyncLog[]
 
   @@index([provider])
   @@index([type])
@@ -1195,17 +1214,17 @@ model IntegrationConnection {
 }
 
 model IntegrationSyncLog {
-  id               String              @id @default(cuid())
-  connectionId     String
-  operation        String
-  direction        SyncDirection
-  status           SyncStatus
-  payload          Json?
-  response         Json?
-  errorMessage     String?
-  duration         Int?
-  timestamp        DateTime            @default(now())
-  connection       IntegrationConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  id           String                @id @default(cuid())
+  connectionId String
+  operation    String
+  direction    SyncDirection
+  status       SyncStatus
+  payload      Json?
+  response     Json?
+  errorMessage String?
+  duration     Int?
+  timestamp    DateTime              @default(now())
+  connection   IntegrationConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
 
   @@index([connectionId])
   @@index([status])
@@ -1213,22 +1232,22 @@ model IntegrationSyncLog {
 }
 
 enum WebsiteTemplate {
-  ECOLOGICAL      // Sinh Thái
-  MODERN          // Hiện Đại
-  TRADITIONAL     // Truyền Thống
-  GEOMETRIC       // Góc Cạnh
+  ECOLOGICAL // Sinh Thái
+  MODERN // Hiện Đại
+  TRADITIONAL // Truyền Thống
+  GEOMETRIC // Góc Cạnh
 }
 
 model WebsiteTemplateSettings {
-  id               String          @id @default(cuid())
-  activeTemplate   WebsiteTemplate @default(ECOLOGICAL)
-  customColors     Json?           // Custom color overrides per template
-  customSettings   Json?           // Template-specific settings
-  isPreview        Boolean         @default(false)
-  previewTemplate  WebsiteTemplate?
-  createdAt        DateTime        @default(now())
-  updatedAt        DateTime        @updatedAt
-  updatedBy        String?
+  id              String           @id @default(cuid())
+  activeTemplate  WebsiteTemplate  @default(ECOLOGICAL)
+  customColors    Json? // Custom color overrides per template
+  customSettings  Json? // Template-specific settings
+  isPreview       Boolean          @default(false)
+  previewTemplate WebsiteTemplate?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  updatedBy       String?
 
   @@unique([id])
 }

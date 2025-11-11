@@ -92,7 +92,7 @@ export const defaultSettings: SettingInput[] = [
   },
   {
     key: 'contact_address',
-    value: 'Ấp Cồn Phụng, Xã An Thạnh, Huyện Chợ Lách, Tỉnh Bến Tre',
+    value: 'Tờ bản đồ số 3, thửa đất số 32, ấp 10 (ấp Tân Vinh), xã Phú Túc, tỉnh Vĩnh Long',
     type: 'TEXT',
     category: 'contact',
     label: 'Địa chỉ',
@@ -102,11 +102,27 @@ export const defaultSettings: SettingInput[] = [
   // Social
   {
     key: 'social_facebook',
-    value: 'https://facebook.com/conphung',
+    value: 'https://www.facebook.com/dulichconphungbentre',
     type: 'URL',
     category: 'social',
     label: 'Facebook URL',
     order: 1,
+  },
+  {
+    key: 'social_instagram',
+    value: 'https://www.instagram.com/dulichconphungbentre',
+    type: 'URL',
+    category: 'social',
+    label: 'Instagram URL',
+    order: 2,
+  },
+  {
+    key: 'social_youtube',
+    value: 'https://www.youtube.com/@ConPhungTouristBenTre',
+    type: 'URL',
+    category: 'social',
+    label: 'YouTube URL',
+    order: 3,
   },
   {
     key: 'social_zalo',
@@ -114,7 +130,7 @@ export const defaultSettings: SettingInput[] = [
     type: 'URL',
     category: 'social',
     label: 'Zalo URL',
-    order: 2,
+    order: 4,
   },
   
   // SEO

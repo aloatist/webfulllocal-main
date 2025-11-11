@@ -11,6 +11,13 @@ import { prisma } from '@/lib/prisma';
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
+  // DISABLED: Online payment is not supported
+  // Redirect to payment info page
+  return NextResponse.redirect(
+    new URL('/phuong-thuc-thanh-toan', request.url)
+  );
+
+  /* DISABLED CODE - Online payment is not allowed
   try {
     // Get query params
     const searchParams = request.nextUrl.searchParams;
@@ -107,4 +114,5 @@ export async function GET(request: NextRequest) {
       new URL('/payment/error?message=Internal server error', request.url)
     );
   }
+  */
 }

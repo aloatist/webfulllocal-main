@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { homepageConfigSchema, type HomepageConfig } from './schema';
+import { defaultSettings } from '@/lib/settings/types';
 
 export const DEFAULT_CONFIG: HomepageConfig = {
   hero: {
@@ -9,7 +10,7 @@ export const DEFAULT_CONFIG: HomepageConfig = {
     description: 'Trải nghiệm du lịch xanh, bền vững tại Cồn Phụng - Nơi hòa quyện giữa thiên nhiên và văn hóa miền sông nước',
     backgroundImage: '/uploads/anhbiadulichconphung.webp',
     phone: '+84918267715',
-    address: 'Tờ bản đồ số 3, thửa đất số 32, Ấp Tân Vinh, Xã Phú Túc, tỉnh Vĩnh Long',
+    address: 'Tờ bản đồ số 3, thửa đất số 32, ấp 10 (ấp Tân Vinh), xã Phú Túc, tỉnh Vĩnh Long',
     openingHours: '7:00 - 18:00',
     primaryCta: {
       text: '☎️ Đặt Tour Ngay',
@@ -266,7 +267,7 @@ export const DEFAULT_CONFIG: HomepageConfig = {
     heading: "ĐƯỜNG ĐẾN CỒN PHỤNG",
     description: "Hướng dẫn chi tiết cách di chuyển đến khu du lịch Cồn Phụng",
     embedUrl: "https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d15700.258118997554!2d106.3687357!3d10.3367211!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x310aaf9861803419%3A0xe04989a08949b954!2zQ-G7kk4gUEjhu6RORyBUT1VSSVNUIEtodSB2dWkgY2jGoWkgdsOgIGR1IGzhu4tjaCBC4bq_biBUcmU!5e0!3m2!1svi!2s!4v1728204449230!5m2!1svi!2s",
-    address: "Tờ bản đồ số 3, thửa đất số 32, Ấp Tân Vinh, Xã Phú Túc, tỉnh Vĩnh Long",
+    address: "Tờ bản đồ số 3, thửa đất số 32, ấp 10 (ấp Tân Vinh), xã Phú Túc, tỉnh Vĩnh Long",
     coordinates: {
       lat: 10.3367211,
       lng: 106.3687357
@@ -472,7 +473,7 @@ export const DEFAULT_CONFIG: HomepageConfig = {
         name: 'Võ Thị Kim Cương',
         title: 'Trưởng phòng điều hành du lịch',
         imgSrc: '/uploads/2019/10/dieu-hanh-du-lich-con-phung-vo-thi-kim-cuong.webp',
-        email: 'mailto:conphungtourist87@gmail.com',
+        email: 'conphungtourist87@gmail.com',
         phone: 'tel:+84917645039',
         numberphone: '+84917645039',
       },
@@ -487,9 +488,9 @@ export const DEFAULT_CONFIG: HomepageConfig = {
     ],
     companyDescription: 'Khám phá vẻ đẹp thiên nhiên và văn hóa độc đáo của miền Tây tại Khu Du Lịch Cồn Phụng - Công trình kiến trúc Đạo Dừa nổi tiếng.',
     socialLinks: [
-      { icon: 'Facebook', href: 'https://facebook.com/conphung', label: 'Facebook', color: 'hover:bg-blue-600' },
-      { icon: 'Instagram', href: 'https://instagram.com/conphung', label: 'Instagram', color: 'hover:bg-pink-600' },
-      { icon: 'Youtube', href: 'https://youtube.com/@conphung', label: 'Youtube', color: 'hover:bg-red-600' },
+      { icon: 'Facebook', href: 'https://www.facebook.com/dulichconphungbentre', label: 'Facebook', color: 'hover:bg-blue-600' },
+      { icon: 'Instagram', href: 'https://www.instagram.com/dulichconphungbentre', label: 'Instagram', color: 'hover:bg-pink-600' },
+      { icon: 'Youtube', href: 'https://www.youtube.com/@ConPhungTouristBenTre', label: 'Youtube', color: 'hover:bg-red-600' },
       { icon: 'MessageCircle', href: 'https://zalo.me/0918267715', label: 'Zalo', color: 'hover:bg-blue-500' },
     ],
     linkGroups: [
@@ -514,8 +515,8 @@ export const DEFAULT_CONFIG: HomepageConfig = {
     ],
     contactInfo: [
       { icon: 'Phone', label: 'Hotline', value: '0918 267 715', href: 'tel:+84918267715' },
-      { icon: 'Mail', label: 'Email', value: 'conphung87@yahoo.com.vn', href: 'mailto:conphung87@yahoo.com.vn' },
-      { icon: 'MapPin', label: 'Địa chỉ', value: 'Tờ bản đồ số 3, thửa đất số 32, Ấp Tân Vinh, Xã Phú Túc, tỉnh Vĩnh Long', href: 'https://maps.google.com/?q=10.3367211,106.3687357' },
+      { icon: 'Mail', label: 'Email', value: 'conphungtourist87@gmail.com', href: 'mailto:conphungtourist87@gmail.com' },
+      { icon: 'MapPin', label: 'Địa chỉ', value: 'Tờ bản đồ số 3, thửa đất số 32, ấp 10 (ấp Tân Vinh), xã Phú Túc, tỉnh Vĩnh Long', href: 'https://maps.google.com/?q=10.3367211,106.3687357' },
       { icon: 'Clock', label: 'Giờ làm việc', value: 'Thứ 2 - CN: 7:00 - 18:00' },
     ],
     newsletterTitle: 'Đăng ký nhận tin',
@@ -525,14 +526,156 @@ export const DEFAULT_CONFIG: HomepageConfig = {
     businessLicense: 'GIẤY PHÉP KINH DOANH DỊCH VỤ LỮ HÀNH QUỐC TẾ - Số GP/No. : 83-005/2019 /TCDL-GP LHQT',
     foodSafetyCert: 'GIẤY CHỨNG NHẬN CƠ SỞ ĐỦ ĐIỀU KIỆN AN TOÀN THỰC PHẨM SỐ: 71/2021./ATTP-CNĐK',
     bankAccount: 'Số tài khoản: 7210783403 - BIDV chi nhánh Bến Tre',
-    address: 'Tờ bản đồ số 3, thửa đất số 32, Ấp Tân Vinh, Xã Phú Túc, tỉnh Vĩnh Long',
+    address: 'Tờ bản đồ số 3, thửa đất số 32, ấp 10 (ấp Tân Vinh), xã Phú Túc, tỉnh Vĩnh Long',
     copyrightText: `© ${new Date().getFullYear()} Khu Du Lịch Cồn Phụng. Bảo lưu mọi quyền.`,
     isActive: true,
   },
 };
 
+/**
+ * Load system settings from database and merge into homepage config
+ * System settings take priority over homepage config for contact info, social links, etc.
+ */
+async function getSystemSettings(): Promise<Record<string, string>> {
+  try {
+    const dbSettings = await prisma.setting.findMany();
+    const settingsMap: Record<string, string> = {};
+    
+    // Convert to key-value map
+    dbSettings.forEach(setting => {
+      settingsMap[setting.key] = setting.value;
+    });
+
+    // Merge with defaults for missing keys
+    const mergedSettings: Record<string, string> = {};
+    defaultSettings.forEach(defSetting => {
+      mergedSettings[defSetting.key] = settingsMap[defSetting.key] || defSetting.value;
+    });
+
+    return mergedSettings;
+  } catch (error) {
+    console.error('Error loading system settings:', error);
+    // Fallback to defaults
+    const defaults: Record<string, string> = {};
+    defaultSettings.forEach(s => {
+      defaults[s.key] = s.value;
+    });
+    return defaults;
+  }
+}
+
+/**
+ * Merge system settings into homepage config
+ * This ensures system settings (contact info, social links) are always up-to-date on homepage
+ */
+function mergeSystemSettingsIntoConfig(
+  config: HomepageConfig,
+  systemSettings: Record<string, string>
+): HomepageConfig {
+  const merged = { ...config };
+
+  // Merge into Hero section
+  if (merged.hero) {
+    if (systemSettings.contact_hotline) {
+      merged.hero.phone = systemSettings.contact_hotline;
+      // Update primary CTA link if it's a phone link
+      if (merged.hero.primaryCta?.link?.startsWith('tel:')) {
+        merged.hero.primaryCta.link = `tel:${systemSettings.contact_hotline.replace(/\D/g, '')}`;
+        merged.hero.primaryCta.text = `☎️ ${systemSettings.contact_hotline}`;
+      }
+    }
+    if (systemSettings.contact_address) {
+      merged.hero.address = systemSettings.contact_address;
+    }
+  }
+
+  // Merge into Footer section
+  if (merged.footer) {
+    // Update contact info
+    if (merged.footer.contactInfo && Array.isArray(merged.footer.contactInfo)) {
+      merged.footer.contactInfo = merged.footer.contactInfo.map((info: any) => {
+        if (info.icon === 'Phone' && systemSettings.contact_hotline) {
+          return {
+            ...info,
+            value: systemSettings.contact_hotline,
+            href: `tel:${systemSettings.contact_hotline.replace(/\D/g, '')}`,
+          };
+        }
+        if (info.icon === 'Mail' && systemSettings.contact_email) {
+          return {
+            ...info,
+            value: systemSettings.contact_email,
+            href: `mailto:${systemSettings.contact_email}`,
+          };
+        }
+        if (info.icon === 'MapPin' && systemSettings.contact_address) {
+          return {
+            ...info,
+            value: systemSettings.contact_address,
+          };
+        }
+        return info;
+      });
+    }
+
+    // Update social links
+    if (merged.footer.socialLinks && Array.isArray(merged.footer.socialLinks)) {
+      merged.footer.socialLinks = merged.footer.socialLinks.map((link: any) => {
+        if (link.icon === 'Facebook' && systemSettings.social_facebook) {
+          return {
+            ...link,
+            href: systemSettings.social_facebook,
+          };
+        }
+        if (link.icon === 'Instagram' && systemSettings.social_instagram) {
+          return {
+            ...link,
+            href: systemSettings.social_instagram,
+          };
+        }
+        if (link.icon === 'Youtube' && systemSettings.social_youtube) {
+          return {
+            ...link,
+            href: systemSettings.social_youtube,
+          };
+        }
+        if (link.icon === 'MessageCircle' && systemSettings.social_zalo) {
+          return {
+            ...link,
+            href: systemSettings.social_zalo,
+          };
+        }
+        return link;
+      });
+    }
+
+    // Update address in footer
+    if (systemSettings.contact_address) {
+      merged.footer.address = systemSettings.contact_address;
+    }
+  }
+
+  // Merge into CTA Booking section
+  if (merged.ctaBooking && systemSettings.contact_hotline) {
+    merged.ctaBooking.phone = systemSettings.contact_hotline;
+    if (merged.ctaBooking.ctaLink?.startsWith('tel:')) {
+      merged.ctaBooking.ctaLink = `tel:${systemSettings.contact_hotline.replace(/\D/g, '')}`;
+    }
+  }
+
+  // Merge into Map section
+  if (merged.map && systemSettings.contact_address) {
+    merged.map.address = systemSettings.contact_address;
+  }
+
+  return merged;
+}
+
 export async function getHomepageConfig(): Promise<HomepageConfig> {
   try {
+    // Load system settings first (these will override homepage config)
+    const systemSettings = await getSystemSettings();
+
     // Priority 1: Load from HomepageSettings.sections (PUBLISHED) - from homepage-settings
     const publishedSettings = await prisma.homepageSettings.findFirst({
       where: { status: 'PUBLISHED' },
@@ -639,7 +782,9 @@ export async function getHomepageConfig(): Promise<HomepageConfig> {
         };
       }
       
-      return mergedConfig;
+      // Merge system settings into config (system settings take priority)
+      const finalConfig = mergeSystemSettingsIntoConfig(mergedConfig, systemSettings);
+      return finalConfig;
     }
 
     // Priority 2: Load from HomepageSection (old CMS)
@@ -648,7 +793,8 @@ export async function getHomepageConfig(): Promise<HomepageConfig> {
     });
 
     if (sections.length === 0) {
-      return DEFAULT_CONFIG;
+      // Even if no sections, merge system settings into default config
+      return mergeSystemSettingsIntoConfig(DEFAULT_CONFIG, systemSettings);
     }
 
     const config: Partial<HomepageConfig> = {};
@@ -664,10 +810,21 @@ export async function getHomepageConfig(): Promise<HomepageConfig> {
       }
     }
 
-    return { ...DEFAULT_CONFIG, ...config };
+    const mergedConfig = { ...DEFAULT_CONFIG, ...config };
+    
+    // Merge system settings into config (system settings take priority)
+    const finalConfig = mergeSystemSettingsIntoConfig(mergedConfig, systemSettings);
+    return finalConfig;
   } catch (error) {
     console.error('Error fetching homepage config:', error);
+    // Even on error, try to merge system settings into default config
+    try {
+      const systemSettings = await getSystemSettings();
+      return mergeSystemSettingsIntoConfig(DEFAULT_CONFIG, systemSettings);
+    } catch (systemError) {
+      console.error('Error loading system settings:', systemError);
     return DEFAULT_CONFIG;
+    }
   }
 }
 

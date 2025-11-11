@@ -175,9 +175,9 @@ export function generateOrganizationStructuredData(): StructuredData {
       availableLanguage: ['vi', 'en'],
     },
     sameAs: [
-      'https://www.facebook.com/conphung',
-      'https://www.instagram.com/conphung',
-      'https://www.youtube.com/@conphung',
+      'https://www.facebook.com/dulichconphungbentre',
+      'https://www.instagram.com/dulichconphungbentre',
+      'https://www.youtube.com/@ConPhungTouristBenTre',
     ],
   };
 }

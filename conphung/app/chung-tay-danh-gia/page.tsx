@@ -1,6 +1,6 @@
 import { Metadata } from "next";
-import Image from "next/image";
 import { MapPin, Star } from "lucide-react";
+import { PlaceImage } from "@/components/chung-tay-danh-gia/PlaceImage";
 
 const reviewPlaces = [
   {
@@ -58,6 +58,17 @@ const reviewPlaces = [
     },
     mapsQuery: "Bến tàu du lịch Cồn Phụng Mỹ Tho",
   },
+  {
+    title: "Khu vui chơi và du lịch Bến Tre",
+    description:
+      "Khám phá khu vui chơi và du lịch tại Bến Tre - điểm đến lý tưởng cho gia đình với nhiều hoạt động giải trí và trải nghiệm văn hóa miền Tây sông nước.",
+    image: {
+      src: "https://conphungtourist.com/TinTuc/danhgiadiadiem/khu-vui-choi-du-lich-ben-tre.webp",
+      alt: "Khu vui chơi và du lịch Bến Tre",
+      hint: "amusement park",
+    },
+    mapsQuery: "Khu vui chơi và du lịch Bến Tre",
+  },
 ] as const;
 
 export const metadata: Metadata = {
@@ -86,14 +97,11 @@ export default function ChungTayDanhGiaPage() {
             key={place.title}
             className="rounded-lg border bg-card text-card-foreground flex flex-col overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300"
           >
-            <div className="relative h-48 w-full">
-              <Image
+            <div className="relative h-48 w-full bg-gray-200 dark:bg-gray-800">
+              <PlaceImage
                 src={place.image.src}
                 alt={place.image.alt}
-                fill
-                className="object-cover"
-                data-ai-hint={place.image.hint}
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                hint={place.image.hint}
               />
             </div>
             <div className="flex flex-col space-y-1.5 p-6 flex-grow">

@@ -281,12 +281,15 @@ export async function generateMetadata(
   });
 
   if (!post || post.status !== 'PUBLISHED') {
-    return {};
+    return {
+      robots: 'noindex, nofollow', // Không index nếu chưa published
+    };
   }
 
   return {
     title: post.title,
     description: post.excerpt ?? undefined,
+    robots: 'index, follow', // Đảm bảo index khi đã published
   };
 }
 

@@ -1,84 +1,80 @@
 import { Suspense } from 'react';
 import Link from 'next/link';
-import { CheckCircle, Home, Calendar, Mail, Phone } from 'lucide-react';
+import { AlertCircle, Home, Calendar, Mail, Phone, Building2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 export const metadata = {
-  title: 'Thanh toán thành công | Cồn Phụng',
-  description: 'Đặt tour thành công',
+  title: 'Thông tin thanh toán | Cồn Phụng',
+  description: 'Hướng dẫn thanh toán cho đơn hàng',
 };
 
 export default function PaymentSuccessPage() {
   return (
     <Suspense fallback={<div className="container mx-auto py-16 text-center">Đang tải...</div>}>
-      <PaymentSuccessContent />
+      <PaymentInfoContent />
     </Suspense>
   );
 }
 
-function PaymentSuccessContent() {
+function PaymentInfoContent() {
   return (
     <div className="container mx-auto py-16 px-4">
       <div className="max-w-2xl mx-auto">
-        {/* Success Icon */}
+        {/* Info Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-green-100 mb-4">
-            <CheckCircle className="w-12 h-12 text-green-600" />
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-blue-100 mb-4">
+            <Building2 className="w-12 h-12 text-blue-600" />
           </div>
-          <h1 className="text-3xl font-bold text-green-600 mb-2">
-            Thanh toán thành công!
+          <h1 className="text-3xl font-bold mb-2">
+            Thông tin thanh toán
           </h1>
           <p className="text-lg text-muted-foreground">
-            Cảm ơn bạn đã đặt tour tại Cồn Phụng
+            Hướng dẫn thanh toán cho đơn hàng của bạn
           </p>
         </div>
 
-        {/* Booking Info Card */}
+        {/* Alert */}
+        <Alert className="mb-6">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Lưu ý quan trọng</AlertTitle>
+          <AlertDescription>
+            Chúng tôi <strong>không hỗ trợ thanh toán trực tuyến</strong> qua website. 
+            Vui lòng thanh toán qua chuyển khoản ngân hàng hoặc tiền mặt tại quầy.
+          </AlertDescription>
+        </Alert>
+
+        {/* Bank Transfer Info Card */}
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle>Thông tin đặt tour</CardTitle>
+            <CardTitle>Thông tin chuyển khoản ngân hàng</CardTitle>
             <CardDescription>
-              Chúng tôi đã gửi email xác nhận đến địa chỉ của bạn
+              Vui lòng chuyển khoản theo thông tin sau
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex items-start gap-3">
-                <Calendar className="w-5 h-5 text-muted-foreground mt-0.5" />
-                <div>
-                  <p className="text-sm font-medium">Ngày khởi hành</p>
-                  <p className="text-sm text-muted-foreground">
-                    Vui lòng kiểm tra email để biết chi tiết
-                  </p>
+            <div className="grid grid-cols-1 gap-3 text-sm">
+              <div className="flex justify-between">
+                <span className="font-medium">Đơn vị thụ hưởng:</span>
+                <span className="text-right">CÔNG TY TNHH DU LỊCH DỊCH VỤ THƯƠNG MẠI CỒN PHỤNG</span>
                 </div>
+              <div className="flex justify-between">
+                <span className="font-medium">Số tài khoản:</span>
+                <span className="font-bold text-primary">7210783403</span>
               </div>
-              <div className="flex items-start gap-3">
-                <Mail className="w-5 h-5 text-muted-foreground mt-0.5" />
-                <div>
-                  <p className="text-sm font-medium">Email xác nhận</p>
-                  <p className="text-sm text-muted-foreground">
-                    Đã gửi đến email của bạn
-                  </p>
-                </div>
+              <div className="flex justify-between">
+                <span className="font-medium">Ngân hàng:</span>
+                <span>BIDV chi nhánh Bến Tre</span>
               </div>
             </div>
-
-            <div className="border-t pt-4">
-              <h3 className="font-medium mb-2">Bước tiếp theo:</h3>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li className="flex items-start gap-2">
-                  <span className="text-primary">1.</span>
-                  <span>Kiểm tra email xác nhận (bao gồm cả thư mục spam)</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-primary">2.</span>
-                  <span>Lưu lại mã đặt tour để tra cứu</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-primary">3.</span>
-                  <span>Chúng tôi sẽ liên hệ với bạn trước ngày khởi hành 1-2 ngày</span>
-                </li>
+            <div className="pt-4 border-t space-y-2 text-xs text-muted-foreground">
+              <p className="font-medium text-foreground">Hướng dẫn thanh toán:</p>
+              <ul className="list-disc list-inside space-y-1 ml-2">
+                <li>Vui lòng chuyển khoản đúng số tiền theo đơn hàng</li>
+                <li>Ghi rõ mã đơn hàng (Booking ID) trong nội dung chuyển khoản</li>
+                <li>Sau khi chuyển khoản, vui lòng liên hệ hotline <strong>0918.267.715</strong> hoặc gửi ảnh chụp biên lai chuyển khoản đến email <strong>conphungtourist87@gmail.com</strong></li>
+                <li>Đơn hàng sẽ được xác nhận trong vòng 24 giờ sau khi nhận được thanh toán</li>
               </ul>
             </div>
           </CardContent>
@@ -103,8 +99,8 @@ function PaymentSuccessContent() {
               <Mail className="w-5 h-5 text-primary" />
               <div>
                 <p className="text-sm font-medium">Email</p>
-                <a href="mailto:info@conphungtourist.com" className="text-sm text-primary hover:underline">
-                  info@conphungtourist.com
+                <a href="mailto:conphungtourist87@gmail.com" className="text-sm text-primary hover:underline">
+                  conphungtourist87@gmail.com
                 </a>
               </div>
             </div>
@@ -114,15 +110,14 @@ function PaymentSuccessContent() {
         {/* Action Buttons */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Button asChild size="lg" className="w-full">
-            <Link href="/">
-              <Home className="w-4 h-4 mr-2" />
-              Về trang chủ
+            <Link href="/phuong-thuc-thanh-toan">
+              Xem thông tin thanh toán
             </Link>
           </Button>
           <Button asChild variant="outline" size="lg" className="w-full">
-            <Link href="/tours">
-              <Calendar className="w-4 h-4 mr-2" />
-              Xem thêm tour
+            <Link href="/">
+              <Home className="w-4 h-4 mr-2" />
+              Về trang chủ
             </Link>
           </Button>
         </div>
@@ -130,7 +125,7 @@ function PaymentSuccessContent() {
         {/* Additional Info */}
         <div className="mt-8 p-4 bg-muted rounded-lg text-center text-sm text-muted-foreground">
           <p>
-            Nếu bạn có bất kỳ thắc mắc nào, vui lòng liên hệ với chúng tôi qua hotline hoặc email.
+            Nếu bạn có bất kỳ thắc mắc nào về thanh toán, vui lòng liên hệ với chúng tôi qua hotline hoặc email.
             Chúng tôi luôn sẵn sàng hỗ trợ bạn!
           </p>
         </div>

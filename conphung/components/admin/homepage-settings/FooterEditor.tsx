@@ -60,9 +60,9 @@ export function FooterEditor({ data, onChange }: FooterEditorProps) {
     showTeamMembers: true,
     companyDescription: 'Khám phá vẻ đẹp thiên nhiên và văn hóa độc đáo của miền Tây tại Khu Du Lịch Cồn Phụng - Công trình kiến trúc Đạo Dừa nổi tiếng.',
     socialLinks: [
-      { icon: 'Facebook', href: 'https://facebook.com/conphung', label: 'Facebook', color: 'hover:bg-blue-600' },
-      { icon: 'Instagram', href: 'https://instagram.com/conphung', label: 'Instagram', color: 'hover:bg-pink-600' },
-      { icon: 'Youtube', href: 'https://youtube.com/@conphung', label: 'Youtube', color: 'hover:bg-red-600' },
+      { icon: 'Facebook', href: 'https://www.facebook.com/dulichconphungbentre', label: 'Facebook', color: 'hover:bg-blue-600' },
+      { icon: 'Instagram', href: 'https://www.instagram.com/dulichconphungbentre', label: 'Instagram', color: 'hover:bg-pink-600' },
+      { icon: 'Youtube', href: 'https://www.youtube.com/@ConPhungTouristBenTre', label: 'Youtube', color: 'hover:bg-red-600' },
       { icon: 'MessageCircle', href: 'https://zalo.me/0918267715', label: 'Zalo', color: 'hover:bg-blue-500' },
     ],
     linkGroups: [
@@ -87,8 +87,8 @@ export function FooterEditor({ data, onChange }: FooterEditorProps) {
     ],
     contactInfo: [
       { icon: 'Phone', label: 'Hotline', value: '0918 267 715', href: 'tel:+84918267715' },
-      { icon: 'Mail', label: 'Email', value: 'conphung87@yahoo.com.vn', href: 'mailto:conphung87@yahoo.com.vn' },
-      { icon: 'MapPin', label: 'Địa chỉ', value: 'Tờ bản đồ số 3, thửa đất số 32, Ấp Tân Vinh, Xã Phú Túc, tỉnh Vĩnh Long', href: 'https://maps.google.com/?q=10.3367211,106.3687357' },
+      { icon: 'Mail', label: 'Email', value: 'conphungtourist87@gmail.com', href: 'mailto:conphungtourist87@gmail.com' },
+      { icon: 'MapPin', label: 'Địa chỉ', value: 'Tờ bản đồ số 3, thửa đất số 32, ấp 10 (ấp Tân Vinh), xã Phú Túc, tỉnh Vĩnh Long', href: 'https://maps.google.com/?q=10.3367211,106.3687357' },
       { icon: 'Clock', label: 'Giờ làm việc', value: 'Thứ 2 - CN: 7:00 - 18:00' },
     ],
     newsletterTitle: 'Đăng ký nhận tin',
@@ -98,7 +98,7 @@ export function FooterEditor({ data, onChange }: FooterEditorProps) {
     businessLicense: 'GIẤY PHÉP KINH DOANH DỊCH VỤ LỮ HÀNH QUỐC TẾ - Số GP/No. : 83-005/2019 /TCDL-GP LHQT',
     foodSafetyCert: 'GIẤY CHỨNG NHẬN CƠ SỞ ĐỦ ĐIỀU KIỆN AN TOÀN THỰC PHẨM SỐ: 71/2021./ATTP-CNĐK',
     bankAccount: 'Số tài khoản: 7210783403 - BIDV chi nhánh Bến Tre',
-    address: 'Tờ bản đồ số 3, thửa đất số 32, Ấp Tân Vinh, Xã Phú Túc, tỉnh Vĩnh Long',
+    address: 'Tờ bản đồ số 3, thửa đất số 32, ấp 10 (ấp Tân Vinh), xã Phú Túc, tỉnh Vĩnh Long',
     copyrightText: `© ${new Date().getFullYear()} Khu Du Lịch Cồn Phụng. Bảo lưu mọi quyền.`,
     isActive: true,
   };

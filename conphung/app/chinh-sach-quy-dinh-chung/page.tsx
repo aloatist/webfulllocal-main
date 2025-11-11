@@ -50,12 +50,16 @@ export default function GeneralPolicyPage() {
               CÔNG TY TNHH DL DV TM CỒN PHỤNG (khách hàng chịu phí chuyển khoản):
               <ul>
                 <li>
-                  Số tài khoản: <strong>72110000783403</strong>
+                  Số tài khoản: <strong>7210783403</strong>
                 </li>
                 <li>
-                  Ngân hàng: <strong>BIDV – Chi nhánh Bến Tre</strong>
+                  Ngân hàng: <strong>BIDV chi nhánh Bến Tre</strong>
                 </li>
               </ul>
+              <p className="mt-2 text-sm text-muted-foreground">
+                <strong>Lưu ý:</strong> Chúng tôi không hỗ trợ thanh toán trực tuyến qua website. 
+                Quý khách vui lòng đặt hàng online và thanh toán qua chuyển khoản ngân hàng hoặc tiền mặt tại quầy.
+              </p>
             </li>
             <li>
               Thanh toán xem như hoàn tất khi công ty nhận đủ tiền trước ngày khởi

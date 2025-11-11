@@ -16,7 +16,7 @@ const defaultData: HeroData = {
   subtitle: "Công Trình Kiến Trúc Đạo Dừa",
   description: "🌿 Du lịch sinh thái - Trải nghiệm thiên nhiên và văn hóa miền Tây. Đặt tour chính chủ để nhận ưu đãi tốt nhất!",
   phone: "+84918267715",
-  address: "Tờ bản đồ số 3, thửa đất số 32, Ấp Tân Vinh, Xã Phú Túc, tỉnh Vĩnh Long",
+  address: "Tờ bản đồ số 3, thửa đất số 32, ấp 10 (ấp Tân Vinh), xã Phú Túc, tỉnh Vĩnh Long",
   openingHours: "7:00 - 18:00",
   backgroundImage: "/uploads/anhbiadulichconphung.webp",
   primaryCta: {

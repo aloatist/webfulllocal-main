@@ -18,6 +18,17 @@ const createPaymentSchema = z.object({
 });
 
 export async function POST(request: NextRequest) {
+  // DISABLED: Online payment is not supported
+  // Only booking is allowed, payment must be done via bank transfer
+  return NextResponse.json(
+    { 
+      error: 'Thanh toán trực tuyến không được hỗ trợ',
+      message: 'Vui lòng đặt hàng online và thanh toán qua chuyển khoản ngân hàng. Thông tin tài khoản: Số tài khoản: 7210783403 - BIDV chi nhánh Bến Tre'
+    },
+    { status: 403 }
+  );
+
+  /* DISABLED CODE - Online payment is not allowed
   try {
     // Rate limiting
     const rateLimitResponse = await rateLimit(request, RateLimitPresets.normal);
@@ -111,4 +122,5 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
+  */
 }

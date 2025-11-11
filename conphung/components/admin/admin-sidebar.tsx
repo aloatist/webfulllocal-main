@@ -58,6 +58,11 @@ const navigation: NavItem[] = [
         icon: FileText,
       },
       {
+        title: '📹 Import YouTube',
+        href: '/admin/posts/import-youtube',
+        icon: FileText,
+      },
+      {
         title: 'Danh mục',
         href: '/admin/categories',
         icon: FolderTree,

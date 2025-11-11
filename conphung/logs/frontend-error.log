@@ -448,3 +448,6 @@
 2025-10-17 17:24:02 +07:00:   syscall: 'open',
 2025-10-17 17:24:02 +07:00:   path: '/Users/congtrinh/fullconphung-main/conphung/.next/prerender-manifest.json'
 2025-10-17 17:24:02 +07:00: }
+2025-11-08 16:26:52 +07:00:  ⚠ You are using a non-standard "NODE_ENV" value in your environment. This creates inconsistencies in the project and is strongly advised against. Read more: https://nextjs.org/docs/messages/non-standard-node-env
+2025-11-08 16:29:19 +07:00:  ⚠ You are using a non-standard "NODE_ENV" value in your environment. This creates inconsistencies in the project and is strongly advised against. Read more: https://nextjs.org/docs/messages/non-standard-node-env
+2025-11-08 19:35:27 +07:00:  ⚠ You are using a non-standard "NODE_ENV" value in your environment. This creates inconsistencies in the project and is strongly advised against. Read more: https://nextjs.org/docs/messages/non-standard-node-env

@@ -57,7 +57,7 @@ export function Chatbot() {
     }
 
     if (lowerMessage.includes('địa chỉ') || lowerMessage.includes('location')) {
-      return 'Khu du lịch Cồn Phụng nằm tại Ấp Tân Vinh, Xã Phú Túc, huyện Long Hồ, tỉnh Vĩnh Long.';
+      return 'Khu du lịch Cồn Phụng nằm tại Tờ bản đồ số 3, thửa đất số 32, ấp 10 (ấp Tân Vinh), xã Phú Túc, tỉnh Vĩnh Long.';
     }
 
     // Default response

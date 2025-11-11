@@ -12,7 +12,7 @@ const defaultData: MapData = {
   heading: "ĐƯỜNG ĐẾN CỒN PHỤNG",
   description: "Hướng dẫn chi tiết cách di chuyển đến khu du lịch Cồn Phụng",
   embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3933.123456789!2d106.3687357!3d10.3367211!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTDCsDIwJzEyLjIiTiAxMDbCsDIyJzA3LjQiRQ!5e0!3m2!1svi!2s!4v1234567890",
-  address: "Tờ bản đồ số 3, thửa đất số 32, Ấp Tân Vinh, Xã Phú Túc, tỉnh Vĩnh Long",
+  address: "Tờ bản đồ số 3, thửa đất số 32, ấp 10 (ấp Tân Vinh), xã Phú Túc, tỉnh Vĩnh Long",
   coordinates: {
     lat: 10.3367211,
     lng: 106.3687357
@@ -94,7 +94,7 @@ export function MapSection({ data = defaultData }: MapSectionProps) {
               </div>
               <div>
                 <p className="text-xs text-gray-600 dark:text-gray-400">Địa chỉ</p>
-                <p className="font-semibold text-gray-900 dark:text-white">Tờ bản đồ số 3, thửa đất số 32, Ấp Tân Vinh, Xã Phú Túc, tỉnh Vĩnh Long</p>
+                <p className="font-semibold text-gray-900 dark:text-white">Tờ bản đồ số 3, thửa đất số 32, ấp 10 (ấp Tân Vinh), xã Phú Túc, tỉnh Vĩnh Long</p>
               </div>
             </div>
 

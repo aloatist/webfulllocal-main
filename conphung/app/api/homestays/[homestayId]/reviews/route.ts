@@ -6,6 +6,7 @@ import { requireEditor } from '@/lib/tours/permissions'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth/auth-options'
 import { nanoid } from 'nanoid'
+import { sanitizeReviewContent } from '@/lib/utils/sanitize'
 
 const paramsSchema = z.object({
   homestayId: z.string(),
@@ -13,7 +14,9 @@ const paramsSchema = z.object({
 
 const createReviewSchema = z.object({
   rating: z.number().min(1).max(5),
-  comment: z.string().optional().nullable(),
+  comment: z.string().max(5000).optional().nullable(),
+  title: z.string().max(200).optional().nullable(),
+  content: z.string().max(5000).optional().nullable(),
   cleanlinessRating: z.number().min(1).max(5).optional(),
   communicationRating: z.number().min(1).max(5).optional(),
   accuracyRating: z.number().min(1).max(5).optional(),
@@ -55,12 +58,16 @@ export async function GET(
     })
 
     // Format for frontend
+    // Note: Content and user names are already sanitized when saved, but we ensure they're safe for display
     const formattedReviews = reviews.map(review => ({
       id: review.id,
       rating: Number(review.overallRating),
-      comment: review.content,
+      comment: review.content || null, // Already sanitized in database
       createdAt: review.createdAt.toISOString(),
-      User: review.User,
+      User: {
+        name: review.User?.name || 'Người dùng',
+        image: review.User?.image || null,
+      },
       cleanlinessRating: review.cleanlinessRating ? Number(review.cleanlinessRating) : null,
       accuracyRating: review.accuracyRating ? Number(review.accuracyRating) : null,
       communicationRating: review.communicationRating ? Number(review.communicationRating) : null,
@@ -115,13 +122,18 @@ export async function POST(
     // Get reviewerId from session
     const reviewerId = session.user.id;
 
+    // Sanitize user input to prevent XSS attacks
+    // Support both 'comment' and 'content' fields for backward compatibility
+    const commentText = data.comment || data.content || '';
+    const sanitizedContent = sanitizeReviewContent(commentText, 5000);
+
     const review = await prisma.homestayReview.create({
       data: {
         id: nanoid(),
         homestayId,
         reviewerId,
         overallRating: data.rating,
-        content: data.comment,
+        content: sanitizedContent || null,
         cleanlinessRating: data.cleanlinessRating,
         communicationRating: data.communicationRating,
         accuracyRating: data.accuracyRating,

@@ -2,10 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { nanoid } from 'nanoid';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
+import { sanitizeReviewContent, sanitizeUserName } from '@/lib/utils/sanitize';
 
 const reviewSchema = z.object({
   rating: z.number().min(1).max(5),
-  fullName: z.string().min(1),
+  fullName: z.string().min(1).max(100),
+  comment: z.string().optional().nullable(),
+  // Legacy fields for backward compatibility
   title: z.string().optional().nullable(),
   content: z.string().optional().nullable(),
 });
@@ -29,12 +32,13 @@ export async function GET(
     });
 
     // Format for frontend - use fullName from review
+    // Note: Content is already sanitized when saved, but we ensure it's safe for display
     const formattedReviews = reviews.map(review => ({
       id: review.id,
       rating: review.rating,
-      comment: review.content,
+      comment: review.content || null, // Already sanitized in database
       createdAt: review.createdAt.toISOString(),
-      User: { name: review.fullName, image: null },
+      User: { name: review.fullName || 'Người dùng', image: null }, // Already sanitized in database
     }));
 
     return NextResponse.json(formattedReviews);
@@ -89,16 +93,23 @@ export async function POST(
     //   );
     // }
 
+    // Sanitize user input to prevent XSS attacks
+    const sanitizedFullName = sanitizeUserName(data.fullName);
+    // Support both 'comment' and 'content' fields for backward compatibility
+    const commentText = data.comment || data.content || '';
+    const sanitizedContent = sanitizeReviewContent(commentText, 5000);
+    const sanitizedTitle = data.title ? sanitizeReviewContent(data.title, 200) : null;
+
     // Create review
     const review = await prisma.tourReview.create({
       data: {
         id: nanoid(),
         tourId,
         customerId: null, // Anonymous review
-        fullName: data.fullName,
+        fullName: sanitizedFullName,
         rating: data.rating,
-        title: data.title,
-        content: data.content,
+        title: sanitizedTitle,
+        content: sanitizedContent || null,
         isPublished: false, // Requires admin approval
         createdAt: new Date(),
         updatedAt: new Date(),

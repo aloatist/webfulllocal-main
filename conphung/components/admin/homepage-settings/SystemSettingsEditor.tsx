@@ -73,8 +73,10 @@ export function SystemSettingsEditor({ onSave }: SystemSettingsEditorProps) {
 
       if (response.ok) {
         setStatus('success');
-        setTimeout(() => setStatus('idle'), 3000);
+        setTimeout(() => setStatus('idle'), 5000);
         onSave?.();
+        // Note: Homepage sẽ tự động load lại system settings khi render
+        // vì homepage có force-dynamic và revalidate = 0
       } else {
         setStatus('error');
         setErrorMessage(data.error || 'Có lỗi xảy ra');
@@ -116,7 +118,12 @@ export function SystemSettingsEditor({ onSave }: SystemSettingsEditorProps) {
         {/* Status Messages */}
         {status === 'success' && (
           <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-            <p className="text-sm text-green-800">✅ Đã lưu thành công!</p>
+            <p className="text-sm text-green-800">
+              ✅ Đã lưu thành công! System settings đã được cập nhật và sẽ hiển thị trên homepage ngay lập tức.
+            </p>
+            <p className="text-xs text-green-600 mt-1">
+              💡 Các thông tin liên hệ, mạng xã hội, và cài đặt chat sẽ được tự động cập nhật trên trang chủ.
+            </p>
           </div>
         )}
 

@@ -148,3 +148,5 @@ export function generateSEOMetadata(post: any, content: string) {
     ogImage: post.full_picture || post.attachments?.data?.[0]?.media?.image?.src,
   };
 }
+
+
