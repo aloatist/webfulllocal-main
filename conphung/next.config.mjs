@@ -46,8 +46,8 @@ const nextConfig = {
     removeConsole:
       process.env.NODE_ENV === "production"
         ? {
-            exclude: ["error", "warn"],
-          }
+          exclude: ["error", "warn"],
+        }
         : false,
   },
   experimental: {
@@ -76,7 +76,7 @@ const nextConfig = {
   },
   // Remove powered by header
   poweredByHeader: false,
-  
+
   // Security headers
   async headers() {
     return [
@@ -155,7 +155,7 @@ const nextConfig = {
       }
     ];
   },
-  
+
   // Webpack optimization
   webpack: (config, { dev, isServer }) => {
     // Production optimizations
@@ -203,8 +203,32 @@ const nextConfig = {
         }
       };
     }
-    
+
     return config;
+  },
+  async redirects() {
+    return [
+      {
+        source: '/dao-dua-nguyen-thanh-nam',
+        destination: '/con-phung/dao-dua-nguyen-thanh-nam',
+        permanent: true,
+      },
+      {
+        source: '/posts/dao-dua-nguyen-thanh-nam',
+        destination: '/con-phung/dao-dua-nguyen-thanh-nam',
+        permanent: true,
+      },
+      {
+        source: '/4-dieu-tom-tat-dao-dua-ben-tre',
+        destination: '/con-phung/dao-dua-nguyen-thanh-nam',
+        permanent: true,
+      },
+      {
+        source: '/du-lich/dao-dua-nguyen-thanh-nam',
+        destination: '/con-phung/dao-dua-nguyen-thanh-nam',
+        permanent: true,
+      },
+    ];
   },
 };
 

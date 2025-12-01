@@ -108,9 +108,7 @@ export async function PATCH(request: NextRequest, context: Context) {
         Tag: tagIds ? {
           set: tagIds.map((id: string) => ({ id })),
         } : undefined,
-        Media: featuredImageId ? {
-          connect: { id: featuredImageId },
-        } : undefined,
+        featuredImageId: featuredImageId !== undefined ? (featuredImageId || null) : undefined,
         SEO: seo ? {
           upsert: {
             create: {

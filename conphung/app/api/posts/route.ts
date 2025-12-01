@@ -155,11 +155,7 @@ export async function POST(request: NextRequest) {
         Tag: {
           connect: tagIds?.map((id: string) => ({ id })) || [],
         },
-        ...(featuredImageId && {
-          Media: {
-            connect: { id: featuredImageId },
-          },
-        }),
+        ...(featuredImageId && { featuredImageId }),
         ...(seo && {
           SEO: {
             create: {

@@ -1,0 +1,75 @@
+{
+  "createdAt": "2025-10-01T09:01:38.370Z",
+  "updatedAt": "2025-10-01T09:34:26.894Z",
+  "id": "bf7BvYMIqbPIpaKO",
+  "name": "diem danh",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -416,
+        -32
+      ],
+      "id": "40290bfc-47b2-4e8a-88ef-13c36391acd5",
+      "name": "When clicking \u2018Execute workflow\u2019"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-zalo-tools.zaloLoginByQr",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        -96
+      ],
+      "id": "610dd2ad-d290-4f04-ba11-75f4810f9109",
+      "name": "Zalo Login Via QR Code",
+      "credentials": {
+        "n8nZaloApi": {
+          "id": "mlbYWQLW6MSU3Y7e",
+          "name": "n8n Zalo Account Credential account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When clicking \u2018Execute workflow\u2019": {
+      "main": [
+        [
+          {
+            "node": "Zalo Login Via QR Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "226bd38c-268f-47b1-80bd-bde9e114ac3d",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-10-01T09:01:38.370Z",
+      "updatedAt": "2025-10-01T09:01:38.370Z",
+      "role": "workflow:owner",
+      "workflowId": "bf7BvYMIqbPIpaKO",
+      "projectId": "ICp1M8C0gzC6bJJb"
+    }
+  ],
+  "tags": [],
+  "repo_owner": "aloatist",
+  "repo_name": "n8nvps",
+  "repo_path": "aloatist/n8nvps",
+  "drive_folder": "1xA6c0JY5ZpCuLzILbuv4tiP_pMCPWRCH"
+}

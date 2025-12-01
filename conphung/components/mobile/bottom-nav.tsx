@@ -28,7 +28,7 @@ const navItems: NavItem[] = [
     icon: Hotel,
   },
   {
-    href: '/news',
+    href: '/posts',
     label: 'Tin tức',
     icon: Calendar,
   },

@@ -21,14 +21,14 @@ export default async function PostsPage() {
       slug: true,
       excerpt: true,
       createdAt: true,
-      categories: {
+      Category: {
         select: {
           id: true,
           name: true,
           slug: true,
         },
       },
-      featuredImage: {
+      Media: {
         select: {
           url: true,
           alt: true,
@@ -57,11 +57,11 @@ export default async function PostsPage() {
               key={post.id}
               className="flex h-full flex-col overflow-hidden rounded-xl border border-border bg-background shadow-sm transition hover:shadow-md"
             >
-              {post.featuredImage?.url ? (
+              {post.Media?.url ? (
                 <div className="relative aspect-[16/10] overflow-hidden">
                   <Image
-                    src={post.featuredImage.url}
-                    alt={post.featuredImage.alt ?? post.title}
+                    src={post.Media.url}
+                    alt={post.Media.alt ?? post.title}
                     fill
                     className="object-cover transition-transform hover:scale-105"
                     sizes="(max-width: 768px) 100vw, 50vw"
@@ -78,7 +78,7 @@ export default async function PostsPage() {
                   <span className="text-gray-600 dark:text-gray-400 font-medium">
                     {format(new Date(post.createdAt), 'dd/MM/yyyy')}
                   </span>
-                  {post.categories.map((category) => (
+                  {post.Category.map((category) => (
                     <span
                       key={category.id}
                       className="rounded-full bg-emerald-100 dark:bg-emerald-900/30 px-3 py-1 text-sm font-semibold text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800"

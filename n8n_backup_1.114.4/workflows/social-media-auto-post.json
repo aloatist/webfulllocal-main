@@ -1,0 +1,366 @@
+{
+  "name": "Social Media Auto-Post - New Content",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "social-post",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-new-content",
+      "name": "Webhook - New Content Published",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 400],
+      "webhookId": "social-post"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.contentType }}",
+              "operation": "equals",
+              "value2": "tour"
+            }
+          ]
+        }
+      },
+      "id": "if-tour",
+      "name": "Is Tour?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.contentType }}",
+              "operation": "equals",
+              "value2": "homestay"
+            }
+          ]
+        }
+      },
+      "id": "if-homestay",
+      "name": "Is Homestay?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [450, 500]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.contentType }}",
+              "operation": "equals",
+              "value2": "post"
+            }
+          ]
+        }
+      },
+      "id": "if-blog-post",
+      "name": "Is Blog Post?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [450, 700]
+    },
+    {
+      "parameters": {
+        "message": "🌴 *Tour Mới Tại Cồn Phụng!*\n\n{{ $json.title }}\n\n{{ $json.summary }}\n\n💰 Giá từ: {{ $json.price }} VND\n⏱️ Thời gian: {{ $json.duration }}\n\n👉 Đặt ngay: {{ $json.url }}\n\n#ConPhung #DuLich #Tour #Vietnam",
+        "additionalFields": {
+          "parseMode": "Markdown"
+        }
+      },
+      "id": "facebook-tour",
+      "name": "Facebook - Tour Post",
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [650, 200],
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "4",
+          "name": "Facebook account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "text": "🌴 Tour Mới Tại Cồn Phụng!\n\n{{ $json.title }}\n\n{{ $json.summary }}\n\n💰 Giá từ: {{ $json.price }} VND\n⏱️ Thời gian: {{ $json.duration }}\n\n👉 Đặt ngay: {{ $json.url }}\n\n#ConPhung #DuLich #Tour #Vietnam",
+        "additionalFields": {}
+      },
+      "id": "twitter-tour",
+      "name": "Twitter/X - Tour Post",
+      "type": "n8n-nodes-base.twitter",
+      "typeVersion": 1,
+      "position": [650, 300],
+      "credentials": {
+        "twitterOAuth1Api": {
+          "id": "5",
+          "name": "Twitter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "message": "🏡 *Homestay Mới Tại Cồn Phụng!*\n\n{{ $json.title }}\n\n{{ $json.summary }}\n\n🛏️ {{ $json.bedrooms }} phòng ngủ\n👥 Tối đa {{ $json.maxGuests }} khách\n💰 Giá từ: {{ $json.price }} VND/đêm\n\n👉 Đặt phòng: {{ $json.url }}\n\n#ConPhung #Homestay #DuLich #Vietnam",
+        "additionalFields": {
+          "parseMode": "Markdown"
+        }
+      },
+      "id": "facebook-homestay",
+      "name": "Facebook - Homestay Post",
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [650, 400],
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "4",
+          "name": "Facebook account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "text": "🏡 Homestay Mới Tại Cồn Phụng!\n\n{{ $json.title }}\n\n{{ $json.summary }}\n\n🛏️ {{ $json.bedrooms }} phòng\n💰 Từ {{ $json.price }} VND/đêm\n\n👉 {{ $json.url }}\n\n#ConPhung #Homestay #DuLich",
+        "additionalFields": {}
+      },
+      "id": "twitter-homestay",
+      "name": "Twitter/X - Homestay Post",
+      "type": "n8n-nodes-base.twitter",
+      "typeVersion": 1,
+      "position": [650, 500],
+      "credentials": {
+        "twitterOAuth1Api": {
+          "id": "5",
+          "name": "Twitter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "message": "📝 *Bài Viết Mới!*\n\n{{ $json.title }}\n\n{{ $json.excerpt }}\n\n👉 Đọc thêm: {{ $json.url }}\n\n#ConPhung #DuLich #Blog #Vietnam",
+        "additionalFields": {
+          "parseMode": "Markdown"
+        }
+      },
+      "id": "facebook-blog",
+      "name": "Facebook - Blog Post",
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [650, 600],
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "4",
+          "name": "Facebook account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "text": "📝 {{ $json.title }}\n\n{{ $json.excerpt }}\n\n👉 {{ $json.url }}\n\n#ConPhung #DuLich #Blog",
+        "additionalFields": {}
+      },
+      "id": "twitter-blog",
+      "name": "Twitter/X - Blog Post",
+      "type": "n8n-nodes-base.twitter",
+      "typeVersion": 1,
+      "position": [650, 700],
+      "credentials": {
+        "twitterOAuth1Api": {
+          "id": "5",
+          "name": "Twitter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "text": "📢 *Social Media Post Published*\n\n📝 Type: {{ $json.contentType }}\n📌 Title: {{ $json.title }}\n🔗 URL: {{ $json.url }}\n\n✅ Posted to:\n• Facebook\n• Twitter/X\n\n⏰ {{ $now.toFormat('yyyy-MM-dd HH:mm') }}",
+        "additionalFields": {
+          "parseMode": "Markdown"
+        }
+      },
+      "id": "telegram-notification",
+      "name": "Telegram - Post Confirmation",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [850, 400],
+      "credentials": {
+        "telegramApi": {
+          "id": "2",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"success\": true, \"message\": \"Social media posts published\", \"contentType\": $json.contentType } }}"
+      },
+      "id": "respond-webhook",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1050, 400]
+    }
+  ],
+  "connections": {
+    "Webhook - New Content Published": {
+      "main": [
+        [
+          {
+            "node": "Is Tour?",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Is Homestay?",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Is Blog Post?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Tour?": {
+      "main": [
+        [
+          {
+            "node": "Facebook - Tour Post",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Twitter/X - Tour Post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Homestay?": {
+      "main": [
+        [
+          {
+            "node": "Facebook - Homestay Post",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Twitter/X - Homestay Post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Blog Post?": {
+      "main": [
+        [
+          {
+            "node": "Facebook - Blog Post",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Twitter/X - Blog Post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Facebook - Tour Post": {
+      "main": [
+        [
+          {
+            "node": "Telegram - Post Confirmation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Twitter/X - Tour Post": {
+      "main": [
+        [
+          {
+            "node": "Telegram - Post Confirmation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Facebook - Homestay Post": {
+      "main": [
+        [
+          {
+            "node": "Telegram - Post Confirmation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Twitter/X - Homestay Post": {
+      "main": [
+        [
+          {
+            "node": "Telegram - Post Confirmation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Facebook - Blog Post": {
+      "main": [
+        [
+          {
+            "node": "Telegram - Post Confirmation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Twitter/X - Blog Post": {
+      "main": [
+        [
+          {
+            "node": "Telegram - Post Confirmation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram - Post Confirmation": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {},
+  "staticData": null,
+  "tags": ["social-media", "automation", "marketing"],
+  "triggerCount": 1,
+  "updatedAt": "2025-01-22T00:00:00.000Z",
+  "versionId": "1"
+}

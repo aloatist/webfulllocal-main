@@ -75,9 +75,13 @@ export default function MediaPage() {
         method: 'DELETE',
       });
 
-      if (!response.ok) throw new Error('Không thể xóa media');
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.details || errorData.error || 'Không thể xóa media');
+      }
       
       setMedia((prev) => prev.filter((item) => item.id !== id));
+      setError(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Không thể xóa media');
     }
@@ -148,10 +152,28 @@ export default function MediaPage() {
       );
 
       const results = await Promise.allSettled(deletePromises);
-      const failed = results.filter((r) => r.status === 'rejected' || !r.value.ok);
+      const failed = results.filter((r) => r.status === 'rejected' || (r.status === 'fulfilled' && !r.value.ok));
+      
+      // Try to get error details from failed requests
+      const failedDetails: string[] = [];
+      for (const result of failed) {
+        if (result.status === 'fulfilled' && !result.value.ok) {
+          try {
+            const errorData = await result.value.json().catch(() => ({}));
+            failedDetails.push(errorData.details || errorData.error || 'Lỗi không xác định');
+          } catch {
+            failedDetails.push('Lỗi không xác định');
+          }
+        } else if (result.status === 'rejected') {
+          failedDetails.push(result.reason?.message || 'Lỗi không xác định');
+        }
+      }
 
       if (failed.length > 0) {
-        throw new Error(`${failed.length} mục không thể xóa`);
+        const uniqueErrors = Array.from(new Set(failedDetails));
+        throw new Error(
+          `${failed.length} mục không thể xóa. ${uniqueErrors.length > 0 ? uniqueErrors.join('; ') : ''}`
+        );
       }
 
       setMedia((prev) => prev.filter((item) => !selectedIds.has(item.id)));

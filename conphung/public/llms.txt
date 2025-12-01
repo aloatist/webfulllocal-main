@@ -1,0 +1,21 @@
+# Khu du lịch Cồn Phụng (Con Phung Tourist)
+
+## Giới thiệu
+Khu du lịch Cồn Phụng là điểm đến du lịch sinh thái nổi tiếng tại Bến Tre, miền Tây Nam Bộ. Chúng tôi cung cấp các dịch vụ tham quan, trải nghiệm văn hóa, ẩm thực và lưu trú.
+
+## Nội dung chính
+- **Trang chủ**: https://conphungtourist.com - Tổng quan về khu du lịch, các gói tour và ưu đãi.
+- **Di tích Đạo Dừa**: Tham quan công trình kiến trúc độc đáo của ông Đạo Dừa Nguyễn Thành Nam.
+- **Ẩm thực**: Nhà hàng phục vụ các món đặc sản miền Tây như cá tai tượng chiên xù, bánh xèo củ hủ dừa, lẩu mắm.
+- **Lưu trú**: Homestay Coco Island - Trải nghiệm nghỉ dưỡng giữa thiên nhiên sông nước.
+
+## Liên hệ
+- **Hotline**: 0918.267.715
+- **Email**: conphungtourist87@gmail.com
+- **Địa chỉ**: Ấp Tân Vinh, Xã Phú Túc, Huyện Châu Thành, Tỉnh Bến Tre.
+
+## Cấu trúc Website
+- `/`: Trang chủ
+- `/chinh-sach-bao-mat`: Chính sách bảo mật
+- `/phuong-thuc-thanh-toan`: Phương thức thanh toán
+- `/chinh-sach-huy-hoan-tien`: Chính sách hủy và hoàn tiền

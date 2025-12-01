@@ -10,4 +10,4 @@ export { TestimonialsEditor } from './TestimonialsEditor';
 export { RestaurantEditor } from './RestaurantEditor';
 export { DiscoveryEditor } from './DiscoveryEditor';
 export { ContactEditor } from './ContactEditor';
-export { NewsletterEditor } from './NewsletterEditor';
+export { NewsletterEditor } from './postsletterEditor';

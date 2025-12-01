@@ -112,21 +112,25 @@ export function generateHomestayStructuredData(homestay: any): StructuredData {
 }
 
 /**
- * Generate structured data for Blog/News posts
+ * Generate structured data for Blog/posts posts
  */
 export function generatePostStructuredData(post: any): StructuredData {
+  const media = post?.Media || post?.featuredImage;
+  const categories = post?.Category || post?.categories || [];
+  const seo = post?.SEO || post?.seo;
+  const author = post?.User || post?.author;
   return {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
     headline: post.title,
-    description: post.excerpt || post.seo?.description,
-    image: post.featuredImage?.url,
-    url: `https://conphungtourist.com//news/${post.slug}`,
+    description: post.excerpt || seo?.description,
+    image: media?.url,
+    url: `https://conphungtourist.com//posts/${post.slug}`,
     datePublished: post.createdAt.toISOString(),
     dateModified: post.updatedAt.toISOString(),
     author: {
       '@type': 'Person',
-      name: post.author?.name || 'Cồn Phụng Team',
+      name: author?.name || 'Cồn Phụng Team',
     },
     publisher: {
       '@type': 'Organization',
@@ -139,13 +143,13 @@ export function generatePostStructuredData(post: any): StructuredData {
     },
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `https://conphungtourist.com//news/${post.slug}`,
+      '@id': `https://conphungtourist.com//posts/${post.slug}`,
     },
-    ...(post.categories && post.categories.length > 0 && {
-      articleSection: post.categories.map((cat: any) => cat.name).join(', '),
+    ...(categories && categories.length > 0 && {
+      articleSection: categories.map((cat: any) => cat.name).join(', '),
     }),
-    ...(post.tags && post.tags.length > 0 && {
-      keywords: post.tags.map((tag: any) => tag.name).join(', '),
+    ...((post?.Tag || post?.tags) && (post?.Tag?.length > 0 || post?.tags?.length > 0) && {
+      keywords: (post.Tag || post.tags).map((tag: any) => tag.name).join(', '),
     }),
   };
 }

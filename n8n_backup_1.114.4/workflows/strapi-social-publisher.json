@@ -1,0 +1,285 @@
+{
+  "name": "Strapi Social Publisher",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "1",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "headerAuth",
+        "headerParametersUi": {
+          "parameter": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{$env.STRAPI_API_TOKEN}}"
+            }
+          ]
+        },
+        "url": "={{$env.STRAPI_API_BASE}}/api/posts?filters[status][$eq]=published&filters[drive_file_id][$notNull]=true&pagination[pageSize]=10",
+        "responseFormat": "json"
+      },
+      "id": "2",
+      "name": "Fetch Posts",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        220,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const entries = items[0].json.data || [];\nreturn entries.map((entry) => ({ json: { id: entry.id, ...entry.attributes } }));"
+      },
+      "id": "3",
+      "name": "Flatten Posts",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        440,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "download",
+        "fileId": "={{$json.drive_file_id}}",
+        "options": {
+          "downloadAsBinary": true,
+          "binaryPropertyName": "data"
+        }
+      },
+      "id": "4",
+      "name": "Google Drive Download",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 2,
+      "position": [
+        660,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "headerAuth",
+        "requestMethod": "POST",
+        "url": "https://graph.facebook.com/v19.0/{{$env.FACEBOOK_PAGE_ID}}/photos",
+        "jsonParameters": true,
+        "headerParametersUi": {
+          "parameter": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{$env.FACEBOOK_PAGE_TOKEN}}"
+            }
+          ]
+        },
+        "bodyParametersJson": "={\n  \"message\": $json.title + '\\n' + ($json.description || '') + '\\n' + ($json.hashtags ? $json.hashtags.join(' ') : ''),\n  \"url\": {{$json.drive_link}}\n}"
+      },
+      "id": "5",
+      "name": "Facebook Publish",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        880,
+        -160
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "queryAuth",
+        "requestMethod": "POST",
+        "url": "https://graph.facebook.com/v19.0/{{$env.INSTAGRAM_BUSINESS_ID}}/media",
+        "jsonParameters": true,
+        "queryParametersUi": {
+          "parameter": [
+            {
+              "name": "access_token",
+              "value": "{{$env.FACEBOOK_PAGE_TOKEN}}"
+            }
+          ]
+        },
+        "bodyParametersJson": "={\n  \"caption\": $json.title + '\\n' + ($json.hashtags ? $json.hashtags.join(' ') : ''),\n  \"image_url\": {{$json.drive_link}}\n}"
+      },
+      "id": "6",
+      "name": "Instagram Publish",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        880,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "upload",
+        "resource": "video",
+        "title": "={{$json.title}}",
+        "description": "={{$json.description || ''}}",
+        "tags": "={{$json.hashtags ? $json.hashtags.join(',') : ''}}",
+        "privacyStatus": "UNLISTED",
+        "binaryPropertyName": "data"
+      },
+      "id": "7",
+      "name": "YouTube Upload",
+      "type": "n8n-nodes-base.youTube",
+      "typeVersion": 2,
+      "position": [
+        880,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "headerAuth",
+        "requestMethod": "POST",
+        "url": "https://open-api.tiktok.com/share/video/upload/",
+        "jsonParameters": true,
+        "headerParametersUi": {
+          "parameter": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{$env.TIKTOK_ACCESS_TOKEN}}"
+            }
+          ]
+        },
+        "bodyParametersJson": "={\n  \"video_description\": $json.title,\n  \"hashtags\": $json.hashtags || [],\n  \"video_url\": {{$json.drive_link}}\n}"
+      },
+      "id": "8",
+      "name": "TikTok Publish",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        880,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "headerAuth",
+        "requestMethod": "PUT",
+        "url": "={{$env.STRAPI_API_BASE}}/api/posts/{{$json.id}}",
+        "jsonParameters": true,
+        "headerParametersUi": {
+          "parameter": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{$env.STRAPI_API_TOKEN}}"
+            }
+          ]
+        },
+        "bodyParametersJson": "={\n  \"data\": {\n    \"status\": \"published\",\n    \"hashtags\": $json.hashtags\n  }\n}"
+      },
+      "id": "9",
+      "name": "Mark as Published",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        1100,
+        80
+      ]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Fetch Posts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Posts": {
+      "main": [
+        [
+          {
+            "node": "Flatten Posts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Flatten Posts": {
+      "main": [
+        [
+          {
+            "node": "Google Drive Download",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive Download": {
+      "main": [
+        [
+          {
+            "node": "Facebook Publish",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Facebook Publish": {
+      "main": [
+        [
+          {
+            "node": "Instagram Publish",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Instagram Publish": {
+      "main": [
+        [
+          {
+            "node": "YouTube Upload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "YouTube Upload": {
+      "main": [
+        [
+          {
+            "node": "TikTok Publish",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "TikTok Publish": {
+      "main": [
+        [
+          {
+            "node": "Mark as Published",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "version": 2
+}

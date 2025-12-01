@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import type EditorJS from '@editorjs/editorjs';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
@@ -111,6 +112,8 @@ export function PostEditor({ postId }: PostEditorProps) {
   const [mediaLoading, setMediaLoading] = useState(false);
   const [mediaError, setMediaError] = useState<string | null>(null);
   const [showMediaDialog, setShowMediaDialog] = useState(false);
+  const [contentMediaDialogOpen, setContentMediaDialogOpen] = useState(false);
+  const [editorInstance, setEditorInstance] = useState<EditorJS | null>(null);
   const [uploading, setUploading] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState('');
   const [newTagName, setNewTagName] = useState('');
@@ -220,7 +223,7 @@ export function PostEditor({ postId }: PostEditorProps) {
       status: formData.status,
       categoryIds: uniqueCategoryIds,
       tagIds: uniqueTagIds,
-      featuredImageId: formData.featuredImageId,
+      featuredImageId: formData.featuredImageId ?? null,
       seo: formData.seo,
     };
 
@@ -250,6 +253,64 @@ export function PostEditor({ postId }: PostEditorProps) {
       featuredImageUrl: media.url,
     }));
     setShowMediaDialog(false);
+  };
+
+  const insertImageIntoContent = (media: MediaItem) => {
+    if (!editorInstance) return;
+    try {
+      editorInstance.blocks.insert('image', {
+        file: { url: media.url },
+        caption: media.caption ?? media.alt ?? '',
+      });
+    } catch (err) {
+      console.error('Failed to insert image into content:', err);
+    }
+  };
+
+  const handleContentMediaSelect = (media: MediaItem) => {
+    insertImageIntoContent(media);
+    setContentMediaDialogOpen(false);
+  };
+
+  const handleContentFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setMediaError('Please select an image file');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setMediaError('File size must be less than 5MB');
+      return;
+    }
+
+    try {
+      setUploading(true);
+      setMediaError(null);
+
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('alt', file.name);
+
+      const response = await fetch('/api/media', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) throw new Error('Failed to upload image');
+
+      const uploadedMedia = await response.json();
+
+      setMediaItems((prev) => [uploadedMedia, ...prev]);
+      insertImageIntoContent(uploadedMedia);
+      setContentMediaDialogOpen(false);
+    } catch (err) {
+      setMediaError(err instanceof Error ? err.message : 'Failed to upload image');
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -497,7 +558,115 @@ export function PostEditor({ postId }: PostEditorProps) {
               onChange={(value) =>
                 setFormData((prev) => ({ ...prev, content: value }))
               }
+              onReady={(instance) => setEditorInstance(instance)}
             />
+            <div className="mt-2">
+              <Dialog
+                open={contentMediaDialogOpen}
+                onOpenChange={setContentMediaDialogOpen}
+              >
+                <DialogTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="outline"
+                  >
+                    <ImagePlusIcon className="mr-2 h-4 w-4" />
+                    Thêm ảnh vào nội dung
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col">
+                  <DialogHeader>
+                    <DialogTitle>Chèn ảnh vào nội dung</DialogTitle>
+                    <DialogDescription>
+                      Tải ảnh mới hoặc chọn từ thư viện media để chèn vào phần nội dung.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4 overflow-y-auto flex-1 pr-2">
+                    <div className="rounded-lg border border-dashed border-border p-6">
+                      <div className="flex flex-col items-center justify-center space-y-3">
+                        <ImagePlusIcon className="h-10 w-10 text-muted-foreground" />
+                        <div className="text-center">
+                          <p className="text-sm font-medium">Tải ảnh mới</p>
+                          <p className="text-xs text-muted-foreground">
+                            PNG, JPG, GIF tối đa 5MB
+                          </p>
+                        </div>
+                        <label htmlFor="content-file-upload" className="cursor-pointer">
+                          <Button
+                            type="button"
+                            variant="secondary"
+                            disabled={uploading}
+                            asChild
+                          >
+                            <span>
+                              {uploading ? (
+                                <>
+                                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                  Đang tải lên...
+                                </>
+                              ) : (
+                                <>
+                                  <ImagePlusIcon className="mr-2 h-4 w-4" />
+                                  Chọn tệp
+                                </>
+                              )}
+                            </span>
+                          </Button>
+                        </label>
+                        <input
+                          id="content-file-upload"
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={handleContentFileUpload}
+                          disabled={uploading}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="relative">
+                      <div className="absolute inset-0 flex items-center">
+                        <span className="w-full border-t" />
+                      </div>
+                      <div className="relative flex justify-center text-xs uppercase">
+                        <span className="bg-background px-2 text-muted-foreground">
+                          Hoặc chọn từ thư viện
+                        </span>
+                      </div>
+                    </div>
+
+                    {mediaError && (
+                      <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+                        {mediaError}
+                      </div>
+                    )}
+                    {mediaLoading ? (
+                      <div className="flex h-48 items-center justify-center">
+                        <Loader2 className="h-6 w-6 animate-spin" />
+                      </div>
+                    ) : mediaItems.length > 0 ? (
+                      <div className="max-h-[400px] overflow-y-auto">
+                        <MediaGrid items={mediaItems} onSelect={handleContentMediaSelect} />
+                      </div>
+                    ) : (
+                      <p className="text-sm text-muted-foreground">
+                        Chưa có tệp media. Vui lòng tải ảnh lên thư viện trước.
+                      </p>
+                    )}
+                    <div className="flex justify-end pt-2 border-t sticky bottom-0 bg-background">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={loadMediaLibrary}
+                        disabled={mediaLoading}
+                      >
+                        Làm mới thư viện
+                      </Button>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
           </div>
 
           <div>
@@ -679,14 +848,14 @@ export function PostEditor({ postId }: PostEditorProps) {
                       Chọn ảnh
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="max-w-4xl">
+                  <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col">
                     <DialogHeader>
                       <DialogTitle>Chọn ảnh nổi bật</DialogTitle>
                       <DialogDescription>
                         Tải ảnh mới hoặc chọn từ thư viện media
                       </DialogDescription>
                     </DialogHeader>
-                    <div className="space-y-4">
+                    <div className="space-y-4 overflow-y-auto flex-1 pr-2">
                       {/* Upload Section */}
                       <div className="rounded-lg border border-dashed border-border p-6">
                         <div className="flex flex-col items-center justify-center space-y-3">
@@ -752,13 +921,15 @@ export function PostEditor({ postId }: PostEditorProps) {
                           <Loader2 className="h-6 w-6 animate-spin" />
                         </div>
                       ) : mediaItems.length > 0 ? (
-                        <MediaGrid items={mediaItems} onSelect={handleMediaSelect} />
+                        <div className="max-h-[400px] overflow-y-auto">
+                          <MediaGrid items={mediaItems} onSelect={handleMediaSelect} />
+                        </div>
                       ) : (
                         <p className="text-sm text-muted-foreground">
                           Chưa có tệp media. Vui lòng tải ảnh lên thư viện trước.
                         </p>
                       )}
-                      <div className="flex justify-end">
+                      <div className="flex justify-end pt-2 border-t sticky bottom-0 bg-background">
                         <Button
                           type="button"
                           variant="outline"

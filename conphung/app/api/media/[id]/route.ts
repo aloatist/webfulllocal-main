@@ -17,16 +17,11 @@ export async function GET(request: NextRequest, context: Context) {
         id: context.params.id,
       },
       include: {
-        uploadedBy: {
+        User: {
           select: {
             id: true,
             name: true,
             email: true,
-          },
-        },
-        _count: {
-          select: {
-            posts: true,
           },
         },
       },
@@ -59,7 +54,7 @@ export async function PATCH(request: NextRequest, context: Context) {
     const media = await prisma.media.findUnique({
       where: { id: context.params.id },
       select: {
-        uploadedBy: { select: { id: true } },
+        userId: true,
       },
     });
 
@@ -68,9 +63,10 @@ export async function PATCH(request: NextRequest, context: Context) {
     }
 
     // Check if user has permission to edit
+    // Allow ADMIN and EDITOR to edit any media, or allow user to edit their own media
     if (
-      media.uploadedBy.id !== session.user.id &&
-      !['ADMIN', 'EDITOR'].includes(session.user.role)
+      media.userId !== session.user.id &&
+      !['ADMIN', 'EDITOR'].includes(session.user.role ?? '')
     ) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
@@ -82,7 +78,7 @@ export async function PATCH(request: NextRequest, context: Context) {
         caption: typeof caption === 'string' ? caption : null,
       },
       include: {
-        uploadedBy: {
+        User: {
           select: {
             id: true,
             name: true,
@@ -113,7 +109,7 @@ export async function DELETE(request: NextRequest, context: Context) {
       where: { id: context.params.id },
       select: {
         publicId: true,
-        uploadedBy: { select: { id: true } },
+        userId: true,
       },
     });
 
@@ -122,16 +118,44 @@ export async function DELETE(request: NextRequest, context: Context) {
     }
 
     // Check if user has permission to delete
+    // Allow ADMIN and EDITOR to delete any media, or allow user to delete their own media
     if (
-      media.uploadedBy.id !== session.user.id &&
-      !['ADMIN', 'EDITOR'].includes(session.user.role)
+      media.userId !== session.user.id &&
+      !['ADMIN', 'EDITOR'].includes(session.user.role ?? '')
     ) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
+    // Check if media is being used
+    const [postCount, homestayCount, tourCount] = await Promise.all([
+      prisma.post.count({ where: { featuredImageId: context.params.id } }),
+      prisma.homestayMedia.count({ where: { mediaId: context.params.id } }),
+      prisma.tourMedia.count({ where: { mediaId: context.params.id } }),
+    ]);
+
+    if (postCount > 0 || homestayCount > 0 || tourCount > 0) {
+      const usage = [];
+      if (postCount > 0) usage.push(`${postCount} bài viết`);
+      if (homestayCount > 0) usage.push(`${homestayCount} homestay`);
+      if (tourCount > 0) usage.push(`${tourCount} tour`);
+      
+      return NextResponse.json(
+        { 
+          error: 'Không thể xóa media đang được sử dụng',
+          details: `Media này đang được sử dụng trong: ${usage.join(', ')}. Vui lòng gỡ bỏ khỏi các mục này trước khi xóa.`
+        },
+        { status: 400 }
+      );
+    }
+
     // Delete from Cloudinary when we have a stored public ID
-    if (media.publicId) {
-      await deleteFromCloudinary(media.publicId);
+    if (media.publicId && !media.publicId.startsWith('local:')) {
+      try {
+        await deleteFromCloudinary(media.publicId);
+      } catch (cloudinaryError) {
+        console.error('Failed to delete from Cloudinary:', cloudinaryError);
+        // Continue with database deletion even if Cloudinary deletion fails
+      }
     }
 
     // Delete from database
@@ -142,8 +166,20 @@ export async function DELETE(request: NextRequest, context: Context) {
     return new NextResponse(null, { status: 204 });
   } catch (error) {
     console.error('Failed to delete media:', error);
+    
+    // Check for foreign key constraint error
+    if (error instanceof Error && 'code' in error && (error as any).code === 'P2003') {
+      return NextResponse.json(
+        { 
+          error: 'Không thể xóa media',
+          details: 'Media này đang được sử dụng ở nơi khác. Vui lòng gỡ bỏ trước khi xóa.'
+        },
+        { status: 400 }
+      );
+    }
+    
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Internal server error', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }

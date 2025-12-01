@@ -1,0 +1,873 @@
+{
+  "createdAt": "2025-09-26T08:57:40.191Z",
+  "updatedAt": "2025-09-26T09:48:15.654Z",
+  "id": "2OTbZqGRfkulAnuz",
+  "name": "automail",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "seconds",
+              "secondsInterval": 2
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1696,
+        400
+      ],
+      "id": "c2dcf2b0-02cd-4183-82d8-afd66703aea3",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1zabwK6HgI1cHQXjGuP6ageWcQzbLIIUvsrFq1bz64Fo",
+          "mode": "list",
+          "cachedResultName": "danh sach mail",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zabwK6HgI1cHQXjGuP6ageWcQzbLIIUvsrFq1bz64Fo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Trang t\u00ednh1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zabwK6HgI1cHQXjGuP6ageWcQzbLIIUvsrFq1bz64Fo/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Tr\u1ea1ng th\u00e1i",
+              "lookupValue": "=No"
+            },
+            {
+              "lookupColumn": "Tr\u1ea1ng th\u00e1i",
+              "lookupValue": "no"
+            }
+          ]
+        },
+        "combineFilters": "OR",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -1184,
+        144
+      ],
+      "id": "8cddeec2-3b50-4a75-b714-b3f2524d4a17",
+      "name": "Google Sheets",
+      "alwaysOutputData": false,
+      "executeOnce": false,
+      "retryOnFail": false,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "lbgwne66qBmePJgG",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json[\"\u0110\u1ecba ch\u1ec9 mail\"] }}",
+        "subject": "=Du l\u1ecbch C\u1ed3n Ph\u1ee5ng B\u1ebfn Tre",
+        "message": "=<!DOCTYPE html>\n<html lang=\"vi\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n</head>\n<body style=\"margin: 0; padding: 0; font-family: Arial, sans-serif; line-height: 1.6; color: #333;\">\n  <div style=\"max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 5px;\">\n    <!-- Header -->\n    <div style=\"text-align: center; padding: 15px; background-color: #28a745; color: #fff; border-radius: 5px 5px 0 0;\">\n      \n      <h1 style=\"margin: 5px 0; font-size: 18px;\">Du l\u1ecbch C\u1ed3n Ph\u1ee5ng B\u1ebfn Tre</h1>\n    </div>\n\n    <!-- Content -->\n    <div style=\"padding: 20px;\">\n      <h2 style=\"color: #28a745; font-size: 20px; margin-top: 0;\">K\u00ednh g\u1eedi Qu\u00fd \u0110\u1ed1i T\u00e1c,</h2>\n      <p style=\"font-size: 14px;\">L\u1eddi \u0111\u1ea7u ti\u00ean, ch\u00fang t\u00f4i xin g\u1eedi \u0111\u1ebfn Qu\u00fd \u0110\u1ed1i T\u00e1c l\u1eddi ch\u00e0o tr\u00e2n tr\u1ecdng v\u00e0 l\u1eddi ch\u00fac s\u1ee9c kh\u1ecfe, th\u00e0nh c\u00f4ng.</p>\n      <p style=\"font-size: 14px;\">Ch\u00fang t\u00f4i r\u1ea5t vui m\u1eebng gi\u1edbi thi\u1ec7u \u0111\u1ebfn Qu\u00fd \u0110\u1ed1i T\u00e1c ch\u01b0\u01a1ng tr\u00ecnh tour du l\u1ecbch \u0111\u1ebfn C\u1ed3n Ph\u1ee5ng, B\u1ebfn Tre \u2013 m\u1ed9t \u0111i\u1ec3m \u0111\u1ebfn h\u1ea5p d\u1eabn v\u1edbi nhi\u1ec1u ho\u1ea1t \u0111\u1ed9ng th\u00fa v\u1ecb v\u00e0 d\u1ecbch v\u1ee5 ch\u1ea5t l\u01b0\u1ee3ng cao. \u0110\u1ec3 gi\u00fap Qu\u00fd \u0110\u1ed1i T\u00e1c c\u00f3 c\u00e1i nh\u00ecn t\u1ed5ng quan v\u00e0 chi ti\u1ebft h\u01a1n v\u1ec1 c\u00e1c d\u1ecbch v\u1ee5 t\u1ea1i C\u1ed3n Ph\u1ee5ng, ch\u00fang t\u00f4i xin g\u1eedi k\u00e8m theo email n\u00e0y b\u1ed9 ch\u01b0\u01a1ng tr\u00ecnh tour v\u00e0 h\u00ecnh \u1ea3nh c\u00e1c d\u1ecbch v\u1ee5 t\u1ea1i \u0111\u00e2y.</p>\n\n      <!-- Promotion Section with Banner -->\n      <div style=\"background-color: #e8f5e9; padding: 15px; border-radius: 5px; margin: 15px 0;\">\n        <!-- Banner -->\n        <div style=\"margin-bottom: 15px;\">\n          <a href=\"https://www.conphungtourist.com\" target=\"_blank\">\n            <img src=\"https://conphungtourist.com/wp-content/uploads/2025/01/tet-ben-con-2n1d-copy-768x434.webp\" alt=\"Ch\u00e0o m\u1eebng \u0111\u1ea1i l\u1ec5 30/4 - 1/5\" style=\"width: 100%; max-width: 600px; height: auto; border-radius: 10px; display: block;\">\n          </a>\n        </div>\n        <h2 style=\"color: #d32f2f; font-size: 20px; text-align: center; margin: 0 0 10px;\">CH\u00c0O M\u1eeaNG \u0110\u1ea0I L\u1ec4 30/4 - 1/5 \ud83c\uddfb\ud83c\uddf3</h2>\n        <h3 style=\"color: #28a745; font-size: 18px; text-align: center; margin: 0 0 10px;\">KH\u00c1M PH\u00c1 TOUR TH\u1edaI S\u01a0N - C\u1ed2N PH\u1ee4NG V\u1edaI GI\u00c1 C\u1ef0C \u01afU \u0110\u00c3I!</h3>\n        <p style=\"font-size: 14px; margin: 0 0 10px;\">\ud83c\udf3f D\u1ecbp l\u1ec5 n\u00e0y, h\u00e3y c\u00f9ng gia \u0111\u00ecnh v\u00e0 b\u1ea1n b\u00e8 v\u1ec1 v\u1edbi mi\u1ec1n s\u00f4ng n\u01b0\u1edbc B\u1ebfn Tre, tr\u1ea3i nghi\u1ec7m ch\u01b0\u01a1ng tr\u00ecnh <strong>\u01afU \u0110\u00c3I TH\u1ea2 GA - KH\u00d4NG LO V\u1ec0 GI\u00c1</strong> t\u1ea1i C\u1ed3n Ph\u1ee5ng!</p>\n        <p style=\"font-size: 14px; color: #d32f2f; font-weight: bold; margin: 0 0 10px;\">\ud83d\udd25 Gi\u00e1 tr\u1ecdn g\u00f3i ch\u1ec9 t\u1eeb <strong>290.000\u0111/kh\u00e1ch</strong></p>\n        <p style=\"font-size: 14px; margin: 0 0 10px;\">\ud83c\udf89 <strong>Tour bao g\u1ed3m:</strong></p>\n        <ul style=\"font-size: 14px; margin: 0 0 10px; padding-left: 20px;\">\n          <li>\u0102n tr\u01b0a t\u1ea1i C\u1ed3n Ph\u1ee5ng, \u1ea9m th\u1ef1c d\u00e2n gian \u0111\u1eadm \u0111\u00e0 h\u01b0\u01a1ng v\u1ecb mi\u1ec1n T\u00e2y</li>\n          <li>Tr\u1ea3i nghi\u1ec7m t\u00e1t m\u01b0\u01a1ng b\u1eaft c\u00e1, l\u00e0m b\u00e1nh d\u00e2n gian</li>\n          <li>Tham quan c\u00f4ng tr\u00ecnh ki\u1ebfn tr\u00fac \u0110\u1ea1o D\u1eeba, b\u1ea3o t\u00e0ng d\u1eeba</li>\n          <li>Th\u01b0\u1edfng th\u1ee9c tr\u00e0 m\u1eadt ong, tr\u00e1i c\u00e2y mi\u1ec7t v\u01b0\u1eddn, \u0111\u1eddn ca t\u00e0i t\u1eed Nam B\u1ed9, xu\u1ed3ng ba l\u00e1 trong r\u1ea1ch d\u1eeba n\u01b0\u1edbc</li>\n          <li>Check-in homestay Coco Island c\u1ef1c chill, s\u1ed1ng \u1ea3o \u201cch\u00e1y m\u00e1y\u201d!</li>\n        </ul>\n        <p style=\"font-size: 14px; margin: 0 0 10px;\">\u2618\ufe0f <strong>N\u1ebfu ch\u1ec9 tham quan C\u1ed3n Ph\u1ee5ng</strong>, qu\u00fd kh\u00e1ch ch\u1ec9 c\u1ea7n mua v\u00e9 c\u1ed5ng tham quan:</p>\n        <ul style=\"font-size: 14px; margin: 0 0 10px; padding-left: 20px;\">\n          <li>Ng\u01b0\u1eddi l\u1edbn: <strong>50.000\u0111/v\u00e9</strong></li>\n          <li>Tr\u1ebb em: <strong>30.000\u0111/v\u00e9</strong></li>\n          <li><em>(Mi\u1ec5n ph\u00ed v\u00e9 t\u00e0u kh\u1ee9 h\u1ed3i, \u0111i\u1ec3m \u0111\u00f3n kh\u00e1ch: B\u1ebfn ph\u00e0 R\u1ea1ch Mi\u1ec5u c\u0169 B\u1ebfn Tre)</em></li>\n        </ul>\n        <p style=\"font-size: 14px; margin: 0 0 10px;\">\ud83d\udea2 <strong>\u0110\u1ecba \u0111i\u1ec3m \u0111\u00f3n kh\u00e1ch tour tham quan:</strong></p>\n        <ul style=\"font-size: 14px; margin: 0 0 10px; padding-left: 20px;\">\n          <li>B\u1ebfn ph\u00e0 R\u1ea1ch Mi\u1ec5u c\u0169 (\u1ea4p 8, T\u00e2n Th\u1ea1ch, Ch\u00e2u Th\u00e0nh, B\u1ebfn Tre)</li>\n          <li>B\u1ebfn t\u00e0u du l\u1ecbch M\u1ef9 Tho (s\u1ed1 8, \u0111\u01b0\u1eddng 30/4, TP. M\u1ef9 Tho, Ti\u1ec1n Giang)</li>\n        </ul>\n        <p style=\"font-size: 14px; font-weight: bold; color: #28a745; margin: 0 0 10px;\">\ud83c\udf3f \u0110\u1eb7t tour ngay h\u00f4m nay \u0111\u1ec3 gi\u1eef ch\u1ed7 d\u1ecbp l\u1ec5 n\u00e0y nh\u00e9!!!</p>\n        <p style=\"font-size: 14px; margin: 0 0 10px;\">\u2618\ufe0f <strong>C\u1ed3n Ph\u1ee5ng - n\u01a1i ch\u1ea1m v\u00e0o thi\u00ean nhi\u00ean, cho chuy\u1ebfn h\u00e0nh tr\u00ecnh \u00fd ngh\u0129a!</strong></p>\n        <p style=\"font-size: 14px; margin: 0 0 10px;\">\ud83d\udca6 <strong>KDL C\u1ed3n Ph\u1ee5ng B\u1ebfn Tre</strong></p>\n        <p style=\"font-size: 14px; margin: 0;\">\u260e <strong>Li\u00ean h\u1ec7 t\u01b0 v\u1ea5n:</strong></p>\n        <ul style=\"font-size: 14px; margin: 0; padding-left: 20px;\">\n          <li>Ms Kim C\u01b0\u01a1ng: <a href=\"tel:0917645039\" style=\"color: #1a73e8; text-decoration: none;\">0917 645 039</a></li>\n          <li>Ms Ng\u1ecdc Nhi\u00ean: <a href=\"tel:0948416066\" style=\"color: #1a73e8; text-decoration: none;\">0948 416 066</a></li>\n        </ul>\n      </div>\n\n      <!-- Images -->\n      <table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"margin: 10px 0;\">\n        <tr>\n          <td style=\"width: 48%; padding: 5px;\">\n            <img src=\"https://conphungtourist.com/wp-content/uploads/2021/11/Cong-trinh-kien-truc-dao-dua.jpg\" alt=\"\u0110\u1ea1o D\u1eeba\" style=\"width: 100%; border-radius: 10px; display: block;\">\n          </td>\n          <td style=\"width: 48%; padding: 5px;\">\n            <img src=\"https://cocoisland.vn/wp-content/uploads/2022/12/coco-island-con-phung-ben-tre-1920x1050.jpg\" alt=\"Coco Island\" style=\"width: 100%; border-radius: 10px; display: block;\">\n          </td>\n        </tr>\n        <tr>\n          <td style=\"width: 48%; padding: 5px;\">\n            <img src=\"https://cocoisland.vn/wp-content/uploads/2023/01/nha-hang-hoa-sung-con-phung-ben-tre-conphungtourist.com-768x576-700x525-1.jpg\" alt=\"\u0110i thuy\u1ec1n tr\u00ean s\u00f4ng\" style=\"width: 100%; border-radius: 10px; display: block;\">\n          </td>\n          <td style=\"width: 48%; padding: 5px;\">\n            <img src=\"https://conphungtourist.com/wp-content/uploads/2023/07/trochoidangianconphungbentre-2.conphungtourist.com_.jpg\" alt=\"Ch\u00e8o xu\u1ed3ng ba l\u00e1\" style=\"width: 100%; border-radius: 10px; display: block;\">\n          </td>\n        </tr>\n        <tr>\n          <td style=\"width: 48%; padding: 5px;\">\n            <img src=\"https://conphungtourist.com/wp-content/uploads/2023/07/trochoidangianconphungbentre.conphungtourist.com_.jpg\" alt=\"C\u00e1c tr\u00f2 ch\u01a1i d\u00e2n gian\" style=\"width: 100%; border-radius: 10px; display: block;\">\n          </td>\n          <td style=\"width: 48%; padding: 5px;\">\n            <img src=\"https://conphungtourist.com/wp-content/uploads/2023/07/nha-hang-con-phung-conphungtourist.com_.jpg\" alt=\"C\u1ed3n Ph\u1ee5ng 6\" style=\"width: 100%; border-radius: 10px; display: block;\">\n          </td>\n        </tr>\n        <tr>\n          <td style=\"width: 48%; padding: 5px;\">\n            <img src=\"https://conphungtourist.com/wp-content/uploads/2023/07/trai-nuoi-ong-tour-long-lan-quy-phung-conphungtourist.com_.jpg\" alt=\"C\u1ed3n Ph\u1ee5ng 7\" style=\"width: 100%; border-radius: 10px; display: block;\">\n          </td>\n          <td style=\"width: 48%; padding: 5px;\">\n            <img src=\"https://conphungtourist.com/wp-content/uploads/2023/03/coco-island-con-phung-ben-tre40-1024x768.jpg\" alt=\"C\u1ed3n Ph\u1ee5ng 8\" style=\"width: 100%; border-radius: 10px; display: block;\">\n          </td>\n        </tr>\n      </table>\n\n      <!-- Tour Details -->\n      \n      <p style=\"font-size: 14px;\">C\u00e1c d\u1ecbch v\u1ee5 t\u1ea1i C\u1ed3n Ph\u1ee5ng lu\u00f4n \u0111\u01b0\u1ee3c ch\u00fang t\u00f4i ch\u00fa tr\u1ecdng v\u00e0 n\u00e2ng cao \u0111\u1ec3 mang \u0111\u1ebfn tr\u1ea3i nghi\u1ec7m t\u1ed1t nh\u1ea5t cho du kh\u00e1ch. Nh\u1eefng h\u00ecnh \u1ea3nh k\u00e8m theo s\u1ebd gi\u00fap Qu\u00fd \u0110\u1ed1i T\u00e1c c\u00f3 c\u00e1i nh\u00ecn tr\u1ef1c quan h\u01a1n v\u1ec1 nh\u1eefng g\u00ec ch\u00fang t\u00f4i cung c\u1ea5p.</p>\n      <p style=\"font-size: 14px;\">Ch\u00fang t\u00f4i hy v\u1ecdng r\u1eb1ng b\u1ed9 ch\u01b0\u01a1ng tr\u00ecnh tour v\u00e0 h\u00ecnh \u1ea3nh n\u00e0y s\u1ebd gi\u00fap Qu\u00fd \u0110\u1ed1i T\u00e1c c\u00f3 th\u00eam th\u00f4ng tin v\u00e0 tin t\u01b0\u1edfng h\u1ee3p t\u00e1c c\u00f9ng ch\u00fang t\u00f4i trong vi\u1ec7c mang l\u1ea1i nh\u1eefng tr\u1ea3i nghi\u1ec7m du l\u1ecbch tuy\u1ec7t v\u1eddi cho kh\u00e1ch h\u00e0ng.</p>\n      <p style=\"font-size: 14px;\">N\u1ebfu Qu\u00fd \u0110\u1ed1i T\u00e1c c\u00f3 b\u1ea5t k\u1ef3 c\u00e2u h\u1ecfi ho\u1eb7c c\u1ea7n th\u00eam th\u00f4ng tin, xin vui l\u00f2ng li\u00ean h\u1ec7 v\u1edbi ch\u00fang t\u00f4i qua email ho\u1eb7c s\u1ed1 \u0111i\u1ec7n tho\u1ea1i b\u00ean d\u01b0\u1edbi.</p>\n\n      <!-- Links -->\n      <h2 style=\"font-size: 18px; font-weight: bold; margin: 20px 0 10px;\">Li\u00ean k\u1ebft \u0111\u1ebfn c\u00e1c file chi ti\u1ebft:</h2>\n      <table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\">\n        <tr>\n          <td style=\"padding: 5px;\">\n            <a href=\"https://drive.google.com/file/d/1y-oita1xVls0oZapo1LQG31R5jTyijmm/view?usp=drive_link\" style=\"display: block; text-align: center; text-decoration: none; color: #fff; background-color: #28a745; padding: 10px; border-radius: 5px; font-size: 16px;\">Ch\u01b0\u01a1ng Tr\u00ecnh Mekongtour 2025</a>\n          </td>\n        </tr>\n        <tr>\n          <td style=\"padding: 5px;\">\n            <a href=\"https://drive.google.com/drive/folders/1xU9Nfm3Cp_9dARCM12Eq-oJU1-tCtImw?usp=sharing\" style=\"display: block; text-align: center; text-decoration: none; color: #fff; background-color: #28a745; padding: 10px; border-radius: 5px; font-size: 16px;\">Th\u1ef1c \u0110\u01a1n kh\u00e1ch \u0111o\u00e0n n\u0103m 2025</a>\n          </td>\n        </tr>\n        <tr>\n          <td style=\"padding: 5px;\">\n            <a href=\"https://drive.google.com/file/d/1TK8umV3YM79xtT8wwR5rsQBRihcTT8tk/view?usp=drive_link\" style=\"display: block; text-align: center; text-decoration: none; color: #fff; background-color: #28a745; padding: 10px; border-radius: 5px; font-size: 16px;\">B\u1ea3ng gi\u00e1 Homestay Coco Island</a>\n          </td>\n        </tr>\n      </table>\n    </div>\n\n    <!-- Signature -->\n    <div style=\"margin-top: 20px; padding-top: 10px; border-top: 1px solid #ddd;\">\n      <div style=\"font-family: 'Times New Roman', serif; font-size: 14px; color: #000;\">\n        <p style=\"margin: 0; font-weight: bold;\">C\u00d4NG TY TNHH DU L\u1ecaCH D\u1ecaCH V\u1ee4 TH\u01af\u01a0NG M\u1ea0I C\u1ed2N PH\u1ee4NG</p>\n        <p style=\"margin: 0;\">M\u00e3 s\u1ed1 thu\u1ebf: 1300390306</p>\n        <p style=\"margin: 0;\">\u0110\u1ecba ch\u1ec9: \u1ea4p 10, X\u00e3 T\u00e2n Th\u1ea1ch, huy\u1ec7n Ch\u00e2u Th\u00e0nh, t\u1ec9nh B\u1ebfn Tre</p>\n        <p style=\"margin: 0;\">\n          Website: <a href=\"https://www.conphungtourist.com/\" style=\"color: #1a73e8; text-decoration: none;\">https://www.conphungtourist.com</a>\n        </p>\n        <p style=\"margin: 0;\">Yahoo mail: <a href=\"mailto:conphung87@yahoo.com.vn\" style=\"color: #1a73e8; text-decoration: none;\">conphung87@yahoo.com.vn</a></p>\n        <p style=\"margin: 0;\">Gmail: <a href=\"mailto:conphungtourist87@gmail.com\" style=\"color: #1a73e8; text-decoration: none;\">conphungtourist87@gmail.com</a></p>\n        <p style=\"margin: 0; font-weight: bold;\">Tr\u01b0\u1edfng ph\u00f2ng \u0110H DL</p>\n        <p style=\"margin: 0; font-weight: bold;\">Ms V\u00f5 Th\u1ecb Kim C\u01b0\u01a1ng</p>\n        <p style=\"margin: 0; font-weight: bold;\">D\u0110: 0917 645 039 - 0973 263 806</p>\n        <p style=\"margin: 0; font-weight: bold;\">\u0110T: 02753 822 198</p>\n        <!-- Image in signature (if needed) -->\n        <!-- <img src=\"https://ci3.googleusercontent.com/mail-sig/AIorK4yS7pKoWgVUdCS4Q276zA0oR9l8RxL0STNFSiD1MRhZ4za_k_VOPlTlLPgFfRknzEZczfmTT30\" alt=\"Signature Image\" style=\"max-width: 100%; height: auto;\"> -->\n      </div>\n    </div>\n  </div>\n</body>\n</html>",
+        "options": {
+          "appendAttribution": "="
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        48,
+        304
+      ],
+      "id": "9cf86739-4db4-4cab-ab8d-de7d25b04736",
+      "name": "Gmail",
+      "webhookId": "51855f58-aa59-457a-aeaf-97f40137ab5b",
+      "notesInFlow": true,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "BG3h0lnpJ9n0EKrI",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1zabwK6HgI1cHQXjGuP6ageWcQzbLIIUvsrFq1bz64Fo",
+          "mode": "list",
+          "cachedResultName": "danh sach mail",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zabwK6HgI1cHQXjGuP6ageWcQzbLIIUvsrFq1bz64Fo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Trang t\u00ednh1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zabwK6HgI1cHQXjGuP6ageWcQzbLIIUvsrFq1bz64Fo/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Tr\u1ea1ng th\u00e1i": "Yes",
+            "\u0110\u1ecba ch\u1ec9 mail": "={{ $('Google Sheets').item.json[\"\u0110\u1ecba ch\u1ec9 mail\"] }}",
+            "ID": "={{ $('If').item.json.ID }}"
+          },
+          "matchingColumns": [
+            "ID"
+          ],
+          "schema": [
+            {
+              "id": "S\u1ed1 TT",
+              "displayName": "S\u1ed1 TT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "H\u1ecd T\u00ean",
+              "displayName": "H\u1ecd T\u00ean",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "\u0110\u1ecba ch\u1ec9 mail",
+              "displayName": "\u0110\u1ecba ch\u1ec9 mail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Ch\u1ee7 \u0111\u1ec1",
+              "displayName": "Ch\u1ee7 \u0111\u1ec1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "N\u1ed9i dung",
+              "displayName": "N\u1ed9i dung",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Tr\u1ea1ng th\u00e1i",
+              "displayName": "Tr\u1ea1ng th\u00e1i",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        352,
+        208
+      ],
+      "id": "0f087089-a43d-4877-9cf6-3204bd333043",
+      "name": "Google Sheets1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "lbgwne66qBmePJgG",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "batchSize": 500,
+        "options": {
+          "reset": false
+        }
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -960,
+        144
+      ],
+      "id": "6bd902d6-239e-4eb5-9443-c88a184898f4",
+      "name": "Loop Over Items",
+      "executeOnce": false
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "name": "Replace Me",
+      "typeVersion": 1,
+      "position": [
+        -544,
+        160
+      ],
+      "id": "d11f2add-427f-4578-9032-d8bbc7dffac5"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1zabwK6HgI1cHQXjGuP6ageWcQzbLIIUvsrFq1bz64Fo",
+          "mode": "list",
+          "cachedResultName": "danh sach mail",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zabwK6HgI1cHQXjGuP6ageWcQzbLIIUvsrFq1bz64Fo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Trang t\u00ednh1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zabwK6HgI1cHQXjGuP6ageWcQzbLIIUvsrFq1bz64Fo/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Tr\u1ea1ng th\u00e1i",
+              "lookupValue": "=Yes"
+            },
+            {
+              "lookupColumn": "Tr\u1ea1ng th\u00e1i",
+              "lookupValue": "yes"
+            }
+          ]
+        },
+        "combineFilters": "OR",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -1440,
+        752
+      ],
+      "id": "460a9f0f-dbd0-42cd-9884-2d37e83edf66",
+      "name": "Google Sheets2",
+      "alwaysOutputData": false,
+      "executeOnce": false,
+      "retryOnFail": false,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "lbgwne66qBmePJgG",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "returnAll": true,
+        "fields": "={{ [\"*\"] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleContacts",
+      "typeVersion": 1,
+      "position": [
+        -880,
+        752
+      ],
+      "id": "2697dc25-e843-492f-b990-65fc97e0d316",
+      "name": "Google Contacts",
+      "credentials": {
+        "googleContactsOAuth2Api": {
+          "id": "kABWIXH70vVAgvst",
+          "name": "Google Contacts account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1zabwK6HgI1cHQXjGuP6ageWcQzbLIIUvsrFq1bz64Fo",
+          "mode": "list",
+          "cachedResultName": "danh sach mail",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zabwK6HgI1cHQXjGuP6ageWcQzbLIIUvsrFq1bz64Fo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Trang t\u00ednh1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zabwK6HgI1cHQXjGuP6ageWcQzbLIIUvsrFq1bz64Fo/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Tr\u1ea1ng th\u00e1i": "No",
+            "\u0110\u1ecba ch\u1ec9 mail": "={{ $json.emailAddresses.other[0] }}",
+            "ID": "={{ $json.contactId }}"
+          },
+          "matchingColumns": [
+            "ID"
+          ],
+          "schema": [
+            {
+              "id": "S\u1ed1 TT",
+              "displayName": "S\u1ed1 TT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "H\u1ecd T\u00ean",
+              "displayName": "H\u1ecd T\u00ean",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "\u0110\u1ecba ch\u1ec9 mail",
+              "displayName": "\u0110\u1ecba ch\u1ec9 mail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Ch\u1ee7 \u0111\u1ec1",
+              "displayName": "Ch\u1ee7 \u0111\u1ec1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "N\u1ed9i dung",
+              "displayName": "N\u1ed9i dung",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Tr\u1ea1ng th\u00e1i",
+              "displayName": "Tr\u1ea1ng th\u00e1i",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -80,
+        768
+      ],
+      "id": "1a0b1393-d3ad-4f73-8763-3f485ba5c0f8",
+      "name": "Google Sheets3",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "lbgwne66qBmePJgG",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "1452fe5d-09f2-4464-9ce8-7c980e28c05b",
+              "leftValue": "={{ $json['\u0110\u1ecba ch\u1ec9 mail'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -336,
+        160
+      ],
+      "id": "187ff3cc-9950-4e5c-bffb-754ad37fc246",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -928,
+        352
+      ],
+      "id": "f323898c-f884-4d15-8f53-6b53ed4a2d5e",
+      "name": "Loop Over Items2"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "name": "Replace Me2",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        368
+      ],
+      "id": "aeae6e1d-ac1f-4b08-97ee-047cb2cd762a"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1zabwK6HgI1cHQXjGuP6ageWcQzbLIIUvsrFq1bz64Fo",
+          "mode": "list",
+          "cachedResultName": "danh sach mail",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zabwK6HgI1cHQXjGuP6ageWcQzbLIIUvsrFq1bz64Fo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Trang t\u00ednh1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zabwK6HgI1cHQXjGuP6ageWcQzbLIIUvsrFq1bz64Fo/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ID": "={{ $json.ID }}",
+            "Tr\u1ea1ng th\u00e1i": "Yes"
+          },
+          "matchingColumns": [
+            "ID"
+          ],
+          "schema": [
+            {
+              "id": "S\u1ed1 TT",
+              "displayName": "S\u1ed1 TT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "H\u1ecd T\u00ean",
+              "displayName": "H\u1ecd T\u00ean",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "\u0110\u1ecba ch\u1ec9 mail",
+              "displayName": "\u0110\u1ecba ch\u1ec9 mail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Ch\u1ee7 \u0111\u1ec1",
+              "displayName": "Ch\u1ee7 \u0111\u1ec1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "N\u1ed9i dung",
+              "displayName": "N\u1ed9i dung",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Tr\u1ea1ng th\u00e1i",
+              "displayName": "Tr\u1ea1ng th\u00e1i",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        0,
+        0
+      ],
+      "id": "1c102485-4fda-4aa7-8bbd-22189e1422b6",
+      "name": "Google Sheets4",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "lbgwne66qBmePJgG",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1zabwK6HgI1cHQXjGuP6ageWcQzbLIIUvsrFq1bz64Fo",
+          "mode": "list",
+          "cachedResultName": "danh sach mail",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zabwK6HgI1cHQXjGuP6ageWcQzbLIIUvsrFq1bz64Fo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Trang t\u00ednh1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zabwK6HgI1cHQXjGuP6ageWcQzbLIIUvsrFq1bz64Fo/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -1520,
+        288
+      ],
+      "id": "51fb73c3-563a-44b0-b617-03b54435439e",
+      "name": "Google Sheets5",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "lbgwne66qBmePJgG",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        -688,
+        864
+      ],
+      "id": "ad731e7a-92e4-4feb-9ecf-40c9c817e160",
+      "name": "Error Trigger"
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Replace Me",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace Me": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets2": {
+      "main": [
+        [
+          {
+            "node": "Google Contacts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Contacts": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Google Sheets4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items2": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Replace Me2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace Me2": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets5": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Google Sheets2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Google Contacts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "73fe9f1e-e5e5-48a9-af1e-cde2aa975f41",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-09-26T08:57:40.191Z",
+      "updatedAt": "2025-09-26T08:57:40.191Z",
+      "role": "workflow:owner",
+      "workflowId": "2OTbZqGRfkulAnuz",
+      "projectId": "ICp1M8C0gzC6bJJb"
+    }
+  ],
+  "tags": [],
+  "repo_owner": "aloatist",
+  "repo_name": "n8nvps",
+  "repo_path": "aloatist/n8nvps",
+  "drive_folder": "1xA6c0JY5ZpCuLzILbuv4tiP_pMCPWRCH"
+}

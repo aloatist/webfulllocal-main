@@ -15,7 +15,6 @@ import { TestimonialsEditor } from '@/components/admin/cocoisland/TestimonialsEd
 import { RestaurantEditor } from '@/components/admin/cocoisland/RestaurantEditor';
 import { DiscoveryEditor } from '@/components/admin/cocoisland/DiscoveryEditor';
 import { ContactEditor } from '@/components/admin/cocoisland/ContactEditor';
-import { NewsletterEditor } from '@/components/admin/cocoisland/NewsletterEditor';
 import Link from 'next/link';
 
 type SaveState = "idle" | "saving" | "success" | "error";
@@ -288,13 +287,6 @@ export default function CocoIslandAdminPage() {
           data={config.contact} 
           onChange={(contact) => setConfig({ ...config, contact })} 
         />
-
-        {config.newsletter && (
-          <NewsletterEditor 
-            data={config.newsletter} 
-            onChange={(newsletter) => setConfig({ ...config, newsletter })} 
-          />
-        )}
       </div>
 
       {/* Floating Save Button */}

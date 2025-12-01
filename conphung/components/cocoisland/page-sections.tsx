@@ -135,6 +135,7 @@ export function Hero({
               height={720}
               className="h-full w-full object-cover"
               priority
+              unoptimized={heroImage.startsWith('/uploads/')}
             />
             <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-emerald-900/70 via-emerald-900/30 to-transparent p-6 text-white">
               <div className="flex items-center justify-between">
@@ -275,6 +276,7 @@ export function RoomShowcase({ rooms }: { rooms: RoomCard[] }) {
                   width={640}
                   height={420}
                   className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                  unoptimized={room.thumbnail.startsWith('/uploads/')}
                 />
               </div>
               <div className="flex flex-1 flex-col gap-5 p-6">
@@ -430,6 +432,7 @@ export function RestaurantSection({
               width={960}
               height={720}
               className="h-full w-full object-cover"
+              unoptimized={image.startsWith('/uploads/')}
             />
           </div>
         </div>
@@ -456,6 +459,7 @@ export function DiscoverySection({
               width={960}
               height={720}
               className="h-full w-full object-cover"
+              unoptimized={image.startsWith('/uploads/')}
             />
           </div>
         </div>

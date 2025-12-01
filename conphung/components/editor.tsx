@@ -28,16 +28,22 @@ const InlineCodeTool = InlineCode as unknown as ToolConstructable;
 interface EditorProps {
   value: string;
   onChange: (value: string) => void;
+  onReady?: (editor: EditorJS) => void;
 }
 
-export default function Editor({ value, onChange }: EditorProps) {
+export default function Editor({ value, onChange, onReady }: EditorProps) {
   const editorRef = useRef<EditorJS | null>(null);
   const initialValueRef = useRef(value);
   const onChangeRef = useRef(onChange);
+  const onReadyRef = useRef<((editor: EditorJS) => void) | null>(null);
 
   useEffect(() => {
     onChangeRef.current = onChange;
   }, [onChange]);
+
+  useEffect(() => {
+    onReadyRef.current = onReady ?? null;
+  }, [onReady]);
 
   const initEditor = useCallback(async () => {
     const editor = new EditorJS({
@@ -135,6 +141,12 @@ export default function Editor({ value, onChange }: EditorProps) {
       onChange: async () => {
         const data = await editor.save();
         onChangeRef.current(JSON.stringify(data));
+      },
+      onReady: () => {
+        editorRef.current = editor;
+        if (onReadyRef.current) {
+          onReadyRef.current(editor);
+        }
       },
     });
 

@@ -53,7 +53,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.5,
     },
     {
-      url: `${siteConfig.site_domain}/dao-dua-nguyen-thanh-nam`,
+      url: `${siteConfig.site_domain}/du-lich/dao-dua-nguyen-thanh-nam`,
       lastModified,
       changeFrequency: "yearly",
       priority: 0.5,
@@ -104,14 +104,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       slug: true,
       updatedAt: true,
       featured: true,
+      Category: {
+        select: {
+          slug: true,
+        },
+      },
     },
   });
-  const postPages: MetadataRoute.Sitemap = posts.map((post) => ({
-    url: `${siteConfig.site_domain}/posts/${post.slug}`,
-    lastModified: post.updatedAt,
-    changeFrequency: "monthly" as const,
-    priority: post.featured ? 0.7 : 0.6,
-  }));
+  const postPages: MetadataRoute.Sitemap = posts
+    .filter((post) => post.Category.length > 0) // Only include posts with categories
+    .map((post) => ({
+      url: `${siteConfig.site_domain}/${post.Category[0].slug}/${post.slug}`,
+      lastModified: post.updatedAt,
+      changeFrequency: "monthly" as const,
+      priority: post.featured ? 0.7 : 0.6,
+    }));
 
   return [...staticPages, ...tourPages, ...homestayPages, ...postPages];
 }

@@ -37,16 +37,16 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-	title: "KHU DU LỊCH CỒN PHỤNG CHÍNH CHỦ | QUẢN LÝ TRỰC TIẾP CÔNG TRÌNH KIẾN TRÚC ĐẠO DỪA",
-	description:
-		"Nhiều công ty trung gian cung cấp dịch vụ đi Cồn Phụng. Vậy đâu là chính chủ? Tìm hiểu ngay thương hiệu, hotline, logo chính chủ để tránh nhầm lẫn!",
-	metadataBase: new URL("https://conphungtourist.com"),
-	alternates: {
-	canonical: "https://conphungtourist.com",
-	languages: {
-	"vi-VN": "/",
-	},
-	},
+  title: "KHU DU LỊCH CỒN PHỤNG CHÍNH CHỦ | QUẢN LÝ TRỰC TIẾP CÔNG TRÌNH KIẾN TRÚC ĐẠO DỪA",
+  description:
+    "Nhiều công ty trung gian cung cấp dịch vụ đi Cồn Phụng. Vậy đâu là chính chủ? Tìm hiểu ngay thương hiệu, hotline, logo chính chủ để tránh nhầm lẫn!",
+  metadataBase: new URL("https://conphungtourist.com"),
+  alternates: {
+    canonical: "https://conphungtourist.com",
+    languages: {
+      "vi-VN": "/",
+    },
+  },
   manifest: "/manifest.webmanifest",
   formatDetection: {
     telephone: true,
@@ -56,39 +56,42 @@ export const metadata: Metadata = {
     statusBarStyle: "default",
     title: "Cồn Phụng",
   },
+  other: {
+    "mobile-web-app-capable": "yes",
+  },
   applicationName: "Cồn Phụng",
-	openGraph: {
-		title: "ĐẶT TOUR NGAY CHO DU LỊCH CỒN PHỤNG BẾN TRE – NHẬN ƯU ĐÃI CỰC SỐC",
-		description: "Nhiều công ty trung gian cung cấp dịch vụ đi Cồn Phụng. Vậy đâu là chính chủ? Tìm hiểu ngay thương hiệu, hotline, logo chính chủ để tránh nhầm lẫn!",
-		url: "https://conphungtourist.com",
-		type: "website",
-		locale: "vi_VN",
-		siteName: "Khu du lịch Cồn Phụng Bến Tre",
-		images: [
-			{
-				url: "https://conphungtourist.com/wp-content/uploads/2024/10/bener-nho.jpg",
-				alt: "Bạn muốn khám phá Khu Du Lịch Cồn Phụng và Công Trình Kiến Trúc Đạo Dừa? Trải nghiệm thiên nhiên và văn hóa độc đáo của miền Tây cùng những gói tour ưu đãi và thực đơn hấp dẫn chỉ có tại trang web chính thức của Khu du lịch Cồn Phụng chúng tôi!",
-			},
-		],
-	},
-	twitter: {
-		card: "summary_large_image",
-		title: "Khu du lịch Cồn Phụng chính chủ",
-		description:
-			"Đặt tour chính chủ tại KDL Cồn Phụng, ưu đãi hấp dẫn cho gia đình và doanh nghiệp cùng trải nghiệm văn hoá Đạo Dừa độc đáo.",
-		images: ["https://conphungtourist.com/wp-content/uploads/2024/10/bener-nho.jpg"],
-	},
-	robots: {
-		index: true,
-		follow: true,
-		googleBot: {
-			index: true,
-			follow: true,
-			"max-snippet": -1,
-			"max-image-preview": "large",
-			"max-video-preview": -1,
-		},
-	},
+  openGraph: {
+    title: "ĐẶT TOUR NGAY CHO DU LỊCH CỒN PHỤNG BẾN TRE – NHẬN ƯU ĐÃI CỰC SỐC",
+    description: "Nhiều công ty trung gian cung cấp dịch vụ đi Cồn Phụng. Vậy đâu là chính chủ? Tìm hiểu ngay thương hiệu, hotline, logo chính chủ để tránh nhầm lẫn!",
+    url: "https://conphungtourist.com",
+    type: "website",
+    locale: "vi_VN",
+    siteName: "Khu du lịch Cồn Phụng Bến Tre",
+    images: [
+      {
+        url: "https://conphungtourist.com/wp-content/uploads/2024/10/bener-nho.jpg",
+        alt: "Bạn muốn khám phá Khu Du Lịch Cồn Phụng và Công Trình Kiến Trúc Đạo Dừa? Trải nghiệm thiên nhiên và văn hóa độc đáo của miền Tây cùng những gói tour ưu đãi và thực đơn hấp dẫn chỉ có tại trang web chính thức của Khu du lịch Cồn Phụng chúng tôi!",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Khu du lịch Cồn Phụng chính chủ",
+    description:
+      "Đặt tour chính chủ tại KDL Cồn Phụng, ưu đãi hấp dẫn cho gia đình và doanh nghiệp cùng trải nghiệm văn hoá Đạo Dừa độc đáo.",
+    images: ["https://conphungtourist.com/wp-content/uploads/2024/10/bener-nho.jpg"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-snippet": -1,
+      "max-image-preview": "large",
+      "max-video-preview": -1,
+    },
+  },
 };
 
 
@@ -139,15 +142,15 @@ export default async function RootLayout({
             <Main className="pb-20 md:pb-0">{children}</Main>
             <HideOnAdmin>
               <ConditionalFooter />
-              <StickyNotification/>
-              <StickyNotificationbutom/>
-              <Chatbot/>
+              <StickyNotification />
+              <StickyNotificationbutom />
+              <Chatbot />
               <PWARegister />
               <MobileBottomNav />
               <DefaultChatProvider />
             </HideOnAdmin>
 
-         </ThemeProvider>
+          </ThemeProvider>
         </SessionProviderWrapper>
 
         {/* Register Service Worker */}
@@ -167,7 +170,52 @@ export default async function RootLayout({
               }
             `,
           }}
-        /> 
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": ["TouristAttraction", "LocalBusiness"],
+              "name": "Khu du lịch Cồn Phụng Bến Tre",
+              "image": [
+                "https://conphungtourist.com/wp-content/uploads/2024/10/bener-nho.jpg",
+                "https://conphungtourist.com/uploads/anhbiadulichconphung.webp"
+              ],
+              "description": "Khu du lịch sinh thái Cồn Phụng, di tích Đạo Dừa, nhà hàng, khách sạn, tour du lịch miền Tây.",
+              "url": "https://conphungtourist.com",
+              "telephone": "+84918267715",
+              "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "Ấp Tân Vinh, Xã Phú Túc",
+                "addressLocality": "Châu Thành",
+                "addressRegion": "Bến Tre",
+                "postalCode": "93000",
+                "addressCountry": "VN"
+              },
+              "geo": {
+                "@type": "GeoCoordinates",
+                "latitude": 10.3367211,
+                "longitude": 106.3687357
+              },
+              "openingHoursSpecification": {
+                "@type": "OpeningHoursSpecification",
+                "dayOfWeek": [
+                  "Monday",
+                  "Tuesday",
+                  "Wednesday",
+                  "Thursday",
+                  "Friday",
+                  "Saturday",
+                  "Sunday"
+                ],
+                "opens": "07:00",
+                "closes": "17:00"
+              },
+              "priceRange": "$$"
+            })
+          }}
+        />
       </body>
     </html>
   );
@@ -183,36 +231,36 @@ interface NavProps {
 const Nav = ({ className, children, id, items }: NavProps) => {
   return (
     <nav
-    className={cn(
-      "sticky z-50 top-0 bg-background",
-      "border-b",
-      "fade-in",
-      className,
-    )}
-    id={id}
-  >
-    <div
-      id="nav-container"
-      className="max-w-5xl mx-auto py-4 px-6 sm:px-8 flex justify-between items-center"
+      className={cn(
+        "sticky z-50 top-0 bg-background",
+        "border-b",
+        "fade-in",
+        className,
+      )}
+      id={id}
     >
-      <ThemeToggle />
-
-      <Link
-        className="hover:opacity-75 transition-all flex gap-2 items-center"
-        href="/"
+      <div
+        id="nav-container"
+        className="max-w-5xl mx-auto py-4 px-6 sm:px-8 flex justify-between items-center"
       >
+        <ThemeToggle />
 
-        <span  className="sr-only">Du Lịch Cồn Phụng Bến Tre</span>
-        <Image
-          src={Logo}
-          alt=" Logo du lịch Cồn Phụng Bến Tre"
-          className="dark:note rounded-md"
-          width={140}
-          height={40}
-        />
-      </Link>
-      {children}
-      <div className="flex items-center gap-2">
+        <Link
+          className="hover:opacity-75 transition-all flex gap-2 items-center"
+          href="/"
+        >
+
+          <span className="sr-only">Du Lịch Cồn Phụng Bến Tre</span>
+          <Image
+            src={Logo}
+            alt=" Logo du lịch Cồn Phụng Bến Tre"
+            className="dark:note rounded-md"
+            width={140}
+            height={40}
+          />
+        </Link>
+        {children}
+        <div className="flex items-center gap-2">
           <div className="mx-2 hidden md:flex">
             {items.map((item) => (
               <Button key={item.id} asChild variant="ghost" size="sm">
@@ -222,22 +270,22 @@ const Nav = ({ className, children, id, items }: NavProps) => {
               </Button>
             ))}
           </div>
-        {/* Link cocoisland.vn đã bị xóa - không sử dụng */}
-        {/* <Link className="mx-2 hidden md:flex" href={"https://cocoisland.vn"}>
+          {/* Link cocoisland.vn đã bị xóa - không sử dụng */}
+          {/* <Link className="mx-2 hidden md:flex" href={"https://cocoisland.vn"}>
      Đặt phòng Coco Island
      </Link> */}
- 
-        <Button asChild className="hidden sm:flex">
-          <Link href="tel:+84917645039">Đặt tour ngay</Link>
-        </Button>
-    
-        <MobileNav items={items} />
-       
+
+          <Button asChild className="hidden sm:flex">
+            <Link href="tel:+84917645039">Đặt tour ngay</Link>
+          </Button>
+
+          <MobileNav items={items} />
+
+        </div>
       </div>
-    </div>
-  </nav>
-  
-    
+    </nav>
+
+
   );
 };
 

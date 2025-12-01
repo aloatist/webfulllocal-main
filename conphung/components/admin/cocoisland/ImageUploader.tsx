@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Upload, X, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
@@ -15,7 +15,14 @@ interface ImageUploaderProps {
 export function ImageUploader({ value, onChange, label, aspectRatio = '16/9' }: ImageUploaderProps) {
   const [uploading, setUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState(value || '');
+  const [imageError, setImageError] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Sync previewUrl with value prop when it changes
+  useEffect(() => {
+    setPreviewUrl(value || '');
+    setImageError(false);
+  }, [value]);
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -49,8 +56,10 @@ export function ImageUploader({ value, onChange, label, aspectRatio = '16/9' }: 
       }
 
       const data = await response.json();
-      setPreviewUrl(data.url);
-      onChange(data.url);
+      const imageUrl = data.url;
+      setPreviewUrl(imageUrl);
+      setImageError(false);
+      onChange(imageUrl);
     } catch (error) {
       console.error('Upload error:', error);
       alert('Lỗi khi tải lên hình ảnh');
@@ -61,6 +70,7 @@ export function ImageUploader({ value, onChange, label, aspectRatio = '16/9' }: 
 
   const handleRemove = () => {
     setPreviewUrl('');
+    setImageError(false);
     onChange('');
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -74,15 +84,33 @@ export function ImageUploader({ value, onChange, label, aspectRatio = '16/9' }: 
       <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 hover:border-gray-400 transition-colors">
         {previewUrl ? (
           <div className="relative group">
-            <div className="relative" style={{ aspectRatio }}>
-              <Image
-                src={previewUrl}
-                alt="Preview"
-                fill
-                className="object-cover rounded-lg"
-              />
+            <div className="relative w-full" style={{ aspectRatio }}>
+              {!imageError ? (
+                <Image
+                  src={previewUrl}
+                  alt="Preview"
+                  fill
+                  className="object-cover rounded-lg"
+                  unoptimized={previewUrl.startsWith('/uploads/')}
+                  onError={() => setImageError(true)}
+                />
+              ) : (
+                <div className="flex flex-col items-center justify-center h-full bg-gray-100 rounded-lg">
+                  <p className="text-sm text-gray-500 mb-2">Không thể tải hình ảnh</p>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      setImageError(false);
+                    }}
+                  >
+                    Thử lại
+                  </Button>
+                </div>
+              )}
             </div>
-            <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
               <Button
                 type="button"
                 size="sm"

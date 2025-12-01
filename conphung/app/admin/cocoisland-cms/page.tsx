@@ -18,7 +18,6 @@ import { DiscoveryEditor } from '@/components/admin/cocoisland-cms/DiscoveryEdit
 import { TestimonialsEditor } from '@/components/admin/cocoisland-cms/TestimonialsEditor';
 import { ServicesEditor } from '@/components/admin/cocoisland-cms/ServicesEditor';
 import { ContactEditor } from '@/components/admin/cocoisland-cms/ContactEditor';
-import { NewsletterEditor } from '@/components/admin/cocoisland-cms/NewsletterEditor';
 
 export default function CocoIslandCMSPage() {
   const [config, setConfig] = useState<CocoIslandConfig | null>(null);
@@ -210,67 +209,7 @@ export default function CocoIslandCMSPage() {
         </div>
       </div>
 
-      {/* Stats Cards */}
-      {config && (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <div className="rounded-xl border bg-card p-6 shadow-sm">
-            <h3 className="text-sm font-medium text-muted-foreground">Dịch vụ</h3>
-            <p className="text-3xl font-bold mt-2">{config.services?.services?.length || 0}</p>
-            <p className="text-xs text-muted-foreground mt-1">dịch vụ đang hiển thị</p>
-          </div>
-
-          <div className="rounded-xl border bg-card p-6 shadow-sm">
-            <h3 className="text-sm font-medium text-muted-foreground">Đánh giá</h3>
-            <p className="text-3xl font-bold mt-2">{config.testimonials?.testimonials?.length || 0}</p>
-            <p className="text-xs text-muted-foreground mt-1">nhận xét khách hàng</p>
-          </div>
-
-          <div className="rounded-xl border bg-card p-6 shadow-sm">
-            <h3 className="text-sm font-medium text-muted-foreground">Ưu đãi</h3>
-            <p className="text-3xl font-bold mt-2">{config.stayPerks?.items?.length || 0}</p>
-            <p className="text-xs text-muted-foreground mt-1">ưu đãi phòng nghỉ</p>
-          </div>
-
-          <div className="rounded-xl border bg-card p-6 shadow-sm">
-            <h3 className="text-sm font-medium text-muted-foreground">Trạng thái</h3>
-            <Badge variant="secondary" className="mt-2 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-              {publishStatus === 'PUBLISHED' ? '● Published' : '● Draft'}
-            </Badge>
-          </div>
-        </div>
-      )}
-
       {/* Status Alert */}
-      {!config && (
-        <Alert className="border-amber-500 bg-amber-50 dark:bg-amber-950/30">
-          <AlertDescription>
-            <div className="flex flex-col gap-3">
-              <div className="flex items-center justify-between">
-                <span>
-                  Trạng thái: <strong>Chưa có dữ liệu</strong>
-                </span>
-                <Button
-                  onClick={handleMigrate}
-                  disabled={saving}
-                  size="sm"
-                  className="bg-emerald-600 hover:bg-emerald-700"
-                >
-                  {saving ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  ) : (
-                    <RefreshCw className="mr-2 h-4 w-4" />
-                  )}
-                  Tải Dữ Liệu Mẫu Ngay
-                </Button>
-              </div>
-              <p className="text-sm text-muted-foreground">
-                💡 Click nút trên để tự động tải dữ liệu mẫu từ cocoisland page vào database. Sau đó bạn có thể chỉnh sửa và lưu.
-              </p>
-            </div>
-          </AlertDescription>
-        </Alert>
-      )}
-
       {status === 'success' && (
         <Alert className="border-green-500 bg-green-50 dark:bg-green-950/30">
           <AlertDescription>
@@ -288,7 +227,7 @@ export default function CocoIslandCMSPage() {
       )}
 
       {/* Tabs for Each Section */}
-      {config && (
+      {config ? (
         <Tabs defaultValue="hero" className="w-full">
           <div className="overflow-x-auto">
             <TabsList className="inline-flex w-auto h-auto flex-wrap">
@@ -301,7 +240,6 @@ export default function CocoIslandCMSPage() {
               <TabsTrigger value="testimonials">Testimonials</TabsTrigger>
               <TabsTrigger value="services">Services</TabsTrigger>
               <TabsTrigger value="contact">Contact</TabsTrigger>
-              <TabsTrigger value="newsletter">Newsletter</TabsTrigger>
             </TabsList>
           </div>
 
@@ -384,18 +322,9 @@ export default function CocoIslandCMSPage() {
                 onChange={(data) => updateSection('contact', data)} 
               />
             </TabsContent>
-
-            <TabsContent value="newsletter">
-              <NewsletterEditor 
-                data={config.newsletter} 
-                onChange={(data) => updateSection('newsletter', data)} 
-              />
-            </TabsContent>
           </div>
         </Tabs>
-      )}
-
-      {!config && !loading && (
+      ) : (
         <Card>
           <CardHeader>
             <CardTitle>Chưa có dữ liệu</CardTitle>

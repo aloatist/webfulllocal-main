@@ -83,11 +83,12 @@ export function generateMetadata(config: SEOConfig): Metadata {
  * Generate metadata for Tour pages
  */
 export function generateTourMetadata(tour: any): Metadata {
+  const tourCategories = tour?.Category || tour?.categories || [];
   const keywords = [
     'tour Cồn Phụng',
     'du lịch Bến Tre',
     tour.title,
-    ...(tour.categories?.map((cat: any) => cat.name) || []),
+    ...(tourCategories?.map((cat: any) => cat.name) || []),
     ...(tour.seoKeywords || []),
   ];
 
@@ -124,24 +125,29 @@ export function generateHomestayMetadata(homestay: any): Metadata {
 }
 
 /**
- * Generate metadata for Blog/News posts
+ * Generate metadata for Blog/posts posts
  */
 export function generatePostMetadata(post: any): Metadata {
+  const categories = post?.Category || post?.categories || [];
+  const tags = post?.Tag || post?.tags || [];
+  const media = post?.Media || post?.featuredImage;
+  const seo = post?.SEO || post?.seo;
+  const author = post?.User || post?.author;
   const keywords = [
-    ...(post.tags?.map((tag: any) => tag.name) || []),
-    ...(post.categories?.map((cat: any) => cat.name) || []),
+    ...(tags?.map((tag: any) => tag.name) || []),
+    ...(categories?.map((cat: any) => cat.name) || []),
   ];
 
   return generateMetadata({
-    title: post.seo?.title || post.title,
-    description: post.seo?.description || post.excerpt || '',
+    title: seo?.title || post.title,
+    description: seo?.description || post.excerpt || '',
     keywords,
-    image: post.featuredImage?.url,
-    url: `${SITE_URL}/news/${post.slug}`,
+    image: media?.url,
+    url: `${SITE_URL}/posts/${post.slug}`,
     type: 'article',
     publishedTime: post.createdAt.toISOString(),
     modifiedTime: post.updatedAt.toISOString(),
-    author: post.author?.name,
+    author: author?.name,
   });
 }
 
