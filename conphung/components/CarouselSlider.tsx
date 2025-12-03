@@ -110,20 +110,26 @@ const CarouselSlider = ({ images }: CarouselSliderProps = {}) => {
                   sizes="(max-width: 1024px) 100vw, 25vw"
                   className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
                   loading={index < 4 ? 'eager' : 'lazy'}
+                  unoptimized={true}
+                  onError={(e) => {
+                    console.error('Image failed to load:', image.url);
+                    // Fallback to a placeholder or hide the image
+                    e.currentTarget.style.display = 'none';
+                  }}
                 />
-                
+
                 {/* Gradient Overlay - Light */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                
+
                 {/* Glow Effect */}
                 <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                   <div className="absolute inset-0 rounded-xl shadow-[0_0_30px_rgba(34,197,94,0.3)] blur-xl"></div>
                 </div>
               </div>
-              
+
               {/* Border Glow */}
               <div className="absolute inset-0 rounded-xl border-2 border-transparent group-hover:border-emerald-400/50 transition-all duration-500 opacity-0 group-hover:opacity-100"></div>
-              
+
               {/* Shadow Effect */}
               <div className="absolute -inset-1 rounded-xl bg-gradient-to-r from-emerald-400/0 via-green-400/0 to-teal-400/0 group-hover:from-emerald-400/20 group-hover:via-green-400/20 group-hover:to-teal-400/20 blur-xl opacity-0 group-hover:opacity-100 transition-all duration-700 -z-10"></div>
             </div>
